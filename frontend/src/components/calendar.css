@@ -1,0 +1,146 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
+.my-calendar-container {
+    width: 100%;
+    max-width: 390px;
+    height: 844px;
+    font-family: "Pretendard", sans-serif;
+    box-sizing: border-box;
+    padding: 0 20px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #fff;
+    color: #595959;
+}
+
+/* 상단 네비게이션 */
+.my-calendar-nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 14px 0;
+    gap: 8px;
+    padding-top: 6px;
+}
+
+.month-label {
+    font-size: 14px;
+    color: #595959;
+    font-weight: 700;
+}
+
+/* 좌우 화살표 */
+.nav-buttons {
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-buttons .arrow-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #595959;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+
+/* 월간 / 주간 버튼 */
+.view-toggle-btn {
+    background-color: #E1F2E7 !important;
+    border: none !important;
+    font-size: 11.5px !important;
+    color: #595959 !important;
+    font-weight: 400 !important;
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    line-height: 1;
+    font-family: "Pretendard", sans-serif !important;
+}
+
+.view-toggle-btn:hover,
+.view-toggle-btn:active,
+.view-toggle-btn:focus {
+    background-color: #E1F2E7 !important;
+    color: #595959 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* 상단 요일 고정 */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 14px;
+    justify-items: center;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.calendar-weekdays .weekday {
+    font-size: 12px;
+    font-weight: 600;
+    color: #595959;
+}
+
+/* 일요일 글자 빨간색 */
+.calendar-weekdays .weekday:nth-child(1) {
+    color: #FD5344;
+}
+
+/* 날짜 그리드 */
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 14px;
+    justify-items: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* 날짜 박스 */
+.day-tile {
+    width: 100%;
+    aspect-ratio: 1 / 1.1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* 날짜 숫자 */
+.day-number {
+    font-weight: 600;
+    color: #595959;
+}
+
+/* 일요일 색상 변경: 숫자 */
+.day-tile.sunday .day-number {
+    color: #FD5344;
+}
+
+/* 오늘 날짜 숫자 원형 */
+.day-tile.today .day-number {
+    background-color: #EBF6EF;
+    color: #36A862;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+    border: 2px solid #36A862;
+}
+
+/* 오늘 날짜 전체 길쭉 테두리 */
+.day-tile.today {
+    position: relative;
+}
