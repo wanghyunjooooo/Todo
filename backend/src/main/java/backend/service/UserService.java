@@ -32,4 +32,16 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public String login(UserDTO dto) {
+        Optional<User> optionalUser = userRepository.findByUserEmail(dto.getUserEmail());
+        if (optionalUser.isEmpty()) throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+
+        User user = optionalUser.get();
+        if (!passwordEncoder.matches(dto.getUserPassword(), user.getUserPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+
+        return jwtoken.createToken(user.getUserId(), user.getUserName());
+    }
 }
