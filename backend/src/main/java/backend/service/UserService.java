@@ -44,4 +44,9 @@ public class UserService {
 
         return jwtoken.createToken(user.getUserId(), user.getUserName());
     }
+
+    public User getProfile(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
 }

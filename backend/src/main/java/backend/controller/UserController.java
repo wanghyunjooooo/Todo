@@ -36,4 +36,10 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<?> getProfile(@PathVariable Long id) {
+        User user = userService.getProfile(id);
+        return ResponseEntity.ok(user);
+    }
 }
