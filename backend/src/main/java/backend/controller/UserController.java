@@ -42,4 +42,10 @@ public class UserController {
         User user = userService.getProfile(id);
         return ResponseEntity.ok(user);
     }
+
+    @PutMapping("/profile/{id}")
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody UserDTO dto) {
+        User updated = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(Map.of("message", "회원정보 수정 완료", "user", updated));
+    }
 }

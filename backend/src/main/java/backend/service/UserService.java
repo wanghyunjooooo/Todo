@@ -49,4 +49,12 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
+
+    public User updateProfile(Long userId, UserDTO dto) {
+        User user = getProfile(userId);
+        if (dto.getUserName() != null) user.setUserName(dto.getUserName());
+        if (dto.getUserPassword() != null)
+            user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+        return userRepository.save(user);
+    }
 }
