@@ -1,24 +1,27 @@
 import React from "react";
 import Header from "../components/Header";
 import MyCalendar from "../components/Calendar";
-import CategoryManager from "../components/Category"; // 이름 변경
+import Todo from "../components/Todo";
+import BottomNav from "../components/Nav"; // 네비 추가
 
 function Home() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {/* Header */}
       <Header />
 
-      {/* 내용 영역 */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "0 16px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "0 16px", marginBottom: "140px" }}>
         {/* 달력 */}
         <MyCalendar />
 
-        {/* 카테고리 */}
-        <div style={{ marginTop: "20px" }}>
-          <CategoryManager /> {/* JSX도 변경 */}
+        {/* Todo 최소 간격 */}
+        <div style={{ marginTop: "8px" }}>
+          <Todo />
         </div>
       </div>
+
+
+      {/* 화면 하단 네비 */}
+      <BottomNav />
     </div>
   );
 }

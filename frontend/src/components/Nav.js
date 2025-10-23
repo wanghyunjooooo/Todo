@@ -12,7 +12,6 @@ function SvgIcon({ src, isActive, width = 37, height = 37 }) {
       style={{
         width,
         height,
-        marginBottom: 4,
         filter: isActive
           ? "invert(46%) sepia(67%) saturate(447%) hue-rotate(92deg) brightness(90%) contrast(87%)"
           : "invert(35%) sepia(0%) saturate(0%) hue-rotate(340deg) brightness(93%) contrast(86%)",
@@ -32,21 +31,24 @@ function BottomNav() {
 
   return (
     <nav
-      style={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        width: "100%",
-        backgroundColor: "#fff",
-        borderTop: "1px solid #ddd",
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-        height: "60px",
-        boxShadow: "0 -1px 5px rgba(0,0,0,0.1)",
-        zIndex: 10,
-      }}
-    >
+  style={{
+    position: "fixed",
+    top: "764px", // 화면 기준 위치
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "390px",
+    height: "80px",
+    padding: "20px 55px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    gap: "80px",
+    background: "#FBFBFB",
+    boxShadow: "0 -2px 4px 0 rgba(0, 0, 0, 0.05)",
+    zIndex: 1000,
+    flexShrink: 0,
+  }}
+>
       {navItems.map((item) => (
         <Link
           key={item.to}

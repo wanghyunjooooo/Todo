@@ -1,27 +1,107 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./todo.css";
+import PlusIcon from "../assets/plus.svg"; // 카테고리 옆 플러스
+import ThreeIcon from "../assets/three.svg"; // 할 일 입력창 점 3개
 
 function Todo() {
+  const [tasks, setTasks] = useState([{ text: "", checked: false }]);
+  const inputRefs = useRef([]);
+
+  const toggleTaskInput = () => {
+    setTasks([...tasks, { text: "", checked: false }]);
+  };
+
+  const handleInputChange = (index, value) => {
+    const newTasks = [...tasks];
+    newTasks[index].text = value;
+    setTasks(newTasks);
+  };
+
+  const toggleChecked = (index) => {
+    const newTasks = [...tasks];
+    newTasks[index].checked = !newTasks[index].checked;
+    setTasks(newTasks);
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setTasks((prev) => {
+        const newTasks = [...prev];
+        newTasks.splice(index + 1, 0, { text: "", checked: false });
+        return newTasks;
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (tasks.length > 0) {
+      const lastIndex = tasks.length - 1;
+      inputRefs.current[lastIndex]?.focus();
+    }
+  }, [tasks.length]);
+
   return (
     <div className="todo-container">
+      {/* 카테고리 박스 */}
       <div className="category-box">
         <span className="category-text">카테고리 01</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
-          viewBox="0 0 40 40"
-          fill="none"
-          className="dots-icon"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M16.4465 19.9967C16.4465 19.7323 16.3443 19.4788 16.1624 19.2919C15.9805 19.105 15.7337 19 15.4765 19H15.47C15.2128 19 14.966 19.105 14.7841 19.2919C14.6022 19.4788 14.5 19.7323 14.5 19.9967V20.0033C14.5 20.2677 14.6022 20.5212 14.7841 20.7081C14.966 20.895 15.2128 21 15.47 21H15.4765C15.7337 21 15.9805 20.895 16.1624 20.7081C16.3443 20.5212 16.4465 20.2677 16.4465 20.0033V19.9967ZM20.0032 19C20.2605 19 20.5072 19.105 20.6891 19.2919C20.8711 19.4788 20.9733 19.7323 20.9733 19.9967V20.0033C20.9733 20.2677 20.8711 20.5212 20.6891 20.7081C20.5072 20.895 20.2605 21 20.0032 21H19.9968C19.7395 21 19.4928 20.895 19.3109 20.7081C19.1289 20.5212 19.0267 20.2677 19.0267 20.0033V19.9967C19.0267 19.7323 19.1289 19.4788 19.3109 19.2919C19.4928 19.105 19.7395 19 19.9968 19H20.0032ZM24.53 19C24.7872 19 25.034 19.105 25.2159 19.2919C25.3978 19.4788 25.5 19.7323 25.5 19.9967V20.0033C25.5 20.2677 25.3978 20.5212 25.2159 20.7081C25.034 20.895 24.7872 21 24.53 21H24.5235C24.2663 21 24.0195 20.895 23.8376 20.7081C23.6557 20.5212 23.5535 20.2677 23.5535 20.0033V19.9967C23.5535 19.7323 23.6557 19.4788 23.8376 19.2919C24.0195 19.105 24.2663 19 24.5235 19H24.53Z"
-            fill="#2A2A2A"
-          />
-        </svg>
+
+        {/* plus 버튼 */}
+        <img
+          src={PlusIcon}
+          alt="plus button"
+          style={{ width: "20px", height: "20px", cursor: "pointer" }}
+          onClick={toggleTaskInput}
+        />
       </div>
+
+      {/* 할 일 입력 영역 */}
+      {tasks.map((task, index) => (
+        <div
+          key={index}
+          className={`task-input ${task.checked ? "checked-bg" : ""}`}
+        >
+          {/* 체크박스 */}
+          <button
+            className={`task-check-btn ${task.checked ? "checked" : ""}`}
+            onClick={() => toggleChecked(index)}
+          >
+            {task.checked && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <rect width="20" height="20" rx="10" fill="#36A862" />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M15.8073 7.18066C15.9307 7.29649 16 7.4535 16 7.6172C16 7.7809 15.9307 7.93791 15.8073 8.05374L9.65614 13.8193C9.53257 13.935 9.36506 14 9.19041 14C9.01576 14 8.84826 13.935 8.72469 13.8193L5.20976 10.5247C5.14501 10.4682 5.09307 10.4 5.05705 10.3242C5.02103 10.2484 5.00166 10.1666 5.0001 10.0837C4.99854 10.0007 5.01482 9.91833 5.04797 9.84141C5.08111 9.76449 5.13045 9.69461 5.19303 9.63595C5.25561 9.57729 5.33016 9.53105 5.41222 9.49998C5.49429 9.46891 5.58218 9.45365 5.67067 9.45512C5.75917 9.45658 5.84644 9.47473 5.92728 9.5085C6.00812 9.54226 6.08088 9.59094 6.14122 9.65163L9.19041 12.5097L14.8758 7.18066C14.9994 7.06498 15.1669 7 15.3415 7C15.5162 7 15.6837 7.06498 15.8073 7.18066Z"
+                  fill="#EBF6EF"
+                />
+              </svg>
+            )}
+          </button>
+
+          {/* 인풋 */}
+          <input
+            type="text"
+            value={task.text}
+            onChange={(e) => handleInputChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            placeholder="할 일 입력"
+            ref={(el) => (inputRefs.current[index] = el)}
+          />
+
+          {/* 점 3개 버튼 */}
+          <button className="task-add-btn">
+            <img src={ThreeIcon} alt="three dots" style={{ width: "20px" }} />
+          </button>
+        </div>
+      ))}
     </div>
   );
 }

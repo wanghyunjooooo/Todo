@@ -1,43 +1,89 @@
+/* todo.css */
 .todo-container {
     font-family: "Pretendard", sans-serif;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* 화면 끝까지 */
+    max-width: 100%;
+    padding: 10px 20px;
+    gap: 10px;
+    box-sizing: border-box;
 }
 
-/* ✅ 피그마 기준 category-box 스타일 */
+/* 카테고리 박스 */
 .category-box {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px;
-    gap: 8px;
-
-    height: 40px;
-        width: fit-content;
-        /* 내용에 맞춤 */
-        min-width: 120px;
-        /* 내용보다 조금 넓게 */
-        padding: 8px 12px;
-        /* 좌우 여백을 살짝 늘림 */
-
+    background: #fff;
     border-radius: 16px;
-    border: 1px solid var(--green-light-active, #C1E4CE);
-    background: var(--Grey-White, #FFF);
+    padding: 0 13px;
+    height: 40px;
+    width: 125px;
     box-sizing: border-box;
+    border: 1px solid var(--green-light-active, #C1E4CE);
+
 }
 
-/* ✅ 텍스트 */
 .category-text {
-    color: var(--Green-Normal, #36A862);
-    text-align: center;
-    font-family: Pretendard;
-    font-size: 12px;
-    font-style: normal;
+    font-size: 14px;
     font-weight: 600;
-    line-height: normal;
+    color: #36A862;
 }
 
-/* ✅ 아이콘 */
-.dots-icon {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
+/* 할 일 입력창 */
+.task-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 16px;
+    background: #f3f3f3;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background 0.3s;
+}
+
+.task-input.checked-bg {
+    background: #ebf6ef;
+}
+
+.task-input input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "Pretendard", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #2a2a2a;
+}
+
+/* 체크 버튼 */
+.task-check-btn {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #777;
+    border-radius: 50%;
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* 점 3개 버튼 */
+.task-add-btn {
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
