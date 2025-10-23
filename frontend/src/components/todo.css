@@ -1,0 +1,43 @@
+.todo-container {
+    font-family: "Pretendard", sans-serif;
+}
+
+/* ✅ 피그마 기준 category-box 스타일 */
+.category-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 8px;
+
+    height: 40px;
+        width: fit-content;
+        /* 내용에 맞춤 */
+        min-width: 120px;
+        /* 내용보다 조금 넓게 */
+        padding: 8px 12px;
+        /* 좌우 여백을 살짝 늘림 */
+
+    border-radius: 16px;
+    border: 1px solid var(--green-light-active, #C1E4CE);
+    background: var(--Grey-White, #FFF);
+    box-sizing: border-box;
+}
+
+/* ✅ 텍스트 */
+.category-text {
+    color: var(--Green-Normal, #36A862);
+    text-align: center;
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+/* ✅ 아이콘 */
+.dots-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
