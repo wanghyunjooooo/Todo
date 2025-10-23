@@ -52,4 +52,14 @@ public class TaskController {
     public ResponseEntity<List<Task>> getIncompleteTasks(@PathVariable Long userId) {
         return ResponseEntity.ok(taskService.getIncompleteTasks(userId));
     }
+
+    @PutMapping("/{taskId}")
+    public ResponseEntity<?> updateTask(@PathVariable Long taskId, @RequestBody TaskDTO dto) {
+        try {
+            Task updated = taskService.updateTask(taskId, dto);
+            return ResponseEntity.ok(Map.of("message", "수정 완료", "task", updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

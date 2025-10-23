@@ -59,4 +59,18 @@ public class TaskService {
     public List<Task> getIncompleteTasks(Long userId) {
         return taskRepository.findByUser_UserIdAndStatus(userId, "미완료");
     }
+
+    public Task updateTask(Long taskId, TaskDTO dto) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 할 일을 찾을 수 없습니다."));
+
+        if (dto.getTaskName() != null) task.setTaskName(dto.getTaskName());
+        if (dto.getMemo() != null) task.setMemo(dto.getMemo());
+        if (dto.getTaskDate() != null) task.setTaskDate(dto.getTaskDate());
+        if (dto.getStatus() != null) task.setStatus(dto.getStatus());
+        if (dto.getNotificationType() != null) task.setNotificationType(dto.getNotificationType());
+        if (dto.getNotificationTime() != null) task.setNotificationTime(dto.getNotificationTime());
+
+        return taskRepository.save(task);
+    }
 }
