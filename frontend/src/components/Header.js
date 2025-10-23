@@ -19,23 +19,17 @@ const styles = {
   header: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
-    padding: "0 16px",
-    height: "60px",
-    position: "sticky",
-    top: 0,
-    zIndex: 10,
-    backgroundColor: "#fff",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-  },
-  logo: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#000", // 로고 글씨 색깔 검정
+    alignItems: "flex-end",        // 피그마 기준
+    padding: "10px 20px",
+    width: "390px",
+    height: "80px",
+    flexShrink: 0,
+    background: "var(--grey-white-hover, #FBFBFB)",
+    boxSizing: "border-box",       // ✅ padding 포함 크기 계산
   },
   plusButton: {
-    width: "48px",       // 버튼 크기 조금 키움
-    height: "48px",
+    width: "40px",                  // 아이콘과 버튼 크기 맞춤
+    height: "40px",
     padding: 0,
     border: "none",
     background: "none",
@@ -45,9 +39,8 @@ const styles = {
     alignItems: "center",
   },
   plusIcon: {
-    width: "28px",       // 아이콘 크기 키움
-    height: "28px",
-    filter: "invert(34%) sepia(0%) saturate(0%) hue-rotate(342deg) brightness(92%) contrast(85%)", // #595959 색상
+    width: "40px",
+    height: "40px",
   },
 };
 
