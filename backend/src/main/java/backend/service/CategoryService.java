@@ -53,11 +53,16 @@ public class CategoryService {
         return category;
     }
 
-    public Category updateCategory(Long id, CategoryDTO dto) {
-        Category category = categoryRepository.findById(id)
+    public Category updateCategory(Long userId, Long categoryId, CategoryDTO dto) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
+
+        if (!category.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 사용자의 카테고리가 아닙니다.");
+        }
 
         category.setCategoryName(dto.getCategoryName());
         return categoryRepository.save(category);
     }
+
 }

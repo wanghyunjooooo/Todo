@@ -51,11 +51,15 @@ public class CategoryController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO dto) {
+    @PutMapping("/{userId}/{categoryId}")
+    public ResponseEntity<?> updateCategory(
+            @PathVariable Long userId,
+            @PathVariable Long categoryId,
+            @RequestBody CategoryDTO dto
+    ) {
         try {
-            Category category = categoryService.updateCategory(id, dto);
-            return ResponseEntity.ok(category);
+            Category updatedCategory = categoryService.updateCategory(userId, categoryId, dto);
+            return ResponseEntity.ok(updatedCategory);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
