@@ -33,4 +33,8 @@ public class CategoryService {
         category.setCreatedAt(LocalDateTime.now());
         return categoryRepository.save(category);
     }
+
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
 }
