@@ -41,4 +41,10 @@ public class RoutineController {
         Routine updated = routineService.updateRoutine(routineId, newType, LocalDate.parse(today));
         return ResponseEntity.ok(Map.of("message", "루틴 수정 완료", "routine", updated));
     }
+
+    @DeleteMapping("/{routineId}")
+    public ResponseEntity<?> deleteRoutine(@PathVariable Long routineId) {
+        routineService.deleteRoutine(routineId);
+        return ResponseEntity.ok(Map.of("message", "루틴이 삭제되었습니다."));
+    }
 }

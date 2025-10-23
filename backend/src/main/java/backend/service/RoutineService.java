@@ -80,6 +80,23 @@ public class RoutineService {
         return routine;
     }
 
+    @Transactional
+    public void deleteRoutine(Long routineId) {
+        Routine routine = routineRepository.findById(routineId)
+                .orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다."));
+
+        List<Task> tasks = taskRepository.findAll().stream()
+                .filter(t -> t.getRoutine() != null && t.getRoutine().getRoutineId().equals(routineId))
+                .toList();
+
+        for (Task t : tasks) {
+            t.setRoutine(null);
+        }
+        taskRepository.saveAll(tasks);
+
+        routineRepository.delete(routine);
+    }
+
     private List<Task> generateRoutineTasks(Routine routine, Task baseTask) {
         List<Task> list = new ArrayList<>();
         LocalDate start = routine.getStartDate();
