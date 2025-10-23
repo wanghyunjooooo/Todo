@@ -6,6 +6,7 @@ import backend.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -31,5 +32,14 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAllTasks());
+    }
+
+    @GetMapping("/{userId}/day")
+    public ResponseEntity<List<Task>> getTasksByDate(
+            @PathVariable Long userId,
+            @RequestParam("date") String dateStr
+    ) {
+        LocalDate date = LocalDate.parse(dateStr);
+        return ResponseEntity.ok(taskService.getTasksByDate(userId, date));
     }
 }

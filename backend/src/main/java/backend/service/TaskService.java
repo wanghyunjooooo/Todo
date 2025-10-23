@@ -9,6 +9,7 @@ import backend.repository.TaskRepository;
 import backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -45,5 +46,9 @@ public class TaskService {
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
+    }
+
+    public List<Task> getTasksByDate(Long userId, LocalDate date) {
+        return taskRepository.findByUser_UserIdAndTaskDate(userId, date);
     }
 }
