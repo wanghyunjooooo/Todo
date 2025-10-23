@@ -9,6 +9,8 @@ import backend.repository.TaskRepository;
 import backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TaskService {
 
@@ -39,5 +41,9 @@ public class TaskService {
         task.setCategory(category);
 
         return taskRepository.save(task);
+    }
+
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
     }
 }
