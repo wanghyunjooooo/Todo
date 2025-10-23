@@ -42,4 +42,12 @@ public class CategoryService {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 카테고리를 찾을 수 없습니다."));
     }
+
+    public Category updateCategory(Long id, CategoryDTO dto) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
+
+        category.setCategoryName(dto.getCategoryName());
+        return categoryRepository.save(category);
+    }
 }
