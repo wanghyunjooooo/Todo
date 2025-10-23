@@ -80,4 +80,11 @@ public class TaskService {
         }
         taskRepository.deleteById(taskId);
     }
+
+    public Task toggleStatus(Long taskId, String newStatus) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 할 일을 찾을 수 없습니다."));
+        task.setStatus(newStatus);
+        return taskRepository.save(task);
+    }
 }

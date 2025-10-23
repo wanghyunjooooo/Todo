@@ -72,4 +72,15 @@ public class TaskController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PatchMapping("/{taskId}/status")
+    public ResponseEntity<?> changeStatus(@PathVariable Long taskId, @RequestBody Map<String, String> body) {
+        try {
+            String newStatus = body.get("status");
+            Task updated = taskService.toggleStatus(taskId, newStatus);
+            return ResponseEntity.ok(Map.of("message", "상태가 변경되었습니다.", "task", updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }
