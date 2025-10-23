@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "\"Notification\"")
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
+@Table(name = "\"Notification\"")
 public class Notification {
 
     @Id
@@ -18,7 +18,7 @@ public class Notification {
     @Column(name = "notification_id")
     private Long notificationId;
 
-    @Column(name = "status", nullable = false, length = 10)
+    @Column(name = "status", nullable = false)
     private String status = "안읽음";
 
     @ManyToOne(fetch = FetchType.LAZY)

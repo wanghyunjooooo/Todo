@@ -25,23 +25,23 @@ public class TaskDTO {
     @JsonProperty("memo")
     private String memo;
 
-    @JsonProperty("routine")
-    private String routine;
-
-    @JsonProperty("start_date")
-    private LocalDate startDate;
-
-    @JsonProperty("end_date")
-    private LocalDate endDate;
+    @JsonProperty("task_date")
+    private LocalDate taskDate;
 
     @JsonProperty("notification_type")
     private String notificationType;
+
+    @JsonProperty("notification_time")
+    private LocalDateTime notificationTime;
 
     @JsonProperty("user_id")
     private Long userId;
 
     @JsonProperty("category_id")
     private Long categoryId;
+
+    @JsonProperty("routine_id")
+    private Long routineId;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;

@@ -7,10 +7,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import backend.dto.TaskDTO;
-
 @Entity
 @Table(name = "\"Category\"")
 @Getter
@@ -26,9 +22,8 @@ public class Category {
     @Column(name = "category_name", unique = true, length = 50)
     private String categoryName;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT now()")

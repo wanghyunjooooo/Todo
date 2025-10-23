@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-
-import backend.dto.NotificationDTO;
 
 @Entity
 @Table(name = "\"Task\"")
@@ -22,26 +19,23 @@ public class Task {
     @Column(name = "task_id")
     private Long taskId;
 
-    @Column(name = "task_name", nullable = false, length = 100)
+    @Column(name = "task_name", nullable = false)
     private String taskName;
 
-    @Column(name = "status", nullable = false, length = 10)
+    @Column(name = "status", nullable = false)
     private String status = "미완료";
 
     @Column(name = "memo")
     private String memo;
 
-    @Column(name = "routine", nullable = false, length = 20)
-    private String routine = "반복없음";
+    @Column(name = "task_date", nullable = false)
+    private LocalDate taskDate;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
-
-    @Column(name = "end_date")
-    private LocalDate endDate;
-
-    @Column(name = "notification_type", nullable = false, length = 10)
+    @Column(name = "notification_type", nullable = false)
     private String notificationType = "미알림";
+
+    @Column(name = "notification_time")
+    private LocalDateTime notificationTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -51,9 +45,10 @@ public class Task {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id")
+    private Routine routine;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT now()")
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Notification> notifications;
 }

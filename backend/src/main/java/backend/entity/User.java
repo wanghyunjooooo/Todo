@@ -18,13 +18,13 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "user_name", nullable = false, length = 50)
+    @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @Column(name = "user_password", nullable = false, length = 255)
+    @Column(name = "user_password", nullable = false)
     private String userPassword;
 
-    @Column(name = "user_email", nullable = false, unique = true, length = 100)
+    @Column(name = "user_email", nullable = false, unique = true)
     private String userEmail;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT now()")
@@ -35,6 +35,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Routine> routines;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
