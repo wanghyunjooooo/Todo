@@ -51,4 +51,12 @@ public class TaskService {
     public List<Task> getTasksByDate(Long userId, LocalDate date) {
         return taskRepository.findByUser_UserIdAndTaskDate(userId, date);
     }
+
+    public List<Task> getCompletedTasks(Long userId) {
+        return taskRepository.findByUser_UserIdAndStatus(userId, "완료");
+    }
+
+    public List<Task> getIncompleteTasks(Long userId) {
+        return taskRepository.findByUser_UserIdAndStatus(userId, "미완료");
+    }
 }

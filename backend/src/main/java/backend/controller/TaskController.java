@@ -42,4 +42,14 @@ public class TaskController {
         LocalDate date = LocalDate.parse(dateStr);
         return ResponseEntity.ok(taskService.getTasksByDate(userId, date));
     }
+
+    @GetMapping("/{userId}/complete")
+    public ResponseEntity<List<Task>> getCompletedTasks(@PathVariable Long userId) {
+        return ResponseEntity.ok(taskService.getCompletedTasks(userId));
+    }
+
+    @GetMapping("/{userId}/incomplete")
+    public ResponseEntity<List<Task>> getIncompleteTasks(@PathVariable Long userId) {
+        return ResponseEntity.ok(taskService.getIncompleteTasks(userId));
+    }
 }
