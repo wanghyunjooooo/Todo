@@ -87,4 +87,16 @@ public class TaskService {
         task.setStatus(newStatus);
         return taskRepository.save(task);
     }
+
+    public List<Task> getWeeklyStats(Long userId, LocalDate start, LocalDate end) {
+        return taskRepository.findTasksInRange(userId, start, end);
+    }
+
+    public List<Task> getMonthlyStats(Long userId, LocalDate start, LocalDate end) {
+        return taskRepository.findTasksInRange(userId, start, end);
+    }
+
+    public List<Task> getRangeStats(Long userId, LocalDate start, LocalDate end) {
+        return taskRepository.findTasksInRange(userId, start, end);
+    }
 }

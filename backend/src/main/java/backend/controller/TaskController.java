@@ -83,4 +83,31 @@ public class TaskController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/stats/weekly")
+    public ResponseEntity<?> getWeeklyStats(
+            @RequestParam Long userId,
+            @RequestParam String start,
+            @RequestParam String end
+    ) {
+        return ResponseEntity.ok(taskService.getWeeklyStats(userId, LocalDate.parse(start), LocalDate.parse(end)));
+    }
+
+    @GetMapping("/stats/monthly")
+    public ResponseEntity<?> getMonthlyStats(
+            @RequestParam Long userId,
+            @RequestParam String start,
+            @RequestParam String end
+    ) {
+        return ResponseEntity.ok(taskService.getMonthlyStats(userId, LocalDate.parse(start), LocalDate.parse(end)));
+    }
+
+    @GetMapping("/stats/range")
+    public ResponseEntity<?> getRangeStats(
+            @RequestParam Long userId,
+            @RequestParam String start,
+            @RequestParam String end
+    ) {
+        return ResponseEntity.ok(taskService.getRangeStats(userId, LocalDate.parse(start), LocalDate.parse(end)));
+    }
 }
