@@ -62,4 +62,14 @@ public class TaskController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long taskId) {
+        try {
+            taskService.deleteTask(taskId);
+            return ResponseEntity.ok(Map.of("message", "삭제 완료"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

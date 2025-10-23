@@ -73,4 +73,11 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
+    public void deleteTask(Long taskId) {
+        if (!taskRepository.existsById(taskId)) {
+            throw new IllegalArgumentException("삭제할 할 일을 찾을 수 없습니다.");
+        }
+        taskRepository.deleteById(taskId);
+    }
 }
