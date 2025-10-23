@@ -1,54 +1,69 @@
 package backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "\"Task\"")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
+    @JsonProperty("task_id")
     private Long taskId;
 
-    @Column(name = "task_name", nullable = false)
+    @Column(nullable = false, length = 100)
+    @JsonProperty("task_name")
     private String taskName;
 
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false, length = 10)
     private String status = "미완료";
 
-    @Column(name = "memo")
+    @Column(columnDefinition = "TEXT")
     private String memo;
 
-    @Column(name = "task_date", nullable = false)
+    @Column(nullable = false)
+    @JsonProperty("task_date")
     private LocalDate taskDate;
 
-    @Column(name = "notification_type", nullable = false)
+    @Column(nullable = false, length = 10)
+    @JsonProperty("notification_type")
     private String notificationType = "미알림";
 
-    @Column(name = "notification_time")
+    @JsonProperty("notification_time")
     private LocalDateTime notificationTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnore
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "routine_id")
+    @JsonIgnore
     private Routine routine;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT now()")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 }

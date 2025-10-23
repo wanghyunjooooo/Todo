@@ -1,34 +1,40 @@
 package backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "\"Notification\"")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "\"Notification\"")
+@AllArgsConstructor
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notification_id")
+    @JsonProperty("notification_id")
     private Long notificationId;
 
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false, length = 10)
     private String status = "안읽음";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
+    @JsonIgnore
     private Task task;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT now()")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
 }

@@ -1,16 +1,14 @@
 package backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class TaskDTO {
 
     @JsonProperty("task_id")
@@ -19,10 +17,7 @@ public class TaskDTO {
     @JsonProperty("task_name")
     private String taskName;
 
-    @JsonProperty("status")
     private String status;
-
-    @JsonProperty("memo")
     private String memo;
 
     @JsonProperty("task_date")

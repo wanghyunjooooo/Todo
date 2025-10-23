@@ -1,44 +1,56 @@
 package backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Entity
-@Table(name = "\"User\"")
+@Table(name = "\"Users\"")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @JsonProperty("user_id")
     private Long userId;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(nullable = false, length = 50)
+    @JsonProperty("user_name")
     private String userName;
 
-    @Column(name = "user_password", nullable = false)
-    private String userPassword;
-
-    @Column(name = "user_email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
+    @JsonProperty("user_email")
     private String userEmail;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT now()")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false, length = 255)
+    @JsonProperty("user_password")
+    private String userPassword;
 
+    @CreationTimestamp
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Task> tasks;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Routine> routines;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
 }

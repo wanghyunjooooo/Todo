@@ -1,16 +1,14 @@
 package backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class RoutineDTO {
 
     @JsonProperty("routine_id")
@@ -27,9 +25,6 @@ public class RoutineDTO {
 
     @JsonProperty("user_id")
     private Long userId;
-
-    @JsonProperty("task_template_id")
-    private Long taskTemplateId;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
