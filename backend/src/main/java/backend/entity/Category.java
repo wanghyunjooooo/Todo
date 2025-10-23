@@ -10,19 +10,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "\"Category\"")
+@Table(
+    name = "\"Category\"",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "category_name"})
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("category_id")
     private Long categoryId;
 
-    @Column(unique = true, length = 50)
+    @Column(length = 50, nullable = false)
     @JsonProperty("category_name")
     private String categoryName;
 

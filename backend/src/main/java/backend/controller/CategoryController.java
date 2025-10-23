@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/categories")
@@ -18,27 +19,43 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody CategoryDTO dto) {
-        Category category = categoryService.createCategory(dto);
-        CategoryDTO response = new CategoryDTO(
-            category.getCategoryId(),
-            category.getCategoryName(),
-            category.getUser().getUserId(),
-            category.getCreatedAt()
-        );
-        return ResponseEntity.ok(response);
+        try {
+            Category category = categoryService.createCategory(dto);
+            CategoryDTO response = new CategoryDTO(
+                category.getCategoryId(),
+                category.getCategoryName(),
+                category.getUser().getUserId(),
+                category.getCreatedAt()
+            );
+            return ResponseEntity.ok(Map.of(
+                "message", "카테고리가 생성되었습니다.",
+                "category", response
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "서버 오류가 발생했습니다."));
+        }
     }
 
-
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<?> getAllCategories() {
+        try {
+            List<Category> categories = categoryService.getAllCategories();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "카테고리를 불러오지 못했습니다."));
+        }
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getCategoryByUserId(@PathVariable Long userId) {
-        List<Category> categories = categoryService.getCategoryByUserId(userId);
-        return ResponseEntity.ok(categories);
+        try {
+            List<Category> categories = categoryService.getCategoryByUserId(userId);
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/{userId}/{categoryId}")
@@ -48,9 +65,15 @@ public class CategoryController {
     ) {
         try {
             Category category = categoryService.getCategoryById(userId, categoryId);
-            return ResponseEntity.ok(category);
+            CategoryDTO response = new CategoryDTO(
+                category.getCategoryId(),
+                category.getCategoryName(),
+                category.getUser().getUserId(),
+                category.getCreatedAt()
+            );
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -62,9 +85,20 @@ public class CategoryController {
     ) {
         try {
             Category updatedCategory = categoryService.updateCategory(userId, categoryId, dto);
-            return ResponseEntity.ok(updatedCategory);
+            CategoryDTO response = new CategoryDTO(
+                updatedCategory.getCategoryId(),
+                updatedCategory.getCategoryName(),
+                updatedCategory.getUser().getUserId(),
+                updatedCategory.getCreatedAt()
+            );
+            return ResponseEntity.ok(Map.of(
+                "message", "카테고리가 수정되었습니다.",
+                "category", response
+            ));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "서버 오류가 발생했습니다."));
         }
     }
 }

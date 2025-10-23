@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -23,6 +22,11 @@ public class CategoryService {
     public Category createCategory(CategoryDTO dto) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        boolean exists = categoryRepository.existsByUser_UserIdAndCategoryName(user.getUserId(), dto.getCategoryName());
+        if (exists) {
+            throw new IllegalArgumentException("이미 동일한 이름의 카테고리가 존재합니다.");
+        }
 
         Category category = new Category();
         category.setCategoryName(dto.getCategoryName());
@@ -55,6 +59,11 @@ public class CategoryService {
 
         if (!category.getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException("해당 사용자의 카테고리가 아닙니다.");
+        }
+
+        boolean exists = categoryRepository.existsByUser_UserIdAndCategoryName(userId, dto.getCategoryName());
+        if (exists && !category.getCategoryName().equals(dto.getCategoryName())) {
+            throw new IllegalArgumentException("이미 동일한 이름의 카테고리가 존재합니다.");
         }
 
         category.setCategoryName(dto.getCategoryName());
