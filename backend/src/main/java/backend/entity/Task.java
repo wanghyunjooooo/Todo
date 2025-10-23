@@ -55,5 +55,5 @@ public class Task {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NotificationDTO> notifications;
+    private List<Notification> notifications;
 }

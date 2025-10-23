@@ -32,5 +32,5 @@ public class Category {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TaskDTO> tasks;
+    private List<Task> tasks;
 }
