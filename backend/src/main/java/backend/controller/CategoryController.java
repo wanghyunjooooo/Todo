@@ -18,13 +18,16 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody CategoryDTO dto) {
-        try {
-            Category category = categoryService.createCategory(dto);
-            return ResponseEntity.ok(category);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Category category = categoryService.createCategory(dto);
+        CategoryDTO response = new CategoryDTO(
+            category.getCategoryId(),
+            category.getCategoryName(),
+            category.getUser().getUserId(),
+            category.getCreatedAt()
+        );
+        return ResponseEntity.ok(response);
     }
+
 
     @GetMapping
     public ResponseEntity<List<Category>> getAllCategories() {
