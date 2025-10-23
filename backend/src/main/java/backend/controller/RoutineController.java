@@ -1,0 +1,34 @@
+package backend.controller;
+
+import backend.dto.RoutineDTO;
+import backend.entity.Routine;
+import backend.entity.Task;
+import backend.repository.TaskRepository;
+import backend.service.RoutineService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/tasks/routine")
+public class RoutineController {
+
+    private final RoutineService routineService;
+    private final TaskRepository taskRepository;
+
+    public RoutineController(RoutineService routineService, TaskRepository taskRepository) {
+        this.routineService = routineService;
+        this.taskRepository = taskRepository;
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createRoutine(@RequestBody RoutineDTO dto, @RequestParam Long taskId) {
+        Task baseTask = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task를 찾을 수 없습니다."));
+
+        Routine routine = routineService.createRoutine(dto, baseTask);
+        return ResponseEntity.ok(Map.of("message", "루틴 생성 완료", "routine", routine));
+    }
+}
