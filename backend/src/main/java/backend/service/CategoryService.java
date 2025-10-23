@@ -37,10 +37,20 @@ public class CategoryService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+    
+    public List<Category> getCategoryByUserId(Long userId) {
+        return categoryRepository.findByUser_UserId(userId);
+    }
 
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id)
+    public Category getCategoryById(Long userId, Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 카테고리를 찾을 수 없습니다."));
+
+        if (!category.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 사용자의 카테고리가 아닙니다.");
+        }
+
+        return category;
     }
 
     public Category updateCategory(Long id, CategoryDTO dto) {

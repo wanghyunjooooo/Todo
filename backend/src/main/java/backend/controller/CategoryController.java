@@ -32,10 +32,19 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getCategoryByUserId(@PathVariable Long userId) {
+        List<Category> categories = categoryService.getCategoryByUserId(userId);
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/{userId}/{categoryId}")
+    public ResponseEntity<?> getCategoryByUserAndId(
+            @PathVariable Long userId,
+            @PathVariable Long categoryId
+    ) {
         try {
-            Category category = categoryService.getCategoryById(id);
+            Category category = categoryService.getCategoryById(userId, categoryId);
             return ResponseEntity.ok(category);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
