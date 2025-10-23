@@ -51,6 +51,35 @@ public class RoutineService {
         return savedRoutine;
     }
 
+    @Transactional
+    public Routine updateRoutine(Long routineId, String newType, LocalDate today) {
+        Routine routine = routineRepository.findById(routineId)
+                .orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다."));
+
+        routine.setRoutineType(newType);
+        routineRepository.save(routine);
+
+        List<Task> tasksToDelete = taskRepository.findAll().stream()
+                .filter(t -> t.getRoutine() != null &&
+                        t.getRoutine().getRoutineId().equals(routineId) &&
+                        (t.getTaskDate().isAfter(today) || t.getTaskDate().isEqual(today)))
+                .toList();
+
+        taskRepository.deleteAll(tasksToDelete);
+
+        Task baseTask = taskRepository.findAll().stream()
+                .filter(t -> t.getRoutine() != null &&
+                        t.getRoutine().getRoutineId().equals(routineId) &&
+                        t.getTaskDate().isBefore(today))
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException("기준 Task를 찾을 수 없습니다."));
+
+        List<Task> newTasks = generateRoutineTasks(routine, baseTask);
+        taskRepository.saveAll(newTasks);
+
+        return routine;
+    }
+
     private List<Task> generateRoutineTasks(Routine routine, Task baseTask) {
         List<Task> list = new ArrayList<>();
         LocalDate start = routine.getStartDate();

@@ -31,4 +31,14 @@ public class RoutineController {
         Routine routine = routineService.createRoutine(dto, baseTask);
         return ResponseEntity.ok(Map.of("message", "루틴 생성 완료", "routine", routine));
     }
+
+    @PatchMapping("/{routineId}")
+    public ResponseEntity<?> updateRoutine(
+            @PathVariable Long routineId,
+            @RequestParam String newType,
+            @RequestParam String today
+    ) {
+        Routine updated = routineService.updateRoutine(routineId, newType, LocalDate.parse(today));
+        return ResponseEntity.ok(Map.of("message", "루틴 수정 완료", "routine", updated));
+    }
 }
