@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ThreeIcon from "../assets/three.svg";
 import CategoryEditor from "./EditCategoryBox";
 
-function Header() {
+function Header({ showMenu = true }) {
   const [isMenuActive, setIsMenuActive] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showCategoryEditor, setShowCategoryEditor] = useState(false);
@@ -46,18 +46,23 @@ function Header() {
     <header style={styles.header}>
       <div style={styles.logo}>LOGO</div>
 
-      <button
-        ref={menuRef}
-        style={{
-          ...styles.menuButton,
-          filter: isMenuActive
-            ? "invert(46%) sepia(67%) saturate(447%) hue-rotate(92deg) brightness(90%) contrast(87%)"
-            : "invert(0%)",
-        }}
-        onClick={handleMenuClick}
-      >
-        <img src={ThreeIcon} alt="three dots" style={{ width: "100%", height: "100%" }} />
-      </button>
+
+
+            {/* 메뉴 버튼 표시 여부 */}
+      {showMenu && (
+        <button
+          ref={menuRef}
+          style={{
+            ...styles.menuButton,
+            filter: isMenuActive
+              ? "invert(46%) sepia(67%) saturate(447%) hue-rotate(92deg) brightness(90%) contrast(87%)"
+              : "invert(0%)",
+          }}
+          onClick={handleMenuClick}
+        >
+          <img src={ThreeIcon} alt="three dots" style={{ width: "100%", height: "100%" }} />
+        </button>
+      )}
 
       {/* 팝업 */}
       {showPopup && (

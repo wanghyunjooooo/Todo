@@ -8,7 +8,7 @@ function Home() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* 상단 헤더 */}
-      <Header />
+      <Header showMenu={true} />
 
       {/* 스크롤 가능 컨텐츠 영역 */}
       <div
