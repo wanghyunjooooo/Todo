@@ -76,6 +76,12 @@ public class TaskService {
         if (dto.getNotificationType() != null) task.setNotificationType(dto.getNotificationType());
         if (dto.getNotificationTime() != null) task.setNotificationTime(dto.getNotificationTime());
 
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
+            task.setCategory(category);
+        }
+
         return taskRepository.save(task);
     }
 
