@@ -31,24 +31,25 @@ function BottomNav() {
 
   return (
     <nav
-  style={{
-    position: "fixed",
-    top: "764px", // 화면 기준 위치
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "390px",
-    height: "80px",
-    padding: "20px 55px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    gap: "80px",
-    background: "#FBFBFB",
-    boxShadow: "0 -2px 4px 0 rgba(0, 0, 0, 0.05)",
-    zIndex: 1000,
-    flexShrink: 0,
-  }}
->
+      style={{
+        position: "fixed",
+        bottom: 0, // 화면 하단에 고정
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%", // 화면 너비에 맞춤
+        maxWidth: "390px", // 최대 너비 제한
+        height: "80px",
+        padding: "20px 55px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        gap: "80px",
+        background: "#FBFBFB",
+        boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.05)",
+        zIndex: 1000,
+        boxSizing: "border-box",
+      }}
+    >
       {navItems.map((item) => (
         <Link
           key={item.to}
