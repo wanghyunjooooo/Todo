@@ -48,6 +48,11 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public List<Task> getTasksById(Long taskId) {
+        return taskRepository.findByTaskId(taskId);
+    }
+
+
     public List<Task> getTasksByDate(Long userId, LocalDate date) {
         return taskRepository.findByUser_UserIdAndTaskDate(userId, date);
     }

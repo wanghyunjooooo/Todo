@@ -34,6 +34,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getAllTasks());
     }
 
+    @GetMapping("/{taskId}")
+    public ResponseEntity<List<Task>> getTasksById(@PathVariable Long taskId) {
+        return ResponseEntity.ok(taskService.getTasksById(taskId));
+    }
+
     @GetMapping("/{userId}/day")
     public ResponseEntity<List<Task>> getTasksByDate(
             @PathVariable Long userId,
