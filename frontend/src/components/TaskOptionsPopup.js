@@ -6,7 +6,7 @@ import AlarmIcon from "../assets/alarm.svg";
 import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 
-function TaskOptionsPopup({ onClose, onConfirm }) {
+function TaskOptionsPopup({ onClose, onDelete }) {
   const [showMemoEditor, setShowMemoEditor] = useState(false);
   const [showRepeatEditor, setShowRepeatEditor] = useState(false);
   const [newName, setNewName] = useState("");
@@ -31,14 +31,15 @@ function TaskOptionsPopup({ onClose, onConfirm }) {
             <img src={AlarmIcon} alt="알림 설정" />
             <span>알림 설정</span>
           </button>
-          <button className="option-btn delete-btn">
+          {/* 삭제 버튼 */}
+          <button className="option-btn delete-btn" onClick={onDelete}>
             <img src={DeleteIcon} alt="삭제" />
             <span>삭제</span>
           </button>
 
+          {/* 취소/확인 버튼 그룹 */}
           <div className="task-options-footer">
             <button className="cancel-btn" onClick={onClose}>취소</button>
-            <button className="confirm-btn" onClick={onConfirm}>확인</button>
           </div>
         </div>
       )}

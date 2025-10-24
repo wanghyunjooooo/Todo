@@ -8,8 +8,8 @@ import TaskOptionsPopup from "./TaskOptionsPopup";
 import CategoryEditor from "./EditCategoryBox";
 
 function Todo() {
-  const [categories, setCategories] = useState([]); 
-  const [tasks, setTasks] = useState({}); // { [categoryId]: [{text, checked}, ...] }
+  const [categories, setCategories] = useState([]);
+  const [tasks, setTasks] = useState({}); // { [categoryId]: [{text, checked, task_id}, ...] }
   const [popupIndex, setPopupIndex] = useState(null);
   const [showCategoryEditor, setShowCategoryEditor] = useState(false);
 
@@ -17,7 +17,7 @@ function Todo() {
   const buttonRefs = useRef({});
   const API_URL = "http://localhost:8080";
 
-  // ✅ 페이지 로드 시 카테고리 불러오기
+  // 페이지 로드 시 카테고리 불러오기
   useEffect(() => {
     const fetchCategories = async () => {
       const user_id = localStorage.getItem("user_id");
@@ -29,10 +29,11 @@ function Todo() {
 
         // 카테고리별 tasks 초기화
         const initialTasks = {};
-        response.data.forEach(cat => {
-          initialTasks[cat.category_id] = (cat.tasks || []).map(task => ({
+        response.data.forEach((cat) => {
+          initialTasks[cat.category_id] = (cat.tasks || []).map((task) => ({
             text: task.task_name,
-            checked: task.status === "완료"
+            checked: task.status === "완료",
+            task_id: task.task_id,
           }));
         });
         setTasks(initialTasks);
@@ -44,46 +45,41 @@ function Todo() {
     fetchCategories();
   }, []);
 
-  // ✅ 새 카테고리 추가 콜백
   const handleCategoryAdded = (newCategory) => {
-    setCategories(prev => [...prev, newCategory]);
-    setTasks(prev => ({ ...prev, [newCategory.category_id]: [] }));
+    setCategories((prev) => [...prev, newCategory]);
+    setTasks((prev) => ({ ...prev, [newCategory.category_id]: [] }));
   };
 
-  // ✅ 새로운 할 일 추가 (빈 입력칸)
   const toggleTaskInput = (categoryId) => {
-    setTasks(prev => {
+    setTasks((prev) => {
       const catTasks = prev[categoryId] || [];
       return { ...prev, [categoryId]: [...catTasks, { text: "", checked: false }] };
     });
   };
 
-  // ✅ 입력값 변경 핸들러
   const handleInputChange = (categoryId, index, value) => {
-    setTasks(prev => {
+    setTasks((prev) => {
       const catTasks = [...prev[categoryId]];
       catTasks[index].text = value;
       return { ...prev, [categoryId]: catTasks };
     });
   };
 
-  // ✅ 체크박스 토글
   const toggleChecked = (categoryId, index) => {
-    setTasks(prev => {
+    setTasks((prev) => {
       const catTasks = [...prev[categoryId]];
       catTasks[index].checked = !catTasks[index].checked;
       return { ...prev, [categoryId]: catTasks };
     });
   };
 
-  // ✅ Enter 누르면 DB에 저장 + 다음 입력칸 생성
+  // Enter 키 눌러 Task 추가
   const handleKeyDown = async (e, categoryId, index) => {
     if (e.key !== "Enter") return;
     e.preventDefault();
 
     const taskToSave = tasks[categoryId][index];
     const user_id = localStorage.getItem("user_id");
-
     if (!user_id) return alert("로그인이 필요합니다.");
     if (!taskToSave.text.trim()) return alert("할 일을 입력하세요.");
 
@@ -93,26 +89,58 @@ function Todo() {
         memo: "",
         task_date: new Date().toISOString().split("T")[0],
         category_id: categoryId,
-        user_id: parseInt(user_id, 10)
+        user_id: parseInt(user_id, 10),
+        notification_type: "미알림",
+        notification_time: null,
       });
 
-      console.log("✅ Task saved:", response.data.task);
+      const savedTask = response.data.task;
 
-      // 입력 완료 후 새로운 빈 입력칸 추가
-      setTasks(prev => {
+      setTasks((prev) => {
         const catTasks = [...prev[categoryId]];
+        catTasks[index] = {
+          text: savedTask.task_name,
+          checked: savedTask.status === "완료",
+          task_id: savedTask.task_id,
+        };
         catTasks.splice(index + 1, 0, { text: "", checked: false });
         return { ...prev, [categoryId]: catTasks };
       });
     } catch (error) {
-      console.error("❌ Error saving task:", error);
+      console.error("Error saving task:", error);
       alert("작업 저장 중 오류가 발생했습니다.");
     }
   };
 
-  // ✅ 새로 추가된 입력창 자동 포커스
+  // Task 삭제
+  const handleDeleteTask = async (categoryId, index) => {
+    const task = tasks[categoryId][index];
+    if (!task.task_id) {
+      // 아직 DB에 저장되지 않은 빈 입력칸이면 그냥 제거
+      setTasks((prev) => {
+        const catTasks = [...prev[categoryId]];
+        catTasks.splice(index, 1);
+        return { ...prev, [categoryId]: catTasks };
+      });
+      return;
+    }
+
+    try {
+      await axios.delete(`${API_URL}/tasks/${task.task_id}`);
+      setTasks((prev) => {
+        const catTasks = [...prev[categoryId]];
+        catTasks.splice(index, 1);
+        return { ...prev, [categoryId]: catTasks };
+      });
+    } catch (error) {
+      console.error("Task 삭제 실패:", error);
+      alert("할 일 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 새 입력창 자동 포커스
   useEffect(() => {
-    categories.forEach(cat => {
+    categories.forEach((cat) => {
       const catTasks = tasks[cat.category_id] || [];
       if (catTasks.length > 0) {
         const lastIndex = catTasks.length - 1;
@@ -121,15 +149,13 @@ function Todo() {
     });
   }, [tasks, categories]);
 
-  // ✅ 옵션 팝업 토글
   const togglePopup = (index) => {
-    setPopupIndex(prev => (prev === index ? null : index));
+    setPopupIndex((prev) => (prev === index ? null : index));
   };
 
   return (
     <div className="todo-container">
-      {/* 카테고리 리스트 + tasks */}
-      {categories.map(cat => (
+      {categories.map((cat) => (
         <div key={cat.category_id} className="category-section">
           <div className="category-box">
             <span className="category-text">{cat.category_name}</span>
@@ -141,7 +167,6 @@ function Todo() {
             />
           </div>
 
-          {/* 카테고리별 할 일 */}
           {(tasks[cat.category_id] || []).map((task, index) => (
             <div
               key={index}
@@ -179,7 +204,7 @@ function Todo() {
                 onChange={(e) => handleInputChange(cat.category_id, index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, cat.category_id, index)}
                 placeholder="할 일 입력"
-                ref={el => {
+                ref={(el) => {
                   if (!inputRefs.current[cat.category_id]) inputRefs.current[cat.category_id] = [];
                   inputRefs.current[cat.category_id][index] = el;
                 }}
@@ -188,7 +213,7 @@ function Todo() {
               {/* 점 3개 버튼 */}
               <button
                 className="task-add-btn"
-                ref={el => {
+                ref={(el) => {
                   if (!buttonRefs.current[cat.category_id]) buttonRefs.current[cat.category_id] = [];
                   buttonRefs.current[cat.category_id][index] = el;
                 }}
@@ -202,6 +227,10 @@ function Todo() {
                 <TaskOptionsPopup
                   style={{ top: "50px", left: "0px" }}
                   onClose={() => setPopupIndex(null)}
+                  onDelete={() => {
+                    handleDeleteTask(cat.category_id, index);
+                    setPopupIndex(null);
+                  }}
                 />
               )}
             </div>
@@ -209,7 +238,6 @@ function Todo() {
         </div>
       ))}
 
-      {/* CategoryEditor 모달 */}
       {showCategoryEditor && (
         <CategoryEditor
           mode="add"
