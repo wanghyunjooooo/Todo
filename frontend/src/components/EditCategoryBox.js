@@ -4,17 +4,18 @@ import "./CategoryEditor.css";
 import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg";
 import { ReactComponent as MemoIcon } from "../assets/memo.svg";
 
-function CategoryEditor({ onClose }) {
-  const [isEditingName, setIsEditingName] = useState(false);
+function CategoryEditor({ onClose, mode = "edit" }) {
+  const [isEditingName, setIsEditingName] = useState(mode === "add");
   const [newName, setNewName] = useState("");
+
+  const isAddMode = mode === "add";
 
   return (
     <div className="editor-overlay" onClick={onClose}>
       <div className="editor-box" onClick={(e) => e.stopPropagation()}>
-        {!isEditingName ? (
-          // 리스트 화면
+        {/* 리스트 화면 */}
+        {!isEditingName && !isAddMode && (
           <div className="category-list">
-            {/* 카테고리 수정하기 */}
             <div className="category-item">
               <div className="text-with-icon">
                 <MemoIcon className="memo-icon" />
@@ -23,7 +24,6 @@ function CategoryEditor({ onClose }) {
               <ArrowIcon className="arrow-icon" />
             </div>
 
-            {/* 이름 변경 */}
             <div
               className="category-item"
               onClick={() => setIsEditingName(true)}
@@ -33,17 +33,23 @@ function CategoryEditor({ onClose }) {
               <ArrowIcon className="arrow-icon" />
             </div>
 
-            {/* 카테고리 삭제 */}
             <div className="category-item delete">
               <span>카테고리 삭제</span>
               <ArrowIcon className="arrow-icon" />
             </div>
           </div>
-        ) : (
-          // 이름 변경 화면
+        )}
+
+        {/* 이름 변경 / 카테고리 추가 화면 */}
+        {(isAddMode || isEditingName) && (
           <div className="rename-box">
-            {/* 제목 */}
-            <span className="rename-title">이름 변경</span>
+            {/* 제목 + Memo 아이콘 */}
+            <div className="rename-title-with-icon">
+              <MemoIcon className="memo-icon" />
+              <span className="rename-title-text">
+                {isAddMode ? "카테고리 추가하기" : "이름 변경"}
+              </span>
+            </div>
 
             {/* 입력창 */}
             <div className="rename-input-container">
@@ -52,7 +58,9 @@ function CategoryEditor({ onClose }) {
                 className="rename-input"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="새 이름을 입력하세요"
+                placeholder={
+                  isAddMode ? "카테고리 이름 입력" : "새 이름을 입력하세요"
+                }
               />
             </div>
 
@@ -60,11 +68,24 @@ function CategoryEditor({ onClose }) {
             <div className="button-group">
               <button
                 className="cancel-button"
-                onClick={() => setIsEditingName(false)}
+                onClick={() => {
+                  setNewName("");
+                  if (isAddMode) onClose();
+                  else setIsEditingName(false);
+                }}
               >
                 취소
               </button>
-              <button className="confirm-button">확인</button>
+              <button
+                className="confirm-button"
+                onClick={() => {
+                  setNewName("");
+                  if (isAddMode) onClose();
+                  else setIsEditingName(false);
+                }}
+              >
+                확인
+              </button>
             </div>
           </div>
         )}

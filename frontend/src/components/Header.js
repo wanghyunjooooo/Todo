@@ -6,19 +6,23 @@ import CategoryEditor from "./EditCategoryBox";
 function Header() {
   const [isMenuActive, setIsMenuActive] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [showCategoryEditor, setShowCategoryEditor] = useState(false); // Editor 표시 여부
+  const [showCategoryEditor, setShowCategoryEditor] = useState(false);
+  const [editorMode, setEditorMode] = useState("edit"); // "edit" | "add"
   const menuRef = useRef(null);
   const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
 
-  // ✅ “수정하기” 클릭 시 에디터 표시
+  // 수정하기 클릭
   const handleEditCategoryClick = () => {
-    setShowCategoryEditor(true); // 에디터 열기
-    setShowPopup(false); // 팝업 닫기
+    setEditorMode("edit");
+    setShowCategoryEditor(true);
+    setShowPopup(false);
   };
 
-  // ❌ 기존 추가하기 클릭 시에는 아무것도 안 하도록 변경 (또는 나중에 추가 로직 연결)
+  // 추가하기 클릭
   const handleAddCategoryClick = () => {
-    alert("카테고리 추가 폼 열기 예정"); // 임시
+    setEditorMode("add");
+    setShowCategoryEditor(true);
+    setShowPopup(false);
   };
 
   const handleMenuClick = () => {
@@ -31,10 +35,9 @@ function Header() {
     if (menuRef.current) {
       const rect = menuRef.current.getBoundingClientRect();
       const boxWidth = 135;
-      let left = rect.left + 40; // 오른쪽 이동
+      let left = rect.left + 40;
       const screenWidth = window.innerWidth;
       if (left + boxWidth > screenWidth) left = screenWidth - boxWidth - 8;
-
       setBoxPosition({ top: rect.bottom + 4, left });
     }
   }, [showPopup]);
@@ -81,9 +84,12 @@ function Header() {
         </div>
       )}
 
-      {/* ✅ 수정하기 누르면 뜨는 CategoryEditor */}
+      {/* CategoryEditor */}
       {showCategoryEditor && (
-        <CategoryEditor onClose={() => setShowCategoryEditor(false)} />
+        <CategoryEditor
+          onClose={() => setShowCategoryEditor(false)}
+          mode={editorMode} // "add" 또는 "edit" 전달
+        />
       )}
     </header>
   );

@@ -19,15 +19,13 @@
     position: fixed;
     bottom: 20px;
     left: 20px;
-    right: 20px;
-    width: auto;
+    width: 350px;
     border-radius: 16px;
     background: #fbfbfb;
     z-index: 2001;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    /* ✅ 이름 변경 화면도 폭 그대로 */
     padding: 20px;
     gap: 12px;
 }
@@ -51,10 +49,8 @@
     border-radius: 8px;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
-    font-style: normal;
     font-weight: 500;
-    line-height: normal;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: #2a2a2a;
 }
 
 .text-with-icon {
@@ -87,7 +83,6 @@
     display: none;
 }
 
-/* 이름 변경 화면 */
 .rename-box {
     display: flex;
     flex-direction: column;
@@ -97,30 +92,37 @@
     font-family: Pretendard, sans-serif;
     font-size: 12px;
     font-weight: 500;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: #2a2a2a;
 }
 
-.rename-title {
-    width: 294px;
-    height: 14px;
+.rename-title-with-icon {
     display: flex;
     align-items: center;
+    gap: 8px;
+    /* 아이콘과 텍스트 사이 */
+}
+
+.rename-title-text {
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #2a2a2a;
 }
 
 .rename-input-container {
     display: flex;
+    align-items: center;
     width: 310px;
     height: 56px;
     padding: 8px 20px;
     gap: 8px;
     border-radius: 16px;
-    background: #fff;
-    border: 1px solid var(--green-light-active, #c1e4ce);
+    background: var(--Grey-Light, #F3F3F3);
     box-sizing: border-box;
 }
-
 .rename-input {
     flex: 1;
+    height: 100%;
     border: none;
     outline: none;
     background: transparent;
@@ -129,7 +131,6 @@
     font-weight: 500;
     color: #2a2a2a;
 }
-
 .button-group {
     display: flex;
     justify-content: flex-end;
@@ -145,7 +146,6 @@
     align-items: center;
     width: 151px;
     height: 40px;
-    padding: 20px;
     gap: 8px;
     border-radius: 16px;
     border: none;
