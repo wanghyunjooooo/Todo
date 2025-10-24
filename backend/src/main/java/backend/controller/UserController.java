@@ -30,8 +30,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO dto) {
         try {
-            String token = userService.login(dto);
-            return ResponseEntity.ok(Map.of("message", "로그인 성공", "token", token));
+            Map<String, Object> response = userService.login(dto);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

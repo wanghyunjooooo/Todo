@@ -6,6 +6,8 @@ import backend.repository.UserRepository;
 import backend.security.JWToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -33,17 +35,28 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public String login(UserDTO dto) {
+    public Map<String, Object> login(UserDTO dto) {
         Optional<User> optionalUser = userRepository.findByUserEmail(dto.getUserEmail());
-        if (optionalUser.isEmpty()) throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        if (optionalUser.isEmpty())
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
 
         User user = optionalUser.get();
+
         if (!passwordEncoder.matches(dto.getUserPassword(), user.getUserPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
 
-        return jwtoken.createToken(user.getUserId(), user.getUserName());
+        String token = jwtoken.createToken(user.getUserId(), user.getUserName());
+
+        return Map.of(
+                "message", "로그인 성공",
+                "token", token,
+                "user_id", user.getUserId(),
+                "user_name", user.getUserName(),
+                "user_email", user.getUserEmail()
+        );
     }
+
 
     public User getProfile(Long userId) {
         return userRepository.findById(userId)
