@@ -25,13 +25,15 @@ function Todo() {
 
       try {
         const response = await axios.get(`${API_URL}/categories?userId=${user_id}`);
-        console.log("✅ 카테고리 API 응답:", response.data);
         setCategories(response.data);
 
         // 카테고리별 tasks 초기화
         const initialTasks = {};
         response.data.forEach(cat => {
-          initialTasks[cat.category_id] = cat.tasks || [];
+          initialTasks[cat.category_id] = (cat.tasks || []).map(task => ({
+            text: task.task_name,
+            checked: task.status === "완료"
+          }));
         });
         setTasks(initialTasks);
       } catch (error) {
@@ -48,12 +50,11 @@ function Todo() {
     setTasks(prev => ({ ...prev, [newCategory.category_id]: [] }));
   };
 
-  // ✅ 새로운 할 일 추가
+  // ✅ 새로운 할 일 추가 (빈 입력칸)
   const toggleTaskInput = (categoryId) => {
     setTasks(prev => {
       const catTasks = prev[categoryId] || [];
-      const newTasks = { ...prev, [categoryId]: [...catTasks, { text: "", checked: false }] };
-      return newTasks;
+      return { ...prev, [categoryId]: [...catTasks, { text: "", checked: false }] };
     });
   };
 
@@ -77,41 +78,35 @@ function Todo() {
 
   // ✅ Enter 누르면 DB에 저장 + 다음 입력칸 생성
   const handleKeyDown = async (e, categoryId, index) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const taskToSave = tasks[categoryId][index];
-      const user_id = localStorage.getItem("user_id");
+    if (e.key !== "Enter") return;
+    e.preventDefault();
 
-      if (!user_id) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
+    const taskToSave = tasks[categoryId][index];
+    const user_id = localStorage.getItem("user_id");
 
-      if (!taskToSave.text.trim()) {
-        alert("할 일을 입력하세요.");
-        return;
-      }
+    if (!user_id) return alert("로그인이 필요합니다.");
+    if (!taskToSave.text.trim()) return alert("할 일을 입력하세요.");
 
-      try {
-        const response = await axios.post(`${API_URL}/tasks`, {
-          user_id: parseInt(user_id, 10),
-          category_id: categoryId,
-          text: taskToSave.text,
-          checked: taskToSave.checked,
-        });
+    try {
+      const response = await axios.post(`${API_URL}/tasks`, {
+        task_name: taskToSave.text,
+        memo: "",
+        task_date: new Date().toISOString().split("T")[0],
+        category_id: categoryId,
+        user_id: parseInt(user_id, 10)
+      });
 
-        console.log("✅ Task saved:", response.data);
+      console.log("✅ Task saved:", response.data.task);
 
-        // 입력 완료 후 새로운 칸 추가
-        setTasks(prev => {
-          const catTasks = [...prev[categoryId]];
-          catTasks.splice(index + 1, 0, { text: "", checked: false });
-          return { ...prev, [categoryId]: catTasks };
-        });
-      } catch (error) {
-        console.error("❌ Error saving task:", error);
-        alert("작업 저장 중 오류가 발생했습니다.");
-      }
+      // 입력 완료 후 새로운 빈 입력칸 추가
+      setTasks(prev => {
+        const catTasks = [...prev[categoryId]];
+        catTasks.splice(index + 1, 0, { text: "", checked: false });
+        return { ...prev, [categoryId]: catTasks };
+      });
+    } catch (error) {
+      console.error("❌ Error saving task:", error);
+      alert("작업 저장 중 오류가 발생했습니다.");
     }
   };
 
