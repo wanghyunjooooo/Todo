@@ -1,42 +1,41 @@
 // Header.js
 import React, { useState, useRef, useEffect } from "react";
-import ThreeIcon from "../assets/three.svg"; // three.svg 불러오기
+import ThreeIcon from "../assets/three.svg";
+import CategoryEditor from "./EditCategoryBox";
 
 function Header() {
   const [isMenuActive, setIsMenuActive] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [showCategoryEditor, setShowCategoryEditor] = useState(false); // Editor 표시 여부
   const menuRef = useRef(null);
   const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
+
+  // ✅ “수정하기” 클릭 시 에디터 표시
+  const handleEditCategoryClick = () => {
+    setShowCategoryEditor(true); // 에디터 열기
+    setShowPopup(false); // 팝업 닫기
+  };
+
+  // ❌ 기존 추가하기 클릭 시에는 아무것도 안 하도록 변경 (또는 나중에 추가 로직 연결)
+  const handleAddCategoryClick = () => {
+    alert("카테고리 추가 폼 열기 예정"); // 임시
+  };
 
   const handleMenuClick = () => {
     setIsMenuActive(!isMenuActive);
     setShowPopup(!showPopup);
   };
 
-  const handleAddCategoryClick = () => {
-    alert("카테고리 추가 폼 열기");
-  };
-
-  const handleEditCategoryClick = () => {
-    alert("카테고리 수정 폼 열기");
-  };
-
-  // 점 3개 버튼 기준으로 팝업 위치 계산
+  // 팝업 위치 계산
   useEffect(() => {
     if (menuRef.current) {
       const rect = menuRef.current.getBoundingClientRect();
-      const boxWidth = 150;
+      const boxWidth = 135;
+      let left = rect.left + 40; // 오른쪽 이동
       const screenWidth = window.innerWidth;
+      if (left + boxWidth > screenWidth) left = screenWidth - boxWidth - 8;
 
-      let left = rect.left;
-      if (rect.left + boxWidth > screenWidth) {
-        left = screenWidth - boxWidth - 8;
-      }
-
-      setBoxPosition({
-        top: rect.bottom + 4,
-        left,
-      });
+      setBoxPosition({ top: rect.bottom + 4, left });
     }
   }, [showPopup]);
 
@@ -44,7 +43,6 @@ function Header() {
     <header style={styles.header}>
       <div style={styles.logo}>LOGO</div>
 
-      {/* 점 3개 버튼 */}
       <button
         ref={menuRef}
         style={{
@@ -55,11 +53,7 @@ function Header() {
         }}
         onClick={handleMenuClick}
       >
-        <img
-          src={ThreeIcon}
-          alt="three dots"
-          style={{ width: "100%", height: "100%" }}
-        />
+        <img src={ThreeIcon} alt="three dots" style={{ width: "100%", height: "100%" }} />
       </button>
 
       {/* 팝업 */}
@@ -69,40 +63,48 @@ function Header() {
             position: "fixed",
             top: boxPosition.top,
             left: boxPosition.left,
-            zIndex: 1000,
+            width: "107px",
+            padding: "8px 0",
             display: "flex",
             flexDirection: "column",
-            gap: "4px",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "8px",
+            borderRadius: "16px",
+            border: "1px solid var(--green-light-active, #C1E4CE)",
+            background: "#FFF",
+            zIndex: 1000,
           }}
         >
           <PopupButton text="카테고리 추가하기" onClick={handleAddCategoryClick} />
           <PopupButton text="카테고리 수정하기" onClick={handleEditCategoryClick} />
         </div>
       )}
+
+      {/* ✅ 수정하기 누르면 뜨는 CategoryEditor */}
+      {showCategoryEditor && (
+        <CategoryEditor onClose={() => setShowCategoryEditor(false)} />
+      )}
     </header>
   );
 }
 
-// 팝업 버튼 컴포넌트
 const PopupButton = ({ text, onClick }) => (
   <div
     onClick={onClick}
     style={{
-      height: "40px",
-      minWidth: "90px",
-      padding: "0 10px",
-      borderRadius: "16px",
-      border: "1px solid var(--green-light-active, #C1E4CE)",
-      backgroundColor: "#ffffff",
+      width: "100%",
+      height: "35px",
       display: "flex",
-      alignItems: "center",
       justifyContent: "center",
+      alignItems: "center",
       fontFamily: "Pretendard, sans-serif",
       fontSize: "12px",
       fontWeight: 600,
       color: "#36A862",
       cursor: "pointer",
-      whiteSpace: "nowrap",
+      background: "transparent",
+      border: "none",
     }}
   >
     {text}
