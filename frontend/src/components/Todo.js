@@ -1,11 +1,15 @@
+// Todo.js
 import React, { useState, useRef, useEffect } from "react";
 import "./todo.css";
-import PlusIcon from "../assets/plus.svg"; // 카테고리 옆 플러스
-import ThreeIcon from "../assets/three.svg"; // 할 일 입력창 점 3개
+import PlusIcon from "../assets/plus.svg";
+import ThreeIcon from "../assets/three.svg";
+import TaskOptionsPopup from "./TaskOptionsPopup";
 
 function Todo() {
   const [tasks, setTasks] = useState([{ text: "", checked: false }]);
+  const [popupIndex, setPopupIndex] = useState(null); // 어떤 input의 팝업인지
   const inputRefs = useRef([]);
+  const buttonRefs = useRef([]);
 
   const toggleTaskInput = () => {
     setTasks([...tasks, { text: "", checked: false }]);
@@ -41,13 +45,16 @@ function Todo() {
     }
   }, [tasks.length]);
 
+  // 팝업 토글
+  const togglePopup = (index) => {
+    setPopupIndex((prev) => (prev === index ? null : index));
+  };
+
   return (
     <div className="todo-container">
       {/* 카테고리 박스 */}
       <div className="category-box">
         <span className="category-text">카테고리 01</span>
-
-        {/* plus 버튼 */}
         <img
           src={PlusIcon}
           alt="plus button"
@@ -61,6 +68,7 @@ function Todo() {
         <div
           key={index}
           className={`task-input ${task.checked ? "checked-bg" : ""}`}
+          style={{ position: "relative" }}
         >
           {/* 체크박스 */}
           <button
@@ -97,9 +105,24 @@ function Todo() {
           />
 
           {/* 점 3개 버튼 */}
-          <button className="task-add-btn">
+          <button
+            className="task-add-btn"
+            ref={(el) => (buttonRefs.current[index] = el)}
+            onClick={() => togglePopup(index)}
+          >
             <img src={ThreeIcon} alt="three dots" style={{ width: "20px" }} />
           </button>
+
+          {/* 팝업 */}
+          {popupIndex === index && (
+            <TaskOptionsPopup
+              style={{
+                top: "50px", // 버튼 기준 적절히 위치 조정
+                left: "0px",
+              }}
+              onClose={() => setPopupIndex(null)}
+            />
+          )}
         </div>
       ))}
     </div>
