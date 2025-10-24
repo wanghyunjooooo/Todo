@@ -1,15 +1,17 @@
+// AuthForm.js
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function AuthForm() {
+function AuthForm({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState(""); // 회원가입용
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Spring Boot 서버 URL
+  const navigate = useNavigate();
   const API_URL = "http://localhost:8080";
 
   const handleSubmit = async (e) => {
@@ -19,17 +21,30 @@ function AuthForm() {
 
     try {
       if (isLogin) {
-        // 로그인 API 호출
+        // ✅ 로그인 요청
         const res = await axios.post(`${API_URL}/users/login`, {
           user_email: email,
           user_password: password,
         });
 
         console.log("로그인 성공:", res.data);
-        localStorage.setItem("token", res.data.token); // JWT 토큰 저장
-        alert("로그인 성공!");
+
+      const { token, user_id, user_name, user_email } = res.data;
+
+localStorage.setItem("token", token);
+localStorage.setItem("user_id", user_id);
+localStorage.setItem("user_name", user_name);
+localStorage.setItem("user_email", user_email);
+
+alert(`${user_name}님, 로그인 성공!`);
+
+        // 부모 컴포넌트에 로그인 상태 전달
+        onLogin && onLogin();
+
+        // 홈으로 이동
+        navigate("/");
       } else {
-        // 회원가입 API 호출
+        // ✅ 회원가입 요청
         const res = await axios.post(`${API_URL}/users/signup`, {
           user_name: username,
           user_email: email,
@@ -38,15 +53,17 @@ function AuthForm() {
 
         console.log("회원가입 성공:", res.data);
         alert("회원가입 성공! 로그인해주세요.");
+
+        // 회원가입 완료 후 로그인 화면으로 전환
         setIsLogin(true);
       }
 
-      // 입력 초기화
+      // 입력값 초기화
       setEmail("");
       setPassword("");
       setUsername("");
     } catch (err) {
-      console.error(err);
+      console.error("에러:", err);
       setError(err.response?.data?.message || "오류가 발생했습니다.");
     } finally {
       setLoading(false);
@@ -58,6 +75,7 @@ function AuthForm() {
       <h2>{isLogin ? "로그인" : "회원가입"}</h2>
 
       <form onSubmit={handleSubmit} style={styles.form}>
+        {/* 회원가입일 때만 이름 입력 */}
         {!isLogin && (
           <input
             type="text"
@@ -68,6 +86,7 @@ function AuthForm() {
             required
           />
         )}
+
         <input
           type="email"
           placeholder="이메일"
@@ -76,6 +95,7 @@ function AuthForm() {
           style={styles.input}
           required
         />
+
         <input
           type="password"
           placeholder="비밀번호"
@@ -84,6 +104,7 @@ function AuthForm() {
           style={styles.input}
           required
         />
+
         <button type="submit" style={styles.button} disabled={loading}>
           {loading ? "처리 중..." : isLogin ? "로그인" : "회원가입"}
         </button>
@@ -103,18 +124,19 @@ function AuthForm() {
 
 const styles = {
   container: {
-    width: "300px",
-    margin: "50px auto",
-    padding: "20px",
+    width: "320px",
+    margin: "60px auto",
+    padding: "24px",
     border: "1px solid #ddd",
     borderRadius: "8px",
     textAlign: "center",
-    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+    boxShadow: "0 0 12px rgba(0,0,0,0.08)",
+    background: "#fff",
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "10px",
+    gap: "12px",
     marginTop: "20px",
   },
   input: {
@@ -131,6 +153,7 @@ const styles = {
     backgroundColor: "#36A862",
     color: "#fff",
     cursor: "pointer",
+    transition: "background 0.2s ease",
   },
   toggleText: {
     marginTop: "12px",

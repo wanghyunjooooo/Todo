@@ -1,10 +1,18 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// App.js
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import BottomNav from "./components/Nav";
 import AuthForm from "./pages/AuthForm";
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) setIsLoggedIn(true);
+  }, []);
+
   return (
     <Router>
       <div
@@ -15,16 +23,28 @@ function App() {
           position: "relative",
         }}
       >
-        {/* 페이지 내용 */}
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<AuthForm />} />
-          <Route path="/notifications" element={<h2>알림 페이지</h2>} />
-          <Route path="/profile" element={<h2>내 정보 페이지</h2>} />
+          <Route
+            path="/"
+            element={
+              isLoggedIn ? <Home /> : <Navigate to="/auth" replace />
+            }
+          />
+          <Route
+            path="/auth"
+            element={<AuthForm onLogin={() => setIsLoggedIn(true)} />}
+          />
+          <Route
+            path="/notifications"
+            element={isLoggedIn ? <h2>알림 페이지</h2> : <Navigate to="/auth" replace />}
+          />
+          <Route
+            path="/profile"
+            element={isLoggedIn ? <h2>내 정보 페이지</h2> : <Navigate to="/auth" replace />}
+          />
         </Routes>
 
-        {/* BottomNav 고정 */}
-        <BottomNav />
+        {isLoggedIn && <BottomNav />}
       </div>
     </Router>
   );
