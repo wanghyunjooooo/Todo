@@ -3,6 +3,7 @@ package backend.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +22,7 @@ public class CategoryDTO {
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
+
+    @JsonProperty("tasks")
+    private List<TaskDTO> tasks;
 }

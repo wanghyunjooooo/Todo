@@ -25,7 +25,8 @@ public class CategoryController {
                 category.getCategoryId(),
                 category.getCategoryName(),
                 category.getUser().getUserId(),
-                category.getCreatedAt()
+                category.getCreatedAt(),
+                null
             );
             return ResponseEntity.ok(Map.of(
                 "message", "카테고리가 생성되었습니다.",
@@ -65,13 +66,7 @@ public class CategoryController {
     ) {
         try {
             Category category = categoryService.getCategoryById(userId, categoryId);
-            CategoryDTO response = new CategoryDTO(
-                category.getCategoryId(),
-                category.getCategoryName(),
-                category.getUser().getUserId(),
-                category.getCreatedAt()
-            );
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(category);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -89,7 +84,8 @@ public class CategoryController {
                 updatedCategory.getCategoryId(),
                 updatedCategory.getCategoryName(),
                 updatedCategory.getUser().getUserId(),
-                updatedCategory.getCreatedAt()
+                updatedCategory.getCreatedAt(),
+                null
             );
             return ResponseEntity.ok(Map.of(
                 "message", "카테고리가 수정되었습니다.",

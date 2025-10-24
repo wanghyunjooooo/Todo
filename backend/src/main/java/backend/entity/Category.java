@@ -39,7 +39,7 @@ public class Category {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("tasks")
     private List<Task> tasks;
 }

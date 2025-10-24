@@ -18,6 +18,7 @@ public class TaskDTO {
     private String taskName;
 
     private String status;
+    
     private String memo;
 
     @JsonProperty("task_date")

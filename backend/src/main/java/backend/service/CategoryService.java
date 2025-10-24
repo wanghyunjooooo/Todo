@@ -5,6 +5,7 @@ import backend.entity.Category;
 import backend.entity.User;
 import backend.repository.CategoryRepository;
 import backend.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,5 +70,4 @@ public class CategoryService {
         category.setCategoryName(dto.getCategoryName());
         return categoryRepository.save(category);
     }
-
 }
