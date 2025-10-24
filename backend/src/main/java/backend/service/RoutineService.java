@@ -52,33 +52,33 @@ public class RoutineService {
     }
 
     @Transactional
-    public Routine updateRoutine(Long routineId, String newType, LocalDate today) {
+    public Routine updateRoutine(Long routineId, RoutineDTO dto) {
         Routine routine = routineRepository.findById(routineId)
                 .orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다."));
 
-        routine.setRoutineType(newType);
-        routineRepository.save(routine);
+        routine.setRoutineType(dto.getRoutineType());
+        if (dto.getStartDate() != null) routine.setStartDate(dto.getStartDate());
+        if (dto.getEndDate() != null) routine.setEndDate(dto.getEndDate());
+        routineRepository.saveAndFlush(routine);
 
-        List<Task> tasksToDelete = taskRepository.findAll().stream()
-                .filter(t -> t.getRoutine() != null &&
-                        t.getRoutine().getRoutineId().equals(routineId) &&
-                        (t.getTaskDate().isAfter(today) || t.getTaskDate().isEqual(today)))
-                .toList();
+        LocalDate today = LocalDate.now();
 
-        taskRepository.deleteAll(tasksToDelete);
+        List<Task> pastOrToday = taskRepository
+                .findByRoutine_RoutineIdAndTaskDateLessThanEqualOrderByTaskDateAsc(routineId, today);
 
-        Task baseTask = taskRepository.findAll().stream()
-                .filter(t -> t.getRoutine() != null &&
-                        t.getRoutine().getRoutineId().equals(routineId) &&
-                        t.getTaskDate().isBefore(today))
-                .reduce((first, second) -> second)
-                .orElseThrow(() -> new IllegalArgumentException("기준 Task를 찾을 수 없습니다."));
+        if (pastOrToday.isEmpty())
+            throw new IllegalArgumentException("기준 Task를 찾을 수 없습니다.");
+
+        Task baseTask = pastOrToday.get(pastOrToday.size() - 1);
+
+        taskRepository.deleteByRoutine_RoutineIdAndTaskDateGreaterThanEqual(routineId, today.plusDays(1));
 
         List<Task> newTasks = generateRoutineTasks(routine, baseTask);
         taskRepository.saveAll(newTasks);
 
         return routine;
     }
+
 
     @Transactional
     public void deleteRoutine(Long routineId) {
