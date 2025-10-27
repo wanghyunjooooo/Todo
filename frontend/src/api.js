@@ -57,3 +57,15 @@ export default api;
 // ✅ 특정 날짜의 Task 조회
 export const getTasksByDay = (user_id, date) =>
   api.post(`/tasks/${user_id}/day`, { date }).then((res) => res.data);
+
+// ✅ 카테고리 추가
+export const addCategory = (user_id, category_name) =>
+  api.post("/categories", { user_id, category_name }).then((res) => res.data);
+
+// ✅ 카테고리 수정
+export const updateCategory = (user_id, category_id, category_name) =>
+  api.put(`/categories/${user_id}/${category_id}`, { category_name }).then((res) => res.data);
+
+// ✅ 카테고리 삭제
+export const deleteCategory = (category_id) =>
+  api.delete(`/categories/${category_id}`).then((res) => res.data);
