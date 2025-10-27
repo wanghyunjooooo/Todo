@@ -26,9 +26,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByRoutine_RoutineId(Long routineId);
 
-    List<Task> findByRoutine_RoutineIdAndTaskDateLessThanEqualOrderByTaskDateAsc(Long routineId, LocalDate taskDate);
-
     Optional<Task> findFirstByRoutine_RoutineIdOrderByTaskDateAsc(Long routineId);
+
+    @Query("SELECT t FROM Task t JOIN FETCH t.category WHERE t.user.userId = :userId AND t.taskDate = :taskDate")
+    List<Task> findTasksByUserAndDateWithCategory(@Param("userId") Long userId, @Param("taskDate") LocalDate taskDate);
+
 
     @Modifying
     @Transactional

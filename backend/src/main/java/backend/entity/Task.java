@@ -56,7 +56,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    @JsonIgnore
+    @JsonProperty("category")
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)

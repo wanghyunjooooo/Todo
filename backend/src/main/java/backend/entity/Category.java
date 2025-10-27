@@ -40,6 +40,6 @@ public class Category {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonProperty("tasks")
+    @JsonIgnore
     private List<Task> tasks;
 }

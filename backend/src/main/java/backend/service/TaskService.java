@@ -52,10 +52,9 @@ public class TaskService {
         return taskRepository.findByTaskId(taskId);
     }
 
-
     public List<Task> getTasksByDate(Long userId, LocalDate date) {
-        return taskRepository.findByUser_UserIdAndTaskDate(userId, date);
-    }
+    return taskRepository.findTasksByUserAndDateWithCategory(userId, date);
+}
 
     public List<Task> getCompletedTasks(Long userId) {
         return taskRepository.findByUser_UserIdAndStatus(userId, "완료");
