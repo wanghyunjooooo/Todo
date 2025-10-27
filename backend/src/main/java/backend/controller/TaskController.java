@@ -39,11 +39,12 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasksById(taskId));
     }
 
-    @GetMapping("/{userId}/day")
+    @PostMapping("/{userId}/day")
     public ResponseEntity<List<Task>> getTasksByDate(
             @PathVariable Long userId,
-            @RequestParam("date") String dateStr
+            @RequestBody Map<String, Object> body
     ) {
+        String dateStr = body.get("date").toString();
         LocalDate date = LocalDate.parse(dateStr);
         return ResponseEntity.ok(taskService.getTasksByDate(userId, date));
     }

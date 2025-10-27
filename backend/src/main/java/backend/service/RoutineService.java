@@ -56,27 +56,40 @@ public class RoutineService {
         Routine routine = routineRepository.findById(routineId)
                 .orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다."));
 
-        routine.setRoutineType(dto.getRoutineType());
         if (dto.getStartDate() != null) routine.setStartDate(dto.getStartDate());
         if (dto.getEndDate() != null) routine.setEndDate(dto.getEndDate());
+
+        routine.setRoutineType(dto.getRoutineType());
         routineRepository.saveAndFlush(routine);
 
         LocalDate today = LocalDate.now();
 
+        taskRepository.deleteByRoutine_RoutineIdAndTaskDateGreaterThanEqual(routineId, today.plusDays(1));
+
+        if ("반복없음".equals(dto.getRoutineType())) {
+            List<Task> tasks = taskRepository.findByRoutine_RoutineId(routineId);
+            for (Task t : tasks) {
+                t.setRoutine(null);
+            }
+            taskRepository.saveAll(tasks);
+
+            routineRepository.delete(routine);
+            return null;
+        }
+
         List<Task> pastOrToday = taskRepository
                 .findByRoutine_RoutineIdAndTaskDateLessThanEqualOrderByTaskDateAsc(routineId, today);
 
-        if (pastOrToday.isEmpty())
+        if (pastOrToday.isEmpty()) {
             throw new IllegalArgumentException("기준 Task를 찾을 수 없습니다.");
+        }
 
         Task baseTask = pastOrToday.get(pastOrToday.size() - 1);
-
-        taskRepository.deleteByRoutine_RoutineIdAndTaskDateGreaterThanEqual(routineId, today.plusDays(1));
 
         List<Task> newTasks = generateRoutineTasks(routine, baseTask);
         taskRepository.saveAll(newTasks);
 
-        return routine;
+        return routineRepository.save(routine);
     }
 
 
@@ -103,6 +116,7 @@ public class RoutineService {
         LocalDate end = routine.getEndDate();
 
         LocalDate date = start.plusDays(1);
+        LocalDate day = start;
 
         while (!date.isAfter(end)) {
             Task newTask = new Task();
@@ -119,8 +133,8 @@ public class RoutineService {
 
             switch (routine.getRoutineType()) {
                 case "매일" -> date = date.plusDays(1);
-                case "매주" -> date = date.plusWeeks(1);
-                case "매달" -> date = date.plusMonths(1);
+                case "매주" -> day = day.plusWeeks(1);
+                case "매달" -> day = day.plusMonths(1);
                 case "반복없음" -> date = end.plusDays(1);
                 default -> throw new IllegalArgumentException("잘못된 반복 타입입니다: " + routine.getRoutineType());
             }
