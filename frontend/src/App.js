@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
@@ -6,12 +5,17 @@ import BottomNav from "./components/Nav";
 import AuthForm from "./pages/AuthForm";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null); // ✅ 초기값 null → 아직 로딩 중 상태 구분
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) setIsLoggedIn(true);
+    setIsLoggedIn(!!token); // 토큰 있으면 true
   }, []);
+
+  if (isLoggedIn === null) {
+    // ✅ 초기 로딩 중일 때 깜빡임 방지
+    return <div style={{ textAlign: "center", marginTop: "40vh" }}>로딩 중...</div>;
+  }
 
   return (
     <Router>
@@ -22,7 +26,7 @@ function App() {
 
 function MainContent({ isLoggedIn, setIsLoggedIn }) {
   const location = useLocation();
-  const hideNav = location.pathname === "/auth"; // ✅ 로그인/회원가입 페이지면 nav 숨김
+  const hideNav = location.pathname === "/auth"; // 로그인/회원가입 페이지에서는 nav 숨김
 
   return (
     <div
@@ -54,7 +58,7 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
         />
       </Routes>
 
-      {/* ✅ 로그인/회원가입 페이지에서는 nav 숨김 */}
+      {/* 로그인/회원가입 페이지에서는 nav 숨김 */}
       {isLoggedIn && !hideNav && <BottomNav />}
     </div>
   );
