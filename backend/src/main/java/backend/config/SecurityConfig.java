@@ -34,10 +34,9 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/signup", "/users/login").permitAll()
-                .requestMatchers("/categories/**", "/tasks/**").authenticated() // 로그인 필요
+                .requestMatchers("/categories/**", "/tasks/**").authenticated()
                 .anyRequest().authenticated()
             )
-            // ✅ JWT 인증 필터 추가
             .addFilterBefore(new JwtAuthFilter(secretKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
