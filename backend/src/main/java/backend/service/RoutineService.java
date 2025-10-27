@@ -40,12 +40,13 @@ public class RoutineService {
         routine.setEndDate(dto.getEndDate());
         routine.setUser(user);
 
-        Routine savedRoutine = routineRepository.save(routine);
+        Routine savedRoutine = routineRepository.saveAndFlush(routine);
 
         baseTask.setRoutine(savedRoutine);
+        baseTask.setRoutineType(dto.getRoutineType());
         taskRepository.save(baseTask);
 
-        List<Task> repeatedTasks = generateRoutineTasks(savedRoutine, baseTask);
+        List<Task> repeatedTasks = generateRoutineTasks(savedRoutine, baseTask, dto.getStartDate());
         taskRepository.saveAll(repeatedTasks);
 
         return savedRoutine;
@@ -54,92 +55,76 @@ public class RoutineService {
     @Transactional
     public Routine updateRoutine(Long routineId, RoutineDTO dto) {
         Routine routine = routineRepository.findById(routineId)
-                .orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 루틴을 찾을 수 없습니다."));
 
-        if (dto.getStartDate() != null) routine.setStartDate(dto.getStartDate());
-        if (dto.getEndDate() != null) routine.setEndDate(dto.getEndDate());
+        LocalDate changeDate = (dto.getStartDate() != null) ? dto.getStartDate() : LocalDate.now();
 
-        routine.setRoutineType(dto.getRoutineType());
-        routineRepository.saveAndFlush(routine);
+        Task baseTask = taskRepository.findFirstByRoutine_RoutineIdOrderByTaskDateAsc(routineId)
+                .orElseThrow(() -> new IllegalArgumentException("기준 Task를 찾을 수 없습니다."));
 
-        LocalDate today = LocalDate.now();
-
-        taskRepository.deleteByRoutine_RoutineIdAndTaskDateGreaterThanEqual(routineId, today.plusDays(1));
+        if (dto.getRoutineType() != null) {
+            List<Task> todays = taskRepository.findByRoutineIdAndExactDate(routineId, changeDate);
+            for (Task t : todays) t.setRoutineType(dto.getRoutineType());
+            if (!todays.isEmpty()) taskRepository.saveAll(todays);
+        }
 
         if ("반복없음".equals(dto.getRoutineType())) {
-            List<Task> tasks = taskRepository.findByRoutine_RoutineId(routineId);
-            for (Task t : tasks) {
-                t.setRoutine(null);
-            }
-            taskRepository.saveAll(tasks);
-
+            taskRepository.deleteFutureTasks(routineId, changeDate);
             routineRepository.delete(routine);
-            return null;
+            return routine;
         }
 
-        List<Task> pastOrToday = taskRepository
-                .findByRoutine_RoutineIdAndTaskDateLessThanEqualOrderByTaskDateAsc(routineId, today);
+        if (dto.getRoutineType() != null) routine.setRoutineType(dto.getRoutineType());
+        routine.setStartDate(changeDate);
+        if (dto.getEndDate() != null) routine.setEndDate(dto.getEndDate());
+        routineRepository.save(routine);
 
-        if (pastOrToday.isEmpty()) {
-            throw new IllegalArgumentException("기준 Task를 찾을 수 없습니다.");
-        }
-
-        Task baseTask = pastOrToday.get(pastOrToday.size() - 1);
-
-        List<Task> newTasks = generateRoutineTasks(routine, baseTask);
+        taskRepository.deleteFutureTasks(routineId, changeDate);
+        List<Task> newTasks = generateRoutineTasks(routine, baseTask, changeDate);
         taskRepository.saveAll(newTasks);
 
-        return routineRepository.save(routine);
+        return routine;
     }
-
 
     @Transactional
     public void deleteRoutine(Long routineId) {
         Routine routine = routineRepository.findById(routineId)
                 .orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다."));
-
-        List<Task> tasks = taskRepository.findAll().stream()
-                .filter(t -> t.getRoutine() != null && t.getRoutine().getRoutineId().equals(routineId))
-                .toList();
-
-        for (Task t : tasks) {
-            t.setRoutine(null);
-        }
-        taskRepository.saveAll(tasks);
-
         routineRepository.delete(routine);
     }
 
-    private List<Task> generateRoutineTasks(Routine routine, Task baseTask) {
+    private List<Task> generateRoutineTasks(Routine routine, Task baseTask, LocalDate baseTaskDateInclusive) {
         List<Task> list = new ArrayList<>();
-        LocalDate start = routine.getStartDate();
         LocalDate end = routine.getEndDate();
 
-        LocalDate date = start.plusDays(1);
-        LocalDate day = start;
+        LocalDate next = stepNext(baseTaskDateInclusive, routine.getRoutineType());
 
-        while (!date.isAfter(end)) {
-            Task newTask = new Task();
-            newTask.setTaskName(baseTask.getTaskName());
-            newTask.setStatus("미완료");
-            newTask.setMemo(baseTask.getMemo());
-            newTask.setTaskDate(date);
-            newTask.setNotificationType(baseTask.getNotificationType());
-            newTask.setNotificationTime(baseTask.getNotificationTime());
-            newTask.setUser(baseTask.getUser());
-            newTask.setCategory(baseTask.getCategory());
-            newTask.setRoutine(routine);
-            list.add(newTask);
+        while (next != null && !next.isAfter(end)) {
+            Task t = new Task();
+            t.setTaskName(baseTask.getTaskName());
+            t.setStatus("미완료");
+            t.setMemo(baseTask.getMemo());
+            t.setTaskDate(next);
+            t.setNotificationType(baseTask.getNotificationType());
+            t.setNotificationTime(baseTask.getNotificationTime());
+            t.setUser(baseTask.getUser());
+            t.setCategory(baseTask.getCategory());
+            t.setRoutine(routine);
+            t.setRoutineType(routine.getRoutineType());
+            list.add(t);
 
-            switch (routine.getRoutineType()) {
-                case "매일" -> date = date.plusDays(1);
-                case "매주" -> day = day.plusWeeks(1);
-                case "매달" -> day = day.plusMonths(1);
-                case "반복없음" -> date = end.plusDays(1);
-                default -> throw new IllegalArgumentException("잘못된 반복 타입입니다: " + routine.getRoutineType());
-            }
+            next = stepNext(next, routine.getRoutineType());
         }
-
         return list;
+    }
+
+    private LocalDate stepNext(LocalDate current, String routineType) {
+        return switch (routineType) {
+            case "매일" -> current.plusDays(1);
+            case "매주" -> current.plusWeeks(1);
+            case "매달" -> current.plusMonths(1);
+            case "반복없음" -> null;
+            default -> throw new IllegalArgumentException("잘못된 반복 타입: " + routineType);
+        };
     }
 }

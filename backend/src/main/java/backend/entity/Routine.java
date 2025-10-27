@@ -44,7 +44,7 @@ public class Routine {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "routine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     @JsonIgnore
-    @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 }

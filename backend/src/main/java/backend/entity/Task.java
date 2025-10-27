@@ -36,6 +36,10 @@ public class Task {
     @Column(nullable = false)
     @JsonProperty("task_date")
     private LocalDate taskDate;
+    
+    @Column(name = "routine_type", length = 20)
+    @JsonProperty("routine_type")
+    private String routineType = "반복없음";
 
     @Column(nullable = false, length = 10)
     @JsonProperty("notification_type")
@@ -43,6 +47,7 @@ public class Task {
 
     @JsonProperty("notification_time")
     private LocalDateTime notificationTime;
+    
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
