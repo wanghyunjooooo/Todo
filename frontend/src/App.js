@@ -3,17 +3,19 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "r
 import Home from "./pages/Home";
 import BottomNav from "./components/Nav";
 import AuthForm from "./pages/AuthForm";
+import MyProfile from "./pages/Profile";
+import Notifications from "./pages/Notifications"; // 새로 import
+import EditProfile from "./components/EditProfile";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(null); // ✅ 초기값 null → 아직 로딩 중 상태 구분
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); // 토큰 있으면 true
+    setIsLoggedIn(!!token);
   }, []);
 
   if (isLoggedIn === null) {
-    // ✅ 초기 로딩 중일 때 깜빡임 방지
     return <div style={{ textAlign: "center", marginTop: "40vh" }}>로딩 중...</div>;
   }
 
@@ -26,7 +28,7 @@ function App() {
 
 function MainContent({ isLoggedIn, setIsLoggedIn }) {
   const location = useLocation();
-  const hideNav = location.pathname === "/auth"; // 로그인/회원가입 페이지에서는 nav 숨김
+  const hideNav = location.pathname === "/auth";
 
   return (
     <div
@@ -40,9 +42,7 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
       <Routes>
         <Route
           path="/"
-          element={
-            isLoggedIn ? <Home /> : <Navigate to="/auth" replace />
-          }
+          element={isLoggedIn ? <Home /> : <Navigate to="/auth" replace />}
         />
         <Route
           path="/auth"
@@ -50,15 +50,24 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
         />
         <Route
           path="/notifications"
-          element={isLoggedIn ? <h2>알림 페이지</h2> : <Navigate to="/auth" replace />}
+          element={isLoggedIn ? <Notifications /> : <Navigate to="/auth" replace />}
         />
         <Route
           path="/profile"
-          element={isLoggedIn ? <h2>내 정보 페이지</h2> : <Navigate to="/auth" replace />}
+          element={isLoggedIn ? <MyProfile /> : <Navigate to="/auth" replace />}
         />
+        <Route
+          path="*"
+          element={<Navigate to={isLoggedIn ? "/" : "/auth"} replace />}
+        />
+
+        
+<Route
+  path="/edit-profile"
+  element={isLoggedIn ? <EditProfile /> : <Navigate to="/auth" replace />}
+/>
       </Routes>
 
-      {/* 로그인/회원가입 페이지에서는 nav 숨김 */}
       {isLoggedIn && !hideNav && <BottomNav />}
     </div>
   );
