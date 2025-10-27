@@ -1,13 +1,16 @@
 package backend.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class NotificationDTO {
 
     @JsonProperty("notification_id")
@@ -15,12 +18,18 @@ public class NotificationDTO {
 
     private String status;
 
-    @JsonProperty("user_id")
-    private Long userId;
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
 
     @JsonProperty("task_id")
     private Long taskId;
 
-    @JsonProperty("created_at")
-    private LocalDateTime createdAt;
+    @JsonProperty("task_name")
+    private String taskName;
+
+    @JsonProperty("task_date")
+    private LocalDate taskDate;
+
+    @JsonProperty("category_name")
+    private String categoryName;
 }
