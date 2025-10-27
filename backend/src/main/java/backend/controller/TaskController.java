@@ -87,30 +87,18 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/stats/weekly")
-    public ResponseEntity<?> getWeeklyStats(
-            @RequestParam Long userId,
-            @RequestParam String start,
-            @RequestParam String end
-    ) {
-        return ResponseEntity.ok(taskService.getWeeklyStats(userId, LocalDate.parse(start), LocalDate.parse(end)));
+    @PostMapping("/stats/weekly/{userId}")
+    public ResponseEntity<?> getWeeklyStats(@PathVariable Long userId, @RequestBody Map<String, String> body) {
+        LocalDate startDate = LocalDate.parse(body.get("start_date"));
+        LocalDate endDate = LocalDate.parse(body.get("end_date"));
+        return ResponseEntity.ok(taskService.getWeeklyStats(userId, startDate, endDate));
     }
 
-    @GetMapping("/stats/monthly")
-    public ResponseEntity<?> getMonthlyStats(
-            @RequestParam Long userId,
-            @RequestParam String start,
-            @RequestParam String end
-    ) {
-        return ResponseEntity.ok(taskService.getMonthlyStats(userId, LocalDate.parse(start), LocalDate.parse(end)));
+    @PostMapping("/stats/monthly/{userId}")
+    public ResponseEntity<?> getMonthlyStats(@PathVariable Long userId, @RequestBody Map<String, String> body) {
+        LocalDate startDate = LocalDate.parse(body.get("start_date"));
+        LocalDate endDate = LocalDate.parse(body.get("end_date"));
+        return ResponseEntity.ok(taskService.getMonthlyStats(userId, startDate, endDate));
     }
 
-    @GetMapping("/stats/range")
-    public ResponseEntity<?> getRangeStats(
-            @RequestParam Long userId,
-            @RequestParam String start,
-            @RequestParam String end
-    ) {
-        return ResponseEntity.ok(taskService.getRangeStats(userId, LocalDate.parse(start), LocalDate.parse(end)));
-    }
 }

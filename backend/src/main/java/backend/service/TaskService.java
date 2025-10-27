@@ -10,7 +10,10 @@ import backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -98,15 +101,51 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public List<Task> getWeeklyStats(Long userId, LocalDate start, LocalDate end) {
-        return taskRepository.findTasksInRange(userId, start, end);
+    public Map<String, Object> getWeeklyStats(Long userId, LocalDate start, LocalDate end) {
+        List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
+        return buildStatsResponse(userId, start, end, tasks);
     }
 
-    public List<Task> getMonthlyStats(Long userId, LocalDate start, LocalDate end) {
-        return taskRepository.findTasksInRange(userId, start, end);
+    public Map<String, Object> getMonthlyStats(Long userId, LocalDate start, LocalDate end) {
+        List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
+        return buildStatsResponse(userId, start, end, tasks);
     }
 
-    public List<Task> getRangeStats(Long userId, LocalDate start, LocalDate end) {
-        return taskRepository.findTasksInRange(userId, start, end);
+    public Map<String, Object> getRangeStats(Long userId, LocalDate start, LocalDate end) {
+        List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
+        return buildStatsResponse(userId, start, end, tasks);
+    }
+
+    private Map<String, Object> buildStatsResponse(Long userId, LocalDate start, LocalDate end, List<Task> tasks) {
+        Map<String, Object> result = new HashMap<>();
+
+        long completed = tasks.stream().filter(t -> "완료".equals(t.getStatus())).count();
+        long incomplete = tasks.stream().filter(t -> !"완료".equals(t.getStatus())).count();
+        double rate = tasks.isEmpty() ? 0 : Math.round(((double) completed / tasks.size()) * 1000.0) / 10.0;
+
+        List<Map<String, Object>> categoryStats = tasks.stream()
+        .collect(Collectors.groupingBy(t -> t.getCategory().getCategoryName(), Collectors.counting())).entrySet().stream()
+        .map(e -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("category_name", e.getKey());
+            map.put("count", e.getValue());
+            return map;
+        })
+        .collect(Collectors.toList());
+
+
+        result.put("user_id", userId);
+        result.put("start_date", start);
+        result.put("end_date", end);
+
+        result.put("summary", Map.of(
+                "total_tasks", tasks.size(),
+                "completed", completed,
+                "incomplete", incomplete,
+                "completion_rate", rate
+        ));
+
+        result.put("categories", categoryStats);
+        return result;
     }
 }
