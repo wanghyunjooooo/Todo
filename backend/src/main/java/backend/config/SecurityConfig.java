@@ -15,10 +15,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
-
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/signup", "/users/login").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()  // 필요에 따라 permitAll()로 바꿀 수 있음
             );
 
         return http.build();

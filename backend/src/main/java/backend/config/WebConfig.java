@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig {
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -15,7 +16,7 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
+                        .allowedHeaders("Authorization", "Content-Type")
                         .allowCredentials(true);
             }
         };
