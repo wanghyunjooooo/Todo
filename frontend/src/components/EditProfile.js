@@ -1,15 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
-import { Eye, EyeOff } from "lucide-react"; // lucide-react 아이콘
+import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 function EditProfile() {
-  const [nickname, setNickname] = useState("홍길동");
-  const [email, setEmail] = useState("hong@example.com");
-  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSave = () => {
-    alert(`저장됨\n닉네임: ${nickname}\n이메일: ${email}\n비밀번호: ${password}`);
+  const userId = localStorage.getItem("user_id");
+
+  // ✅ 회원정보 불러오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!userId) {
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const res = await axios.get(`http://localhost:8080/users/profile/${userId}`);
+        const data = res.data;
+        console.log("회원정보:", data);
+
+        setUserName(data.user_name || "");
+        setUserEmail(data.user_email || "");
+      } catch (err) {
+        console.error("회원정보 조회 실패:", err);
+        alert("회원 정보를 불러오지 못했습니다.");
+      }
+    };
+
+    fetchUserInfo();
+  }, [userId]);
+
+  // ✅ 회원정보 수정
+  const handleSave = async () => {
+    if (!userName || !userEmail) {
+      alert("이름과 이메일은 필수입니다.");
+      return;
+    }
+
+    try {
+      const payload = {
+        user_name: userName,
+        user_email: userEmail,
+        ...(userPassword && { user_password: userPassword }), // 입력 시에만 포함
+      };
+
+      console.log("회원정보수정:", payload);
+
+      const res = await axios.put(`http://localhost:8080/users/profile/${userId}`, payload);
+      console.log("수정 결과:", res.data);
+
+      alert(res.data.message || "회원정보가 수정되었습니다.");
+      window.location.href = "/mypage"; // 수정 완료 후 이동
+    } catch (err) {
+      console.error("회원정보 수정 실패:", err);
+      alert("회원정보 수정에 실패했습니다.");
+    }
   };
 
   const handleCancel = () => {
@@ -69,10 +120,12 @@ function EditProfile() {
         justifyContent: "flex-start",
       }}
     >
+      {/* ✅ Header 고정 */}
       <div style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 100 }}>
         <Header showMenu={false} />
       </div>
 
+      {/* ✅ 입력 폼 */}
       <div
         style={{
           paddingTop: "80px",
@@ -98,26 +151,26 @@ function EditProfile() {
         <input
           style={inputStyle}
           type="text"
-          placeholder="닉네임"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          placeholder="이름"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
         />
         <input
           style={inputStyle}
           type="email"
           placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={userEmail}
+          onChange={(e) => setUserEmail(e.target.value)}
         />
 
-        {/* 비밀번호 + 눈 아이콘 */}
+        {/* ✅ 비밀번호 입력 */}
         <div style={{ position: "relative", width: "350px", marginBottom: "12px" }}>
           <input
             style={{ ...inputStyle, paddingRight: "40px" }}
             type={showPassword ? "text" : "password"}
-            placeholder="비밀번호"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            placeholder="비밀번호 (변경 시 입력)"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
           />
           <button
             type="button"
@@ -138,6 +191,7 @@ function EditProfile() {
         </div>
       </div>
 
+      {/* ✅ 버튼 */}
       <div
         style={{
           display: "flex",
