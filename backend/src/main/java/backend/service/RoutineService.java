@@ -52,6 +52,7 @@ public class RoutineService {
         return savedRoutine;
     }
 
+
     @Transactional
     public Routine updateRoutine(Long routineId, RoutineDTO dto) {
         Routine routine = routineRepository.findById(routineId)
@@ -70,9 +71,18 @@ public class RoutineService {
 
         if ("반복없음".equals(dto.getRoutineType())) {
             taskRepository.deleteFutureTasks(routineId, changeDate);
+
+            List<Task> remainTasks = taskRepository.findByRoutine_RoutineId(routineId);
+            for (Task t : remainTasks) {
+                t.setRoutine(null);
+                t.setRoutineType("반복없음");
+            }
+            taskRepository.saveAll(remainTasks);
+
             routineRepository.delete(routine);
             return routine;
         }
+
 
         if (dto.getRoutineType() != null) routine.setRoutineType(dto.getRoutineType());
         routine.setStartDate(changeDate);
