@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -45,9 +46,9 @@ public class Task {
     @JsonProperty("notification_type")
     private String notificationType = "미알림";
 
+    @Column(name = "notification_time")
     @JsonProperty("notification_time")
-    private LocalDateTime notificationTime;
-    
+    private LocalTime notificationTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
