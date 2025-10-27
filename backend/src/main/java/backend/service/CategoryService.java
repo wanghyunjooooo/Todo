@@ -5,6 +5,7 @@ import backend.entity.Category;
 import backend.entity.User;
 import backend.repository.CategoryRepository;
 import backend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,5 +70,17 @@ public class CategoryService {
 
         category.setCategoryName(dto.getCategoryName());
         return categoryRepository.save(category);
+    }
+
+    @Transactional
+    public void deleteCategory(Long userId, Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
+
+        if (!category.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 사용자의 카테고리가 아닙니다.");
+        }
+
+        categoryRepository.delete(category);
     }
 }

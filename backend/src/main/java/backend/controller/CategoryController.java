@@ -60,10 +60,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{userId}/{categoryId}")
-    public ResponseEntity<?> getCategoryByUserAndId(
-            @PathVariable Long userId,
-            @PathVariable Long categoryId
-    ) {
+    public ResponseEntity<?> getCategoryByUserAndId(@PathVariable Long userId, @PathVariable Long categoryId) {
         try {
             Category category = categoryService.getCategoryById(userId, categoryId);
             return ResponseEntity.ok(category);
@@ -73,11 +70,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{userId}/{categoryId}")
-    public ResponseEntity<?> updateCategory(
-            @PathVariable Long userId,
-            @PathVariable Long categoryId,
-            @RequestBody CategoryDTO dto
-    ) {
+    public ResponseEntity<?> updateCategory(@PathVariable Long userId, @PathVariable Long categoryId, @RequestBody CategoryDTO dto) {
         try {
             Category updatedCategory = categoryService.updateCategory(userId, categoryId, dto);
             CategoryDTO response = new CategoryDTO(
@@ -90,6 +83,21 @@ public class CategoryController {
             return ResponseEntity.ok(Map.of(
                 "message", "카테고리가 수정되었습니다.",
                 "category", response
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "서버 오류가 발생했습니다."));
+        }
+    }
+
+    @DeleteMapping("/{userId}/{categoryId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long userId, @PathVariable Long categoryId) {
+        try {
+            categoryService.deleteCategory(userId, categoryId);
+            return ResponseEntity.ok(Map.of(
+                "message", "카테고리가 삭제되었습니다.",
+                "category_id", categoryId
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
