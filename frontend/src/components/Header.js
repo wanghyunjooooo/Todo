@@ -1,24 +1,21 @@
-// Header.js
 import React, { useState, useRef, useEffect } from "react";
 import ThreeIcon from "../assets/three.svg";
 import CategoryEditor from "./EditCategoryBox";
 
-function Header({ showMenu = true }) {
+function Header({ showMenu = true, onCategoryAdded }) {
   const [isMenuActive, setIsMenuActive] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showCategoryEditor, setShowCategoryEditor] = useState(false);
-  const [editorMode, setEditorMode] = useState("edit"); // "edit" | "add"
+  const [editorMode, setEditorMode] = useState("add"); // "edit" | "add"
   const menuRef = useRef(null);
   const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
 
-  // 수정하기 클릭
   const handleEditCategoryClick = () => {
     setEditorMode("edit");
     setShowCategoryEditor(true);
     setShowPopup(false);
   };
 
-  // 추가하기 클릭
   const handleAddCategoryClick = () => {
     setEditorMode("add");
     setShowCategoryEditor(true);
@@ -30,7 +27,6 @@ function Header({ showMenu = true }) {
     setShowPopup(!showPopup);
   };
 
-  // 팝업 위치 계산
   useEffect(() => {
     if (menuRef.current) {
       const rect = menuRef.current.getBoundingClientRect();
@@ -46,9 +42,6 @@ function Header({ showMenu = true }) {
     <header style={styles.header}>
       <div style={styles.logo}>LOGO</div>
 
-
-
-            {/* 메뉴 버튼 표시 여부 */}
       {showMenu && (
         <button
           ref={menuRef}
@@ -64,7 +57,6 @@ function Header({ showMenu = true }) {
         </button>
       )}
 
-      {/* 팝업 */}
       {showPopup && (
         <div
           style={{
@@ -89,11 +81,15 @@ function Header({ showMenu = true }) {
         </div>
       )}
 
-      {/* CategoryEditor */}
       {showCategoryEditor && (
         <CategoryEditor
+          mode={editorMode} // "add" 또는 "edit"
           onClose={() => setShowCategoryEditor(false)}
-          mode={editorMode} // "add" 또는 "edit" 전달
+          onCategoryAdded={(newCategory) => {
+            // Home으로 이벤트 전달
+            if (onCategoryAdded) onCategoryAdded(newCategory);
+            setShowCategoryEditor(false);
+          }}
         />
       )}
     </header>
