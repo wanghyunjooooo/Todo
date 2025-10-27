@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import ThreeIcon from "../assets/three.svg";
+import LogoIcon from "../assets/logo.svg"; // ← 추가
 import CategoryEditor from "./EditCategoryBox";
 
 function Header({ showMenu = true, onCategoryAdded }) {
@@ -40,7 +41,9 @@ function Header({ showMenu = true, onCategoryAdded }) {
 
   return (
     <header style={styles.header}>
-      <div style={styles.logo}>LOGO</div>
+      <div style={styles.logo}>
+        <img src={LogoIcon} alt="Logo" style={{ width: "40px", height: "40px" }} />
+      </div>
 
       {showMenu && (
         <button
@@ -53,7 +56,7 @@ function Header({ showMenu = true, onCategoryAdded }) {
           }}
           onClick={handleMenuClick}
         >
-          <img src={ThreeIcon} alt="three dots" style={{ width: "100%", height: "100%" }} />
+          <img src={ThreeIcon} alt="three dots" style={{ width: "40px", height: "40px" }} />
         </button>
       )}
 
@@ -86,7 +89,6 @@ function Header({ showMenu = true, onCategoryAdded }) {
           mode={editorMode} // "add" 또는 "edit"
           onClose={() => setShowCategoryEditor(false)}
           onCategoryAdded={(newCategory) => {
-            // Home으로 이벤트 전달
             if (onCategoryAdded) onCategoryAdded(newCategory);
             setShowCategoryEditor(false);
           }}
@@ -130,10 +132,10 @@ const styles = {
     boxSizing: "border-box",
     position: "relative",
   },
-  logo: { fontSize: "16px", fontWeight: "600" },
+  logo: { display: "flex", alignItems: "center" },
   menuButton: {
-    width: "40px",
-    height: "40px",
+    width: "38.658px",
+    height: "24px",
     aspectRatio: "1 / 1",
     padding: 0,
     border: "none",
