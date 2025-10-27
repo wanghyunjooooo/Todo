@@ -4,7 +4,7 @@ import "./CategoryEditor.css";
 import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg";
 import { ReactComponent as MemoIcon } from "../assets/memo.svg";
 import { updateCategory } from "../api"; // api.js에서 함수 가져오기
-import api from "../api"; // GET, POST 등 다른 요청용
+import api from "../api"; // GET, POST, DELETE 등
 
 function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
   const [isEditingName, setIsEditingName] = useState(mode === "add");
@@ -15,12 +15,12 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showActionButtons, setShowActionButtons] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // 삭제 확인 상태
 
   const isAddMode = mode === "add";
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("user_id");
 
-  // 카테고리 불러오기
   const fetchCategories = async () => {
     if (!token || !userId) {
       setError("로그인이 필요합니다.");
@@ -56,6 +56,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
     setSelectedCategory(category);
     setShowActionButtons(true);
     setIsEditingName(false);
+    setShowDeleteConfirm(false); // 삭제 모달 초기화
     setNewName("");
   };
 
@@ -74,19 +75,22 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
     } finally { setLoading(false); }
   };
 
-  const handleDeleteCategory = async () => {
-    if (!selectedCategory) return;
-    setLoading(true); setError("");
-    try {
-      await api.delete(`/categories/${selectedCategory.category_id}`);
-      setSelectedCategory(null);
-      setShowActionButtons(false);
-      fetchCategories();
-    } catch (err) {
-      console.error("카테고리 삭제 실패:", err.response || err.message);
-      setError(err.response?.data?.message || "카테고리 삭제 중 오류 발생");
-    } finally { setLoading(false); }
-  };
+const handleDeleteCategory = async () => {
+  if (!selectedCategory) return;
+  setLoading(true); setError("");
+  try {
+    await api.delete(`/categories/${userId}/${selectedCategory.category_id}`);
+    setSelectedCategory(null);
+    setShowActionButtons(false);
+    setShowDeleteConfirm(false);
+    fetchCategories();
+  } catch (err) {
+    console.error("카테고리 삭제 실패:", err.response || err.message);
+    setError(err.response?.data?.message || "카테고리 삭제 중 오류 발생");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => { if (!isAddMode) fetchCategories(); }, []);
 
@@ -144,7 +148,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
         )}
 
         {/* 선택한 카테고리: 이름변경/삭제 버튼 */}
-        {selectedCategory && showActionButtons && !isEditingName && (
+        {selectedCategory && showActionButtons && !isEditingName && !showDeleteConfirm && (
           <div className="rename-box">
             <div className="rename-title-with-icon">
               <MemoIcon className="memo-icon" />
@@ -154,14 +158,14 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
               <span>이름 변경</span>
               <ArrowIcon className="arrow-icon" />
             </div>
-            <div className="category-item delete" onClick={handleDeleteCategory}>
+            <div className="category-item delete" onClick={() => setShowDeleteConfirm(true)}>
               <span>카테고리 삭제</span>
               <ArrowIcon className="arrow-icon" />
             </div>
           </div>
         )}
 
-        {/* 이름 변경 폼만 */}
+        {/* 이름 변경 폼 */}
         {selectedCategory && isEditingName && (
           <div className="rename-box">
             <div className="rename-title-with-icon">
@@ -193,6 +197,34 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                 disabled={loading}
               >
                 {loading ? "처리 중..." : "확인"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 삭제 확인 모달 */}
+        {selectedCategory && showDeleteConfirm && (
+          <div className="rename-box">
+            <div className="rename-title-with-icon">
+              <MemoIcon className="memo-icon" />
+              <span className="rename-title-text">카테고리 삭제 확인</span>
+            </div>
+            <p>선택한 카테고리를 영구적으로 삭제하시겠습니까?</p>
+            {error && <p className="error-text">{error}</p>}
+            <div className="button-group">
+              <button
+                className="cancel-button"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={loading}
+              >
+                취소
+              </button>
+              <button
+                className="confirm-button delete"
+                onClick={handleDeleteCategory}
+                disabled={loading}
+              >
+                {loading ? "처리 중..." : "삭제"}
               </button>
             </div>
           </div>
