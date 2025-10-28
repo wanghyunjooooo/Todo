@@ -117,9 +117,10 @@ function Todo({ tasksByDate, selectedDate }) {
         }
     };
 
-    // ✅ 할일 삭제
     const handleDeleteTask = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
+
+        // ✅ DB 삭제 (있는 경우만)
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
@@ -127,11 +128,21 @@ function Todo({ tasksByDate, selectedDate }) {
                 console.error("Task 삭제 실패:", err);
             }
         }
+
+        // ✅ 화면 상태 갱신
         setTasksByCategory((prev) => {
-            const newList = [...prev];
-            newList[catIdx].tasks.splice(taskIdx, 1);
+            const newList = prev.map((cat, idx) => {
+                if (idx !== catIdx) return cat;
+                return {
+                    ...cat,
+                    tasks: cat.tasks.filter((_, i) => i !== taskIdx),
+                };
+            });
             return newList;
         });
+
+        // ✅ 팝업 자동 닫기
+        setPopupIndex({ category: null, index: null });
     };
 
     // ✅ 팝업 열기/닫기
