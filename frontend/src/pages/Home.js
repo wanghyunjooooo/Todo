@@ -3,88 +3,93 @@ import Header from "../components/Header";
 import MyCalendar from "../components/Calendar";
 import Todo from "../components/Todo";
 import BottomNav from "../components/Nav";
-import { getCategories, getTasksByDay } from "../api";
+import { getCategories, getTasksByDay, addCategory, getMonthlyTasks } from "../api";
 
 function Home() {
-  const [categories, setCategories] = useState([]);
-  const [tasksByDate, setTasksByDate] = useState([]); // category 없이 그냥 배열
-  const [selectedDate, setSelectedDate] = useState(new Date());
+    const [categories, setCategories] = useState([]);
+    const [tasksByDate, setTasksByDate] = useState([]);
+    const [tasksByMonth, setTasksByMonth] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const userId = localStorage.getItem("user_id");
 
-  // 1️⃣ 초기 카테고리 로드
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const user_id = localStorage.getItem("user_id");
-      if (!user_id) return;
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
 
-      try {
-        const data = await getCategories(user_id);
-        console.log("카테고리 로드:", data); // ✅ 콘솔 찍기
-        setCategories(data);
-      } catch (err) {
-        console.error("카테고리 로드 실패:", err);
-      }
+    useEffect(() => {
+        if (!userId) return;
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories(userId);
+                console.log("카테고리 목록:", data);
+                setCategories(data);
+            } catch (err) {
+                console.error("카테고리 로드 실패:", err);
+            }
+        };
+        fetchCategories();
+    }, [userId]);
+
+    useEffect(() => {
+        if (!userId || !selectedDate) return;
+
+        const fetchTasksByDate = async () => {
+            const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+            try {
+                const tasks = await getTasksByDay(userId, dateStr);
+                setTasksByDate(tasks);
+            } catch (err) {
+                console.error("날짜별 Task 로드 실패:", err);
+            }
+        };
+
+        fetchTasksByDate();
+    }, [selectedDate, userId]);
+
+    useEffect(() => {
+        if (!userId) return;
+
+        const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+        const endDate = `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`;
+
+        const fetchTasksByMonth = async () => {
+            try {
+                const tasks = await getMonthlyTasks(userId, startDate, endDate);
+                setTasksByMonth(tasks);
+            } catch (err) {
+                console.error("월간 Task 로드 실패:", err);
+            }
+        };
+
+        fetchTasksByMonth();
+    }, [userId, year, month]);
+
+    const handleCategoryAdded = async (categoryName) => {
+        try {
+            const newCategory = await addCategory(userId, categoryName);
+            console.log("새 카테고리:", newCategory);
+            setCategories((prev) => [...prev, newCategory]);
+        } catch (err) {
+            console.error("카테고리 추가 실패:", err);
+        }
     };
-    fetchCategories();
-  }, []);
 
-  // 2️⃣ 선택 날짜 변경 시 tasks 불러오기
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const user_id = localStorage.getItem("user_id");
-      if (!user_id) return;
-
-      // 🔹 로컬 기준 YYYY-MM-DD 생성
-      const dateStr = `${selectedDate.getFullYear()}-${String(
-        selectedDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
-
-      console.log("선택 날짜:", dateStr); // ✅ 콘솔 찍기
-
-      try {
-        const tasks = await getTasksByDay(user_id, dateStr);
-        console.log("해당 날짜 tasks:", tasks); // ✅ 콘솔 찍기
-        setTasksByDate(tasks); // 그대로 배열로 저장
-      } catch (err) {
-        console.error("날짜별 할 일 로드 실패:", err);
-      }
+    const handleDateChange = (newDate) => {
+        console.log("선택 날짜:", newDate);
+        setSelectedDate(newDate);
     };
 
-    fetchTasks();
-  }, [selectedDate]);
-
-  const handleCategoryAdded = (newCategory) => {
-    console.log("새 카테고리 추가:", newCategory); // ✅ 콘솔 찍기
-    setCategories((prev) => [...prev, newCategory]);
-  };
-
-  const handleDateChange = (newDate) => {
-    console.log("날짜 변경:", newDate); // ✅ 콘솔 찍기
-    setSelectedDate(newDate);
-  };
-
-  console.log("렌더링 - categories:", categories); // ✅ 렌더링마다 상태 확인
-  console.log("렌더링 - tasksByDate:", tasksByDate); // ✅ 렌더링마다 상태 확인
-
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <Header
-        showMenu={true}
-        categories={categories}
-        onCategoryAdded={handleCategoryAdded}
-      />
-      <div style={{ flex: 1, overflowY: "auto", paddingBottom: "100px", marginTop: "24px" }}>
-        <MyCalendar selectedDate={selectedDate} onDateChange={handleDateChange} />
-        <div style={{ marginTop: "8px" }}>
-          <Todo
-            tasksByDate={tasksByDate}
-            selectedDate={selectedDate}
-            categories={categories} // 필요 없으면 제거 가능
-          />
+    return (
+        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} />
+            <div style={{ flex: 1, overflowY: "auto", paddingBottom: "100px", marginTop: "24px" }}>
+                <MyCalendar selectedDate={selectedDate} onDateChange={handleDateChange} tasksByDate={tasksByMonth} />
+                <div style={{ marginTop: "8px" }}>
+                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} />
+                </div>
+            </div>
+            <BottomNav />
         </div>
-      </div>
-      <BottomNav />
-    </div>
-  );
+    );
 }
 
 export default Home;

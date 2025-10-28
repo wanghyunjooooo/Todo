@@ -1,41 +1,33 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
-/* 전체 달력 컨테이너 */
+/* 기본 컨테이너 */
 .my-calendar-container {
     width: 350px;
-    /* 피그마 기준 Fill (350px) */
     padding: 20px;
-    /* 피그마 기준 Padding */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
-    /* 피그마 기준 Gap */
     border-radius: 16px;
-    /* 피그마 기준 Radius */
-    background: #FFF;
-    /* 배경색 */
+    background: #fff;
     box-sizing: border-box;
     font-family: "Pretendard", sans-serif;
     margin: 0 auto;
     color: #595959;
-    overflow: hidden;
 }
 
-/* 상단 네비게이션 */
+/* 상단 */
 .my-calendar-nav {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     width: 100%;
     gap: 20px;
-    /* 피그마 Gap */
 }
 
 .month-label {
     font-size: 14px;
     font-weight: 700;
-    color: #595959;
 }
 
 .nav-buttons {
@@ -50,64 +42,44 @@
     border: none;
     font-size: 16px;
     color: #595959;
-    font-weight: 600;
     cursor: pointer;
-    padding: 2px 4px;
 }
 
 .view-toggle-btn {
-    background-color: #E1F2E7 !important;
+    background-color: #e1f2e7 !important;
     border: none !important;
     font-size: 11.5px !important;
     color: #595959 !important;
-    font-weight: 400 !important;
-    cursor: pointer;
-    margin-left: 6px;
-    padding: 4px 10px;
     border-radius: 6px;
-    line-height: 1;
-    font-family: "Pretendard", sans-serif !important;
+    padding: 4px 10px;
+    cursor: pointer;
 }
 
-.view-toggle-btn:hover,
-.view-toggle-btn:active,
-.view-toggle-btn:focus {
-    background-color: #E1F2E7 !important;
-    color: #595959 !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-/* 요일 헤더 */
+/* 요일 */
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 20px;
-    /* 피그마 Gap */
     justify-items: center;
-    align-items: center;
     width: 100%;
 }
 
-.calendar-weekdays .weekday {
+.weekday {
     font-size: 12px;
     font-weight: 600;
     color: #595959;
 }
 
-/* 일요일 글자 빨간색 */
-.calendar-weekdays .weekday:nth-child(1) {
-    color: #FD5344;
+.weekday:nth-child(1),
+.day-tile.sunday .day-number {
+    color: #fd5344;
 }
 
-/* 날짜 그리드 */
+/* 날짜 */
 .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 20px;
-    /* 피그마 Gap */
     justify-items: center;
-    align-items: center;
     width: 100%;
 }
 
@@ -117,34 +89,44 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
+
 }
 
 .day-number {
+    font-size: 10px;
     font-weight: 600;
     color: #595959;
-}
-
-.day-tile.sunday .day-number {
-    color: #FD5344;
-}
-
-.day-tile.today .day-number {
-    background-color: #EBF6EF;
-    color: #36A862;
+    background-color: #FBFBFB;
     width: 24px;
     height: 24px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid #36A862;
-    position: relative;
-    z-index: 2;
 }
 
-.day-tile.today {
-    position: relative;
+/* ✅ 완료한 할 일 있는 날짜 → 초록색 채워진 동그라미 */
+.day-number.completed {
+    background-color: #36a862;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #36a862;
+}
+
+/* ✅ 선택된 날짜 → 연한 초록색 테두리 동그라미 */
+.day-tile.selected .day-number {
+    background-color: #ebf6ef;
+    color: #36a862;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #36a862;
 }
