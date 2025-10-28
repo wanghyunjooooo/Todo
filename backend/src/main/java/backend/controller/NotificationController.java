@@ -41,4 +41,13 @@ public class NotificationController {
         notificationRepository.save(n);
         return ResponseEntity.ok(Map.of("message", "알림이 읽음 처리되었습니다."));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteNotification(@PathVariable Long id) {
+        if (!notificationRepository.existsById(id)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "해당 알림을 찾을 수 없습니다."));
+        }
+        notificationRepository.deleteById(id);
+        return ResponseEntity.ok(Map.of("message", "알림이 삭제되었습니다."));
+    }
 }

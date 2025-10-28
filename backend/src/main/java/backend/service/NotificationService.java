@@ -35,6 +35,13 @@ public class NotificationService {
         return convertToDTO(notificationRepository.save(notification));
     }
 
+    public void deleteNotification(Long id) {
+        if (!notificationRepository.existsById(id)) {
+            throw new IllegalArgumentException("삭제할 알림이 없습니다.");
+        }
+        notificationRepository.deleteById(id);
+    }
+
     private NotificationDTO convertToDTO(Notification n) {
         return NotificationDTO.builder()
                 .notificationId(n.getNotificationId())

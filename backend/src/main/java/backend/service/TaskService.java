@@ -102,6 +102,7 @@ public class TaskService {
         if (!taskRepository.existsById(taskId)) {
             throw new IllegalArgumentException("삭제할 할 일을 찾을 수 없습니다.");
         }
+        notificationSchedulerService.cancelNotification(taskId);
         taskRepository.deleteById(taskId);
     }
 
