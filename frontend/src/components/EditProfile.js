@@ -1,7 +1,8 @@
+// src/pages/EditProfile.js
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { Eye, EyeOff } from "lucide-react";
-import axios from "axios";
+import api from "../api"; // JWT 토큰 자동 포함 Axios 인스턴스
 
 function EditProfile() {
   const [userName, setUserName] = useState("");
@@ -9,7 +10,7 @@ function EditProfile() {
   const [userPassword, setUserPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const userId = localStorage.getItem("user_id");
+  const userId = localStorage.getItem("user_id"); // login 시 저장된 userId 사용
 
   // ✅ 회원정보 불러오기
   useEffect(() => {
@@ -21,7 +22,7 @@ function EditProfile() {
       }
 
       try {
-        const res = await axios.get(`http://localhost:8080/users/profile/${userId}`);
+        const res = await api.get(`/users/profile/${userId}`);
         const data = res.data;
         console.log("회원정보:", data);
 
@@ -52,7 +53,7 @@ function EditProfile() {
 
       console.log("회원정보수정:", payload);
 
-      const res = await axios.put(`http://localhost:8080/users/profile/${userId}`, payload);
+      const res = await api.put(`/users/profile/${userId}`, payload);
       console.log("수정 결과:", res.data);
 
       alert(res.data.message || "회원정보가 수정되었습니다.");
@@ -120,12 +121,12 @@ function EditProfile() {
         justifyContent: "flex-start",
       }}
     >
-      {/* ✅ Header 고정 */}
+      {/* Header */}
       <div style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 100 }}>
         <Header showMenu={false} />
       </div>
 
-      {/* ✅ 입력 폼 */}
+      {/* 입력 폼 */}
       <div
         style={{
           paddingTop: "80px",
@@ -163,7 +164,7 @@ function EditProfile() {
           onChange={(e) => setUserEmail(e.target.value)}
         />
 
-        {/* ✅ 비밀번호 입력 */}
+        {/* 비밀번호 입력 */}
         <div style={{ position: "relative", width: "350px", marginBottom: "12px" }}>
           <input
             style={{ ...inputStyle, paddingRight: "40px" }}
@@ -191,7 +192,7 @@ function EditProfile() {
         </div>
       </div>
 
-      {/* ✅ 버튼 */}
+      {/* 버튼 */}
       <div
         style={{
           display: "flex",
