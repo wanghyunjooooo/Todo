@@ -40,7 +40,7 @@ function AuthForm({ onLogin }) {
 
         // ✅ localStorage에 저장
         localStorage.setItem("token", token);
-        localStorage.setItem("userId", user_id);
+        localStorage.setItem("user_id", user_id);
         localStorage.setItem("user_name", user_name);
         localStorage.setItem("user_email", user_email);
 
