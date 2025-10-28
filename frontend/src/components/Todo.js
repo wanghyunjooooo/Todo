@@ -71,19 +71,50 @@ function Todo({ tasksByDate, selectedDate }) {
         }
     };
 
-    // ✅ 할일 추가
-    const handleAddTask = (catIdx) => {
-        setTasksByCategory((prev) => {
-            const newList = [...prev];
-            const nextNumber = newList[catIdx].tasks.length + 1;
-            newList[catIdx].tasks.push({
-                text: `할일 ${String(nextNumber).padStart(2, "0")}`,
-                checked: false,
-                task_id: null,
+    const handleAddTask = async (catIdx) => {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) return alert("로그인이 필요합니다.");
+
+        const category_id = tasksByCategory[catIdx].tasks[0]?.category_id;
+        const dateStr = selectedDate.toISOString().split("T")[0];
+
+        try {
+            // ✅ DB에 새 할 일 생성
+            const result = await addTask({
+                task_name: `할 일 0${tasksByCategory[catIdx].tasks.length + 1}`,
                 memo: "",
+                task_date: dateStr,
+                category_id,
+                user_id: Number(user_id),
+                notification_type: "미알림",
+                notification_time: null,
             });
-            return newList;
-        });
+
+            const savedTask = result.task;
+
+            // ✅ 이미 이 카테고리에 최소 1개 이상 할 일이 있다면, 새 “빈 할 일”은 추가하지 않음
+            setTasksByCategory((prev) => {
+                const newList = [...prev];
+                const tasks = newList[catIdx].tasks;
+
+                // “할 일 01” 같은 새 항목을 추가 (중복 방지)
+                const alreadyExists = tasks.some((t) => t.task_id === savedTask.task_id);
+                if (!alreadyExists) {
+                    tasks.push({
+                        text: savedTask.task_name,
+                        checked: savedTask.status === "완료",
+                        task_id: savedTask.task_id,
+                        memo: savedTask.memo || "",
+                        category_id: savedTask.category_id,
+                    });
+                }
+
+                return newList;
+            });
+        } catch (error) {
+            console.error("할 일 추가 실패:", error);
+            alert("할 일을 추가하는 중 오류가 발생했습니다.");
+        }
     };
 
     // ✅ 할일 삭제

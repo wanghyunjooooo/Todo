@@ -22,9 +22,9 @@ function Home() {
             try {
                 const data = await getCategories(userId);
                 setCategories(data || []);
-                console.log("📂 카테고리 목록:", data);
+                console.log("카테고리 목록:", data);
             } catch (err) {
-                console.error("❌ 카테고리 로드 실패:", err);
+                console.error("카테고리 로드 실패:", err);
             }
         };
         fetchCategories();
@@ -39,9 +39,9 @@ function Home() {
             try {
                 const tasks = await getTasksByDay(userId, dateStr);
                 setTasksByDate(tasks || []);
-                console.log(`📅 ${dateStr}의 Task:`, tasks);
+                console.log(`${dateStr}의 Task:`, tasks);
             } catch (err) {
-                console.error("❌ 날짜별 Task 로드 실패:", err);
+                console.error("날짜별 Task 로드 실패:", err);
             }
         };
 
@@ -61,7 +61,7 @@ function Home() {
                 setTasksByMonth(tasks || []);
                 console.log(`📆 ${month + 1}월 Task 목록:`, tasks);
             } catch (err) {
-                console.error("❌ 월간 Task 로드 실패:", err);
+                console.error("월간 Task 로드 실패:", err);
             }
         };
 
@@ -72,16 +72,16 @@ function Home() {
     const handleCategoryAdded = async (categoryName) => {
         try {
             const newCategory = await addCategory(userId, categoryName);
-            console.log("✅ 새 카테고리 추가:", newCategory);
+            console.log("카테고리 추가:", newCategory);
             setCategories((prev) => [...prev, newCategory]);
         } catch (err) {
-            console.error("❌ 카테고리 추가 실패:", err);
+            console.error("카테고리 추가 실패:", err);
         }
     };
 
     /** ✅ 날짜 변경 시 실행 */
     const handleDateChange = (newDate) => {
-        console.log("📌 선택 날짜 변경:", newDate);
+        console.log("선택 날짜 변경:", newDate);
         setSelectedDate(newDate);
     };
 
