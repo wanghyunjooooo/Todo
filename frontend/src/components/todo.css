@@ -25,7 +25,7 @@
 .category-title {
     font-size: 12px;
     font-weight: 600;
-    color: #36a862;
+    color: #36A862;
 }
 
 .task-add-btn {
@@ -102,7 +102,6 @@
     width: 100%;
     font-family: Pretendard;
     font-size: 12px;
-    font-style: normal;
     font-weight: 500;
     line-height: normal;
     color: var(--Grey-Darker, #2A2A2A);
