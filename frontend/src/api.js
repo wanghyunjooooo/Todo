@@ -86,3 +86,15 @@ export const updateTaskStatus = (task_id, data) => api.patch(`/tasks/${task_id}/
 // ✅ 알림 전체 조회
 export const getNotifications = (user_id) =>
   api.get(`/notifications/${user_id}`).then((res) => res.data);
+
+// ✅ 알림 개별 조회
+export const getNotificationById = (user_id, notification_id) =>
+  api
+    .get(`/notifications/${user_id}/${notification_id}`)
+    .then((res) => res.data);
+
+// ✅ 알림 읽음 처리
+export const markNotificationRead = (notification_id) =>
+  api
+    .patch(`/notifications/${notification_id}/read`)
+    .then((res) => res.data);

@@ -7,37 +7,15 @@ import "./Notifications.css";
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
-  const userId = localStorage.getItem("userId"); // ✅ 로그인 시 저장된 userId 사용
+  const userId = localStorage.getItem("user_id");
 
   // 🔹 알림 전체 조회
   useEffect(() => {
-    console.log("📌 useEffect 실행됨. userId =", userId);
-    if (!userId) {
-      console.warn("⚠️ 로그인 정보가 없습니다. userId 없음");
-      return;
-    }
+    if (!userId) return;
 
     const fetchNotifications = async () => {
       try {
-        // ✅ 요청 전 토큰 확인
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("⚠️ 토큰이 존재하지 않습니다.");
-          return;
-        }
-        console.log("🔑 현재 저장된 토큰:", token);
-
-        // 🔹 토큰을 명시적으로 헤더에 붙여 요청
-        const res = await api.get(`/notifications/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        console.log("✅ 서버 응답 전체:", res);
-        console.log("📦 응답 데이터:", res.data);
-
-        // 🔸 클라이언트 표시용 변환
+        const res = await api.get(`/notifications/${userId}`);
         const mapped = res.data.map((n) => ({
           id: n.notification_id,
           date: n.task_date,
@@ -45,41 +23,51 @@ function Notifications() {
           read: n.status === "읽음",
           selected: false,
         }));
-
-        console.log("🧩 매핑된 알림 데이터:", mapped);
         setNotifications(mapped);
       } catch (err) {
-        console.error("❌ 알림 불러오기 실패:", err);
-        console.error("🔍 Axios Error Response:", err.response);
-        console.error("🔍 Error Headers:", err.response?.headers);
-        console.error("🔍 Error Status:", err.response?.status);
-        console.error("🔍 Error Data:", err.response?.data);
+        console.error("알림 불러오기 실패:", err);
       }
     };
 
     fetchNotifications();
   }, [userId]);
 
+  // 🔹 클릭 시 개별 알림 읽음 처리
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      await api.patch(`/notifications/${notificationId}/read`);
+
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notificationId ? { ...n, read: true } : n
+        )
+      );
+    } catch (err) {
+      console.error("알림 읽음 처리 실패:", err);
+    }
+  };
+
   // 🔹 선택 토글
   const toggleSelect = (id) => {
-    console.log(`🟢 알림 선택 토글: id=${id}`);
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, selected: !n.selected } : n))
     );
   };
 
-  // 🔹 선택 읽음 처리
-  const markSelectedRead = () => {
-    console.log("🟡 선택된 항목 읽음 처리");
-    setNotifications((prev) =>
-      prev.map((n) => (n.selected ? { ...n, read: true } : n))
-    );
-  };
+  // 🔹 선택 삭제 (서버 반영)
+  const deleteSelected = async () => {
+    const selectedIds = notifications.filter((n) => n.selected).map((n) => n.id);
+    if (selectedIds.length === 0) return;
 
-  // 🔹 선택 삭제
-  const deleteSelected = () => {
-    console.log("🔴 선택된 항목 삭제");
-    setNotifications((prev) => prev.filter((n) => !n.selected));
+    try {
+      await Promise.all(
+        selectedIds.map((id) => api.delete(`/notifications/${id}`))
+      );
+
+      setNotifications((prev) => prev.filter((n) => !n.selected));
+    } catch (err) {
+      console.error("선택 알림 삭제 실패:", err);
+    }
   };
 
   // 🔹 날짜별 그룹화
@@ -97,22 +85,16 @@ function Notifications() {
     <div className="notifications-page">
       <Header title="알림" />
 
-      {/* 상단 버튼 */}
       <div className="notifications-header">
         <span className="notifications-date">{sortedDates[0] || ""}</span>
         <div className="notifications-actions">
           <div
             className="action-button"
             onClick={() =>
-              setNotifications((prev) =>
-                prev.map((n) => ({ ...n, selected: true }))
-              )
+              setNotifications((prev) => prev.map((n) => ({ ...n, selected: true })))
             }
           >
             전체선택
-          </div>
-          <div className="action-button" onClick={markSelectedRead}>
-            읽음
           </div>
           <div className="action-button" onClick={deleteSelected}>
             삭제
@@ -120,7 +102,6 @@ function Notifications() {
         </div>
       </div>
 
-      {/* 알림 목록 */}
       <div className="notifications-list">
         {sortedDates.map((date) => (
           <div key={date} className="notification-group">
@@ -129,12 +110,14 @@ function Notifications() {
               <div
                 key={n.id}
                 className={`notification-item ${n.read ? "read" : ""}`}
+                onClick={() => handleNotificationClick(n.id)}
               >
                 <div
-                  className={`notification-select ${
-                    n.selected ? "selected" : ""
-                  }`}
-                  onClick={() => toggleSelect(n.id)}
+                  className={`notification-select ${n.selected ? "selected" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSelect(n.id);
+                  }}
                 >
                   {n.selected && (
                     <img src={CheckIcon} alt="check" className="checkmark" />
