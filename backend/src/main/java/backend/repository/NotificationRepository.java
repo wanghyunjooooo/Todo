@@ -17,4 +17,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("""
         SELECT n FROM Notification n JOIN FETCH n.task t JOIN FETCH t.category c WHERE n.user.userId = :userId ORDER BY n.createdAt DESC """)
     List<Notification> findAllByUserWithTask(@Param("userId") Long userId);
+
+    @Query("""
+        SELECT n FROM Notification n JOIN FETCH n.task t JOIN FETCH t.category c WHERE n.user.userId = :userId AND n.notificationId = :notificationId """)
+    Optional<Notification> findByUserIdAndNotificationId(@Param("userId") Long userId, @Param("notificationId") Long notificationId);
 }

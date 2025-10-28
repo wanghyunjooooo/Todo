@@ -21,6 +21,13 @@ public class NotificationService {
         return notificationRepository.findAllByUserWithTask(userId).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public NotificationDTO getNotificationDetail(Long userId, Long notificationId) {
+        Notification notification = notificationRepository.findByUserIdAndNotificationId(userId, notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 알림을 찾을 수 없습니다."));
+        return convertToDTO(notification);
+    }
+
     private NotificationDTO convertToDTO(Notification n) {
         return NotificationDTO.builder()
                 .notificationId(n.getNotificationId())
