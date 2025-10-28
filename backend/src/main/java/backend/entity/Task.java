@@ -38,7 +38,7 @@ public class Task {
     @JsonProperty("task_date")
     private LocalDate taskDate;
     
-    @Column(name = "routine_type", length = 20)
+    @Column(length = 20)
     @JsonProperty("routine_type")
     private String routineType = "반복없음";
 
@@ -46,7 +46,6 @@ public class Task {
     @JsonProperty("notification_type")
     private String notificationType = "미알림";
 
-    @Column(name = "notification_time")
     @JsonProperty("notification_time")
     private LocalTime notificationTime;
 
