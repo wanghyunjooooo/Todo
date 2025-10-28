@@ -17,7 +17,6 @@
     bottom: 20px;
     right: 20px;
     width: 350px;
-    height: 272px;
     background: #fff;
     border-radius: 16px;
     padding: 20px;
@@ -26,6 +25,11 @@
     align-items: flex-start;
     gap: 8px;
     z-index: 9999;
+    height: auto;
+    /* 고정 height 제거 */
+    max-height: 90vh;
+    /* 화면 넘치면 스크롤 */
+    overflow-y: auto;
 }
 
 /* 옵션 버튼 */
@@ -54,12 +58,12 @@
 
 .task-options-footer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    /* 왼쪽-오른쪽 배치 */
     width: 100%;
-    gap: 8px;
-    margin-top: auto;
+    margin-top: 20px;
+    gap: 12px;
 }
-
 .cancel-btn,
 .confirm-btn {
     width: 151px;
