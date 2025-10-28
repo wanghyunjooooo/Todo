@@ -35,7 +35,6 @@ function Todo({ tasksByDate, selectedDate }) {
         setTasksByCategory(formatted);
     }, [tasksByDate]);
 
-    // ✅ 체크 상태 변경
     const toggleChecked = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
         const newChecked = !task.checked;
@@ -65,7 +64,6 @@ function Todo({ tasksByDate, selectedDate }) {
         const dateStr = selectedDate.toISOString().split("T")[0];
 
         try {
-            // ✅ DB에 새 할 일 생성
             const result = await addTask({
                 task_name: `할 일 0${tasksByCategory[catIdx].tasks.length + 1}`,
                 memo: "",
@@ -78,14 +76,10 @@ function Todo({ tasksByDate, selectedDate }) {
 
             const savedTask = result.task;
 
-            // ✅ 이미 이 카테고리에 최소 1개 이상 할 일이 있다면, 새 “빈 할 일”은 추가하지 않음
             setTasksByCategory((prev) => {
                 const newList = [...prev];
                 const tasks = newList[catIdx].tasks;
-
-                // “할 일 01” 같은 새 항목을 추가 (중복 방지)
-                const alreadyExists = tasks.some((t) => t.task_id === savedTask.task_id);
-                if (!alreadyExists) {
+                if (!tasks.some((t) => t.task_id === savedTask.task_id)) {
                     tasks.push({
                         text: savedTask.task_name,
                         checked: savedTask.status === "완료",
@@ -94,7 +88,6 @@ function Todo({ tasksByDate, selectedDate }) {
                         category_id: savedTask.category_id,
                     });
                 }
-
                 return newList;
             });
         } catch (error) {
@@ -106,7 +99,6 @@ function Todo({ tasksByDate, selectedDate }) {
     const handleDeleteTask = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
 
-        // ✅ DB 삭제 (있는 경우만)
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
@@ -115,24 +107,24 @@ function Todo({ tasksByDate, selectedDate }) {
             }
         }
 
-        // ✅ 화면 상태 갱신
         setTasksByCategory((prev) => {
-            const newList = prev.map((cat, idx) => {
+            return prev.map((cat, idx) => {
                 if (idx !== catIdx) return cat;
                 return {
                     ...cat,
                     tasks: cat.tasks.filter((_, i) => i !== taskIdx),
                 };
             });
-            return newList;
         });
 
-        // ✅ 팝업 자동 닫기
         setPopupIndex({ category: null, index: null });
     };
 
-    // ✅ 팝업 열기/닫기
+    // ✅ 팝업 열기/닫기 (DB에 저장된 Task만)
     const togglePopup = (catIdx, taskIdx) => {
+        const task = tasksByCategory[catIdx].tasks[taskIdx];
+        if (!task.task_id) return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
+
         setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : { category: catIdx, index: taskIdx }));
     };
 
@@ -153,7 +145,6 @@ function Todo({ tasksByDate, selectedDate }) {
 
                     {group.tasks.map((task, taskIdx) => (
                         <div key={task.task_id || taskIdx} className={`task-item ${task.checked ? "checked" : ""}`}>
-                            {/* 체크 버튼 */}
                             <button className={`task-check-btn ${task.checked ? "checked" : ""}`} onClick={() => toggleChecked(catIdx, taskIdx)}>
                                 {task.checked && (
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
@@ -163,12 +154,8 @@ function Todo({ tasksByDate, selectedDate }) {
                                 )}
                             </button>
 
-                            {/* 할일 버튼 */}
-                            <button className={`task-text-btn ${task.checked ? "checked" : ""}`} onClick={() => {}}>
-                                {task.text}
-                            </button>
+                            <button className={`task-text-btn ${task.checked ? "checked" : ""}`}>{task.text}</button>
 
-                            {/* “…” 버튼 */}
                             <button
                                 className="task-menu-btn"
                                 onClick={(e) => {
@@ -179,8 +166,22 @@ function Todo({ tasksByDate, selectedDate }) {
                                 <img src={ThreeIcon} alt="menu" style={{ width: "20px" }} />
                             </button>
 
-                            {/* 팝업 */}
-                            {popupIndex.category === catIdx && popupIndex.index === taskIdx && <TaskOptionsPopup style={{ top: "40px", right: "0" }} onClose={() => setPopupIndex({ category: null, index: null })} onDelete={() => handleDeleteTask(catIdx, taskIdx)} />}
+                            {popupIndex.category === catIdx && popupIndex.index === taskIdx && (
+                                <TaskOptionsPopup
+                                    style={{ top: "40px", right: "0" }}
+                                    taskId={task.task_id}
+                                    userId={localStorage.getItem("user_id")}
+                                    onClose={() => setPopupIndex({ category: null, index: null })}
+                                    onDelete={() => handleDeleteTask(catIdx, taskIdx)}
+                                    onEditConfirm={(newText) => {
+                                        setTasksByCategory((prev) => {
+                                            const updated = [...prev];
+                                            updated[catIdx].tasks[taskIdx].text = newText;
+                                            return updated;
+                                        });
+                                    }}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
