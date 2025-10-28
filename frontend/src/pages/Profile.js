@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import ProfileInfoBox from "../components/ProfileInfoBox";
 import ProgressBar from "../components/ProgressBar";
 import BottomNav from "../components/Nav";
-import LogoutBox from "../components/LogoutBox"; // 새로 추가
+import LogoutBox from "../components/LogoutBox";
 
 function MyProfile() {
   const [username, setUsername] = useState("홍길동");
   const [email, setEmail] = useState("hong@example.com");
-  const [completionRate, setCompletionRate] = useState(75);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem("user_id"); // 로그인 시 저장한 user_id
+    setUserId(id);
+  }, []);
 
   const handleSaveProfile = () => {
     alert(`회원정보가 저장되었습니다.\n이름: ${username}\n이메일: ${email}`);
@@ -25,7 +30,15 @@ function MyProfile() {
         <Header showMenu={false} />
       </div>
 
-      <div style={{ padding: "20px", paddingTop: "100px", paddingBottom: "120px", overflowY: "auto", height: "100%" }}>
+      <div
+        style={{
+          padding: "20px",
+          paddingTop: "100px",
+          paddingBottom: "120px",
+          overflowY: "auto",
+          height: "100%",
+        }}
+      >
         <ProfileInfoBox
           username={username}
           setUsername={setUsername}
@@ -34,14 +47,21 @@ function MyProfile() {
           onSave={handleSaveProfile}
         />
 
-        <ProgressBar completionRate={completionRate} />
+        {userId ? <ProgressBar userId={userId} /> : <div>주간 통계 로딩중...</div>}
 
-        {/* 로그아웃 박스 컴포넌트로 교체 */}
         <LogoutBox onLogout={handleLogout} />
       </div>
 
-      {/* BottomNav 자리 확보 */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, width: "100%", height: "80px", background: "transparent" }}>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: "80px",
+          background: "transparent",
+        }}
+      >
         <BottomNav />
       </div>
     </div>
