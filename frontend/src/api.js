@@ -83,3 +83,6 @@ export const updateCategory = (user_id, category_id, category_name) => api.put(`
 export const deleteCategory = (category_id) => api.delete(`/categories/${category_id}`).then((res) => res.data);
 
 export const updateTaskStatus = (task_id, data) => api.patch(`/tasks/${task_id}/status`, data).then((res) => res.data);
+// ✅ 알림 전체 조회
+export const getNotifications = (user_id) =>
+  api.get(`/notifications/${user_id}`).then((res) => res.data);
