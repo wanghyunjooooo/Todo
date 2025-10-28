@@ -1,228 +1,164 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
-import { addTask, deleteTask, updateTaskStatus } from "../api"; // updateTaskStatus 포함
+import { addTask, deleteTask, updateTaskStatus } from "../api";
 
 function Todo({ tasksByDate, selectedDate }) {
-  const [tasksByCategory, setTasksByCategory] = useState([]);
-  const [popupIndex, setPopupIndex] = useState({ category: null, index: null });
-  const inputRefs = useRef({});
+    const [tasksByCategory, setTasksByCategory] = useState([]);
+    const [popupIndex, setPopupIndex] = useState({ category: null, index: null });
 
-  // tasksByDate → category별 그룹화
-  useEffect(() => {
-    if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
-      setTasksByCategory([]);
-      return;
+    useEffect(() => {
+        if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
+            // ✅ 기본 카테고리 생성
+            setTasksByCategory([
+                {
+                    categoryName: "카테고리 01",
+                    category_id: null,
+                    tasks: [
+                        {
+                            text: "할일 01",
+                            checked: false,
+                            task_id: null,
+                            memo: "",
+                        },
+                    ],
+                },
+            ]);
+            return;
+        }
+
+        const grouped = tasksByDate.reduce((acc, task) => {
+            const categoryName = task.category?.category_name || "미분류";
+            if (!acc[categoryName]) acc[categoryName] = [];
+            acc[categoryName].push({
+                text: task.task_name,
+                checked: task.status === "완료",
+                task_id: task.task_id,
+                memo: task.memo || "",
+                category_id: task.category?.category_id || null,
+            });
+            return acc;
+        }, {});
+
+        const formatted = Object.entries(grouped).map(([categoryName, tasks]) => ({
+            categoryName,
+            tasks,
+        }));
+
+        setTasksByCategory(formatted);
+    }, [tasksByDate]);
+
+    // ✅ 체크 상태 변경
+    const toggleChecked = async (catIdx, taskIdx) => {
+        const task = tasksByCategory[catIdx].tasks[taskIdx];
+        const newChecked = !task.checked;
+
+        if (!task.task_id) {
+            console.log("서버에 등록되지 않은 로컬 Task입니다.");
+            return;
+        }
+
+        try {
+            await updateTaskStatus(task.task_id, { status: newChecked ? "완료" : "미완료" });
+            setTasksByCategory((prev) => {
+                const updated = [...prev];
+                updated[catIdx].tasks[taskIdx].checked = newChecked;
+                return updated;
+            });
+        } catch (err) {
+            console.error("체크 상태 업데이트 실패:", err);
+        }
+    };
+
+    // ✅ 할일 추가
+    const handleAddTask = (catIdx) => {
+        setTasksByCategory((prev) => {
+            const newList = [...prev];
+            const nextNumber = newList[catIdx].tasks.length + 1;
+            newList[catIdx].tasks.push({
+                text: `할일 ${String(nextNumber).padStart(2, "0")}`,
+                checked: false,
+                task_id: null,
+                memo: "",
+            });
+            return newList;
+        });
+    };
+
+    // ✅ 할일 삭제
+    const handleDeleteTask = async (catIdx, taskIdx) => {
+        const task = tasksByCategory[catIdx].tasks[taskIdx];
+        if (task.task_id) {
+            try {
+                await deleteTask(task.task_id);
+            } catch (err) {
+                console.error("Task 삭제 실패:", err);
+            }
+        }
+        setTasksByCategory((prev) => {
+            const newList = [...prev];
+            newList[catIdx].tasks.splice(taskIdx, 1);
+            return newList;
+        });
+    };
+
+    // ✅ 팝업 열기/닫기
+    const togglePopup = (catIdx, taskIdx) => {
+        setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : { category: catIdx, index: taskIdx }));
+    };
+
+    if (!tasksByCategory.length) {
+        return <div className="no-task-text">오늘은 할 일이 없습니다.</div>;
     }
 
-    const grouped = tasksByDate.reduce((acc, task) => {
-      const categoryName = task.category?.category_name || "미분류";
-      if (!acc[categoryName]) acc[categoryName] = [];
-      acc[categoryName].push({
-        text: task.task_name,
-        checked: task.status === "완료",
-        task_id: task.task_id,
-        memo: task.memo || "",
-        category_id: task.category?.category_id || null,
-      });
-      return acc;
-    }, {});
-
-    const formatted = Object.entries(grouped).map(([categoryName, tasks]) => ({
-      categoryName,
-      tasks,
-    }));
-
-    setTasksByCategory(formatted);
-  }, [tasksByDate]);
-
-  const handleInputChange = (catIdx, taskIdx, value) => {
-    setTasksByCategory((prev) => {
-      const newList = [...prev];
-      newList[catIdx].tasks[taskIdx].text = value;
-      return newList;
-    });
-  };
-
-// ✅ 체크 상태 토글 + 서버 반영 (디버깅 콘솔 추가)
-const toggleChecked = async (catIdx, taskIdx) => {
-  const task = tasksByCategory[catIdx].tasks[taskIdx];
-  if (!task.task_id) {
-    console.log("저장되지 않은 Task, 서버 연동 생략", task);
-    return; // 저장 안 된 task는 서버 연동 안 함
-  }
-
-  const newChecked = !task.checked;
-  console.log("toggleChecked 호출:", { catIdx, taskIdx, task, newChecked });
-
-  try {
-    console.log("서버 updateTaskStatus 요청 시작:", task.task_id, { status: newChecked ? "완료" : "미완료" });
-    const res = await updateTaskStatus(task.task_id, { status: newChecked ? "완료" : "미완료" });
-    console.log("서버 updateTaskStatus 응답:", res);
-
-    setTasksByCategory((prev) => {
-      const newList = prev.map((cat, cIdx) => {
-        if (cIdx !== catIdx) return cat;
-        return {
-          ...cat,
-          tasks: cat.tasks.map((t, tIdx) => {
-            if (tIdx !== taskIdx) return t;
-            const updatedTask = { ...t, checked: newChecked };
-            console.log("로컬 상태 업데이트:", updatedTask);
-            return updatedTask;
-          }),
-        };
-      });
-      console.log("전체 tasksByCategory 업데이트 후:", newList);
-      return newList;
-    });
-  } catch (error) {
-    console.error("체크 상태 업데이트 실패:", error);
-    alert("체크 상태 변경 중 오류가 발생했습니다.");
-  }
-};
-
-
-  const handleKeyDown = async (e, catIdx, taskIdx) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-
-    const taskToSave = tasksByCategory[catIdx].tasks[taskIdx];
-    const user_id = localStorage.getItem("user_id");
-    if (!user_id) return alert("로그인이 필요합니다.");
-    if (!taskToSave.text.trim()) return alert("할 일을 입력하세요.");
-
-    try {
-      const result = await addTask({
-        task_name: taskToSave.text,
-        memo: taskToSave.memo || "",
-        task_date: selectedDate.toISOString().split("T")[0],
-        category_id: taskToSave.category_id,
-        user_id: parseInt(user_id, 10),
-        notification_type: "미알림",
-        notification_time: null,
-      });
-
-      const savedTask = result.task;
-
-      setTasksByCategory((prev) => {
-        const newList = [...prev];
-        newList[catIdx].tasks[taskIdx] = {
-          text: savedTask.task_name,
-          checked: savedTask.status === "완료",
-          task_id: savedTask.task_id,
-          memo: savedTask.memo || "",
-          category_id: savedTask.category_id,
-        };
-        newList[catIdx].tasks.splice(taskIdx + 1, 0, { text: "", checked: false, memo: "" });
-        return newList;
-      });
-    } catch (error) {
-      console.error("할 일 저장 실패:", error);
-      alert("작업 저장 중 오류가 발생했습니다.");
-    }
-  };
-
-  const handleDeleteTask = async (catIdx, taskIdx) => {
-    const task = tasksByCategory[catIdx].tasks[taskIdx];
-    if (!task.task_id) {
-      setTasksByCategory((prev) => {
-        const newList = [...prev];
-        newList[catIdx].tasks.splice(taskIdx, 1);
-        return newList;
-      });
-      return;
-    }
-
-    try {
-      await deleteTask(task.task_id);
-      setTasksByCategory((prev) => {
-        const newList = [...prev];
-        newList[catIdx].tasks.splice(taskIdx, 1);
-        return newList;
-      });
-    } catch (error) {
-      console.error("Task 삭제 실패:", error);
-      alert("할 일 삭제 중 오류가 발생했습니다.");
-    }
-  };
-
-  const togglePopup = (catIdx, taskIdx) => {
-    setPopupIndex((prev) =>
-      prev.category === catIdx && prev.index === taskIdx
-        ? { category: null, index: null }
-        : { category: catIdx, index: taskIdx }
-    );
-  };
-
-  if (!tasksByCategory.length) {
     return (
-      <div style={{ textAlign: "center", marginTop: "20px", color: "#888" }}>
-        오늘은 할 일이 없습니다.
-      </div>
-    );
-  }
+        <div className="todo-container">
+            {tasksByCategory.map((group, catIdx) => (
+                <div key={group.categoryName} className="category-group">
+                    <div className="category-header">
+                        <h3 className="category-title">{group.categoryName}</h3>
+                        <button className="task-add-btn" onClick={() => handleAddTask(catIdx)}>
+                            +
+                        </button>
+                    </div>
 
-  return (
-    <div className="todo-container">
-      {tasksByCategory.map((group, catIdx) => (
-        <div key={group.categoryName} className="category-group">
-          <h3 className="category-title">{group.categoryName}</h3>
+                    {group.tasks.map((task, taskIdx) => (
+                        <div key={task.task_id || taskIdx} className={`task-item ${task.checked ? "checked" : ""}`}>
+                            {/* 체크 버튼 */}
+                            <button className={`task-check-btn ${task.checked ? "checked" : ""}`} onClick={() => toggleChecked(catIdx, taskIdx)}>
+                                {task.checked && (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                        <rect width="20" height="20" rx="10" fill="#36A862" />
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M15.8 7.18c.13.12.2.28.2.44 0 .17-.07.33-.2.45l-6.15 5.76a.66.66 0 0 1-.47.17.66.66 0 0 1-.47-.17L5.2 10.52a.66.66 0 0 1-.14-.36c0-.13.03-.25.09-.36a.6.6 0 0 1 .26-.24.7.7 0 0 1 .46-.05.7.7 0 0 1 .39.2l3.05 2.86 5.7-5.39a.66.66 0 0 1 .94.04z" fill="#fff" />
+                                    </svg>
+                                )}
+                            </button>
 
-          {group.tasks.map((task, taskIdx) => (
-            <div
-              key={task.task_id || taskIdx}
-              className={`task-input ${task.checked ? "checked-task" : ""}`}
-              style={{ position: "relative" }}
-            >
-              <button
-                className={`task-check-btn ${task.checked ? "checked" : ""}`}
-                onClick={() => toggleChecked(catIdx, taskIdx)}
-              >
-                {task.checked && (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <rect width="20" height="20" rx="10" fill="#36A862" />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M15.8073 7.18066C15.9307 7.29649 16 7.4535 16 7.6172C16 7.7809 15.9307 7.93791 15.8073 8.05374L9.65614 13.8193C9.53257 13.935 9.36506 14 9.19041 14C9.01576 14 8.84826 13.935 8.72469 13.8193L5.20976 10.5247C5.14501 10.4682 5.09307 10.4 5.05705 10.3242C5.02103 10.2484 5.00166 10.1666 5.0001 10.0837C4.99854 10.0007 5.01482 9.91833 5.04797 9.84141C5.08111 9.76449 5.13045 9.69461 5.19303 9.63595C5.25561 9.57729 5.33016 9.53105 5.41222 9.49998C5.49429 9.46891 5.58218 9.45365 5.67067 9.45512C5.75917 9.45658 5.84644 9.47473 5.92728 9.5085C6.00812 9.54226 6.08088 9.59094 6.14122 9.65163L9.19041 12.5097L14.8758 7.18066C14.9994 7.06498 15.1669 7 15.3415 7C15.5162 7 15.6837 7.06498 15.8073 7.18066Z"
-                      fill="#EBF6EF"
-                    />
-                  </svg>
-                )}
-              </button>
+                            {/* 할일 버튼 */}
+                            <button className={`task-text-btn ${task.checked ? "checked" : ""}`} onClick={() => {}}>
+                                {task.text}
+                            </button>
 
-              <input
-                type="text"
-                value={task.text}
-                onChange={(e) => handleInputChange(catIdx, taskIdx, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, catIdx, taskIdx)}
-                placeholder="할 일 입력"
-                ref={(el) => (inputRefs.current[`${catIdx}-${taskIdx}`] = el)}
-                className={`task-input-box ${task.checked ? "checked-task" : ""}`}
-              />
+                            {/* “…” 버튼 */}
+                            <button
+                                className="task-menu-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    togglePopup(catIdx, taskIdx);
+                                }}
+                            >
+                                <img src={ThreeIcon} alt="menu" style={{ width: "20px" }} />
+                            </button>
 
-              <button className="task-add-btn" onClick={() => togglePopup(catIdx, taskIdx)}>
-                <img src={ThreeIcon} alt="three dots" style={{ width: "20px" }} />
-              </button>
-
-              {popupIndex.category === catIdx && popupIndex.index === taskIdx && (
-                <TaskOptionsPopup
-                  style={{ top: "50px", left: "0px" }}
-                  onClose={() => setPopupIndex({ category: null, index: null })}
-                  onDelete={() => {
-                    handleDeleteTask(catIdx, taskIdx);
-                    setPopupIndex({ category: null, index: null });
-                  }}
-                />
-              )}
-            </div>
-          ))}
+                            {/* 팝업 */}
+                            {popupIndex.category === catIdx && popupIndex.index === taskIdx && <TaskOptionsPopup style={{ top: "40px", right: "0" }} onClose={() => setPopupIndex({ category: null, index: null })} onDelete={() => handleDeleteTask(catIdx, taskIdx)} />}
+                        </div>
+                    ))}
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 }
 
 export default Todo;
