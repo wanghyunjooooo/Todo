@@ -1,6 +1,7 @@
 package backend.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t JOIN FETCH t.category WHERE t.user.userId = :userId AND t.taskDate = :taskDate")
     List<Task> findTasksByUserAndDateWithCategory(@Param("userId") Long userId, @Param("taskDate") LocalDate taskDate);
 
-
     @Modifying
     @Transactional
     @Query("DELETE FROM Task t WHERE t.routine.routineId = :routineId AND t.taskDate > :targetDate")
@@ -39,4 +39,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE t.routine.routineId = :routineId AND t.taskDate = :taskDate")
     List<Task> findByRoutineIdAndExactDate(@Param("routineId") Long routineId, @Param("taskDate") LocalDate taskDate);
+
+    @Query("SELECT t FROM Task t " + "WHERE t.notificationType = '알림' " + "AND t.notificationTime IS NOT NULL " + "AND t.taskDate = :today " + "AND t.notificationTime <= :now")
+    List<Task> findTasksForTodayNotifications(@Param("today") LocalDate today, @Param("now") LocalDateTime now);
 }
