@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
-import { addTask, deleteTask } from "../api";
+import { addTask, deleteTask, updateTaskStatus } from "../api"; // updateTaskStatus 포함
 
 function Todo({ tasksByDate, selectedDate }) {
   const [tasksByCategory, setTasksByCategory] = useState([]);
@@ -11,11 +11,8 @@ function Todo({ tasksByDate, selectedDate }) {
 
   // tasksByDate → category별 그룹화
   useEffect(() => {
-    console.log("useEffect 실행, tasksByDate:", tasksByDate);
-
     if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
       setTasksByCategory([]);
-      console.log("할 일이 없음, tasksByCategory 초기화");
       return;
     }
 
@@ -37,37 +34,53 @@ function Todo({ tasksByDate, selectedDate }) {
       tasks,
     }));
 
-    console.log("그룹화 완료:", formatted);
     setTasksByCategory(formatted);
   }, [tasksByDate]);
 
   const handleInputChange = (catIdx, taskIdx, value) => {
-    console.log(`handleInputChange: category ${catIdx}, task ${taskIdx}, value:`, value);
     setTasksByCategory((prev) => {
       const newList = [...prev];
       newList[catIdx].tasks[taskIdx].text = value;
-      console.log("업데이트 후 tasksByCategory:", newList);
       return newList;
     });
   };
 
- const toggleChecked = (catIdx, taskIdx) => {
-  console.log(`toggleChecked: category ${catIdx}, task ${taskIdx}`);
-  setTasksByCategory((prev) => {
-    const newList = prev.map((cat, cIdx) => {
-      if (cIdx !== catIdx) return cat;
-      return {
-        ...cat,
-        tasks: cat.tasks.map((t, tIdx) => {
-          if (tIdx !== taskIdx) return t;
-          const updated = { ...t, checked: !t.checked };
-          console.log("체크 상태 변경 후:", updated);
-          return updated;
-        }),
-      };
+// ✅ 체크 상태 토글 + 서버 반영 (디버깅 콘솔 추가)
+const toggleChecked = async (catIdx, taskIdx) => {
+  const task = tasksByCategory[catIdx].tasks[taskIdx];
+  if (!task.task_id) {
+    console.log("저장되지 않은 Task, 서버 연동 생략", task);
+    return; // 저장 안 된 task는 서버 연동 안 함
+  }
+
+  const newChecked = !task.checked;
+  console.log("toggleChecked 호출:", { catIdx, taskIdx, task, newChecked });
+
+  try {
+    console.log("서버 updateTaskStatus 요청 시작:", task.task_id, { status: newChecked ? "완료" : "미완료" });
+    const res = await updateTaskStatus(task.task_id, { status: newChecked ? "완료" : "미완료" });
+    console.log("서버 updateTaskStatus 응답:", res);
+
+    setTasksByCategory((prev) => {
+      const newList = prev.map((cat, cIdx) => {
+        if (cIdx !== catIdx) return cat;
+        return {
+          ...cat,
+          tasks: cat.tasks.map((t, tIdx) => {
+            if (tIdx !== taskIdx) return t;
+            const updatedTask = { ...t, checked: newChecked };
+            console.log("로컬 상태 업데이트:", updatedTask);
+            return updatedTask;
+          }),
+        };
+      });
+      console.log("전체 tasksByCategory 업데이트 후:", newList);
+      return newList;
     });
-    return newList;
-  });
+  } catch (error) {
+    console.error("체크 상태 업데이트 실패:", error);
+    alert("체크 상태 변경 중 오류가 발생했습니다.");
+  }
 };
 
 
@@ -76,17 +89,9 @@ function Todo({ tasksByDate, selectedDate }) {
     e.preventDefault();
 
     const taskToSave = tasksByCategory[catIdx].tasks[taskIdx];
-    console.log("handleKeyDown Enter pressed:", taskToSave);
-
     const user_id = localStorage.getItem("user_id");
-    if (!user_id) {
-      console.log("로그인 필요");
-      return alert("로그인이 필요합니다.");
-    }
-    if (!taskToSave.text.trim()) {
-      console.log("할 일 비어있음");
-      return alert("할 일을 입력하세요.");
-    }
+    if (!user_id) return alert("로그인이 필요합니다.");
+    if (!taskToSave.text.trim()) return alert("할 일을 입력하세요.");
 
     try {
       const result = await addTask({
@@ -98,8 +103,6 @@ function Todo({ tasksByDate, selectedDate }) {
         notification_type: "미알림",
         notification_time: null,
       });
-
-      console.log("Task 저장 성공, result:", result);
 
       const savedTask = result.task;
 
@@ -113,7 +116,6 @@ function Todo({ tasksByDate, selectedDate }) {
           category_id: savedTask.category_id,
         };
         newList[catIdx].tasks.splice(taskIdx + 1, 0, { text: "", checked: false, memo: "" });
-        console.log("저장 후 tasksByCategory:", newList);
         return newList;
       });
     } catch (error) {
@@ -124,13 +126,10 @@ function Todo({ tasksByDate, selectedDate }) {
 
   const handleDeleteTask = async (catIdx, taskIdx) => {
     const task = tasksByCategory[catIdx].tasks[taskIdx];
-    console.log("handleDeleteTask:", task);
-
     if (!task.task_id) {
       setTasksByCategory((prev) => {
         const newList = [...prev];
         newList[catIdx].tasks.splice(taskIdx, 1);
-        console.log("ID 없는 Task 삭제 후:", newList);
         return newList;
       });
       return;
@@ -141,7 +140,6 @@ function Todo({ tasksByDate, selectedDate }) {
       setTasksByCategory((prev) => {
         const newList = [...prev];
         newList[catIdx].tasks.splice(taskIdx, 1);
-        console.log("삭제 후 tasksByCategory:", newList);
         return newList;
       });
     } catch (error) {
@@ -151,7 +149,6 @@ function Todo({ tasksByDate, selectedDate }) {
   };
 
   const togglePopup = (catIdx, taskIdx) => {
-    console.log(`togglePopup: category ${catIdx}, task ${taskIdx}`);
     setPopupIndex((prev) =>
       prev.category === catIdx && prev.index === taskIdx
         ? { category: null, index: null }
@@ -174,11 +171,11 @@ function Todo({ tasksByDate, selectedDate }) {
           <h3 className="category-title">{group.categoryName}</h3>
 
           {group.tasks.map((task, taskIdx) => (
-           <div
-  key={task.task_id || taskIdx}
-  className={`task-input ${task.checked ? "checked-task" : ""}`}
-  style={{ position: "relative" }}
->
+            <div
+              key={task.task_id || taskIdx}
+              className={`task-input ${task.checked ? "checked-task" : ""}`}
+              style={{ position: "relative" }}
+            >
               <button
                 className={`task-check-btn ${task.checked ? "checked" : ""}`}
                 onClick={() => toggleChecked(catIdx, taskIdx)}

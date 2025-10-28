@@ -69,3 +69,6 @@ export const updateCategory = (user_id, category_id, category_name) =>
 // ✅ 카테고리 삭제
 export const deleteCategory = (category_id) =>
   api.delete(`/categories/${category_id}`).then((res) => res.data);
+
+export const updateTaskStatus = (task_id, data) =>
+  api.patch(`/tasks/${task_id}/status`, data).then(res => res.data);
