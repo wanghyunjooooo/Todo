@@ -7,27 +7,39 @@ import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 import EditIcon from "../assets/edit.svg";
 
-// 달력용
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
   const [showEditor, setShowEditor] = useState(false);
-  const [editorType, setEditorType] = useState(""); // "memo" 또는 "edit"
+  const [editorType, setEditorType] = useState("");
   const [showRepeatEditor, setShowRepeatEditor] = useState(false);
   const [showAlarmEditor, setShowAlarmEditor] = useState(false);
   const [newText, setNewText] = useState("");
+
+  // 반복 주기
+  const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
+  const [selectedRepeatOption, setSelectedRepeatOption] = useState("");
+
+  // 기간 설정
+  const [periodVisible, setPeriodVisible] = useState(false);
+  const [periodStart, setPeriodStart] = useState(new Date());
+  const [periodEnd, setPeriodEnd] = useState(new Date());
+
+  // 알림 설정
   const [alarmDate, setAlarmDate] = useState(new Date());
 
-  // editorType에 따라 제목과 placeholder 변경
+  const repeatOptions = ["매일", "매주", "매월"];
+
   const getTitle = () => (editorType === "edit" ? "할일 수정" : "메모");
   const getPlaceholder = () =>
     editorType === "edit" ? "할일 이름을 입력하세요" : "작성 하기";
   const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
 
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
   return (
     <>
-      {/* 공통 오버레이 */}
       <div className="overlay" onClick={onClose}></div>
 
       {/* 옵션 팝업 */}
@@ -77,7 +89,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
         </div>
       )}
 
-      {/* 메모/할일 수정 팝업 */}
+      {/* 메모/할일 수정 */}
       {showEditor && (
         <div className="editor-overlay" onClick={() => setShowEditor(false)}>
           <div className="editor-box" onClick={(e) => e.stopPropagation()}>
@@ -117,7 +129,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
         </div>
       )}
 
-      {/* 반복 설정 팝업 */}
+      {/* 반복 설정 */}
       {showRepeatEditor && (
         <div className="editor-overlay" onClick={() => setShowRepeatEditor(false)}>
           <div className="editor-box" onClick={(e) => e.stopPropagation()}>
@@ -127,27 +139,87 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                   <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
                   <span>반복 일정</span>
                 </div>
-                <div className="category-item">
-                  <span>반복 주기</span>
+
+                {/* 반복 주기 */}
+                <div
+                  className="category-item"
+                  onClick={() => setRepeatOptionsVisible(!repeatOptionsVisible)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <span>반복 주기 {selectedRepeatOption && `: ${selectedRepeatOption}`}</span>
                   <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                 </div>
-                <div className="category-item">
+                {repeatOptionsVisible &&
+                  repeatOptions.map((opt) => (
+                    <div
+                      key={opt}
+                      className="repeat-option"
+                      onClick={() => setSelectedRepeatOption(opt)}
+                      style={{
+                        padding: "8px 20px",
+                        border:
+                          selectedRepeatOption === opt ? "2px solid #4caf50" : "1px solid #ccc",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {opt}
+                    </div>
+                  ))}
+
+                {/* 기간 설정 */}
+                <div
+                  className="category-item"
+                  onClick={() => setPeriodVisible(!periodVisible)}
+                  style={{ cursor: "pointer" }}
+                >
                   <span>기간 설정</span>
                   <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                 </div>
+                {periodVisible && (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      marginTop: "8px",
+                      flexWrap: "wrap",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    <DatePicker
+                      selected={periodStart}
+                      onChange={(date) => setPeriodStart(date)}
+                      selectsStart
+                      startDate={periodStart}
+                      endDate={periodEnd}
+                      dateFormat="yyyy/MM/dd"
+                      popperModifiers={[
+                        { name: "preventOverflow", options: { tether: false, altAxis: true } },
+                      ]}
+                       withPortal={isMobile}
+                    />
+                    <DatePicker
+                      selected={periodEnd}
+                      onChange={(date) => setPeriodEnd(date)}
+                      selectsEnd
+                      startDate={periodStart}
+                      endDate={periodEnd}
+                      dateFormat="yyyy/MM/dd"
+                      popperModifiers={[
+                        { name: "preventOverflow", options: { tether: false, altAxis: true } },
+                      ]}
+                      withPortal={isMobile}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="button-group">
-                <button
-                  className="cancel-button"
-                  onClick={() => setShowRepeatEditor(false)}
-                >
+                <button className="cancel-button" onClick={() => setShowRepeatEditor(false)}>
                   취소
                 </button>
-                <button
-                  className="confirm-button"
-                  onClick={() => setShowRepeatEditor(false)}
-                >
+                <button className="confirm-button" onClick={() => setShowRepeatEditor(false)}>
                   확인
                 </button>
               </div>
@@ -156,40 +228,31 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
         </div>
       )}
 
-      {/* 알림 설정 팝업 (달력) */}
+      {/* 알림 설정 (달력) */}
       {showAlarmEditor && (
         <div className="editor-overlay" onClick={() => setShowAlarmEditor(false)}>
           <div className="editor-box" onClick={(e) => e.stopPropagation()}>
-            <div className="rename-box">
-              <div
-                style={{
-                  width: "350px",
-                  padding: "20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
-              >
-                <label>알림 날짜/시간 선택</label>
+            <div className="rename-box" style={{ width: "350px", padding: "20px" }}>
+              <label>알림 날짜/시간 선택</label>
+              <div style={{ maxWidth: "100%" }}>
                 <DatePicker
                   selected={alarmDate}
                   onChange={(date) => setAlarmDate(date)}
                   showTimeSelect
                   dateFormat="yyyy/MM/dd HH:mm"
+                  popperPlacement="bottom-start"
+                  popperModifiers={[
+                    { name: "preventOverflow", options: { tether: false, altAxis: true } },
+                  ]}
+                  withPortal={isMobile} // 모바일에서 화면 밖으로 안 튀어나오게
                 />
               </div>
 
-              <div className="button-group">
-                <button
-                  className="cancel-button"
-                  onClick={() => setShowAlarmEditor(false)}
-                >
+              <div className="button-group" style={{ marginTop: "16px" }}>
+                <button className="cancel-button" onClick={() => setShowAlarmEditor(false)}>
                   취소
                 </button>
-                <button
-                  className="confirm-button"
-                  onClick={() => setShowAlarmEditor(false)}
-                >
+                <button className="confirm-button" onClick={() => setShowAlarmEditor(false)}>
                   확인
                 </button>
               </div>

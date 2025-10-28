@@ -229,3 +229,9 @@
 .category-item.white-bg .arrow-icon {
     display: none;
 }
+
+.react-datepicker-popper {
+    max-width: 50%;
+    box-sizing: border-box;
+    z-index: 9999;
+}
