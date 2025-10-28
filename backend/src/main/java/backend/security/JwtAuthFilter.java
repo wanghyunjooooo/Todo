@@ -15,6 +15,7 @@ import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.util.List;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -25,9 +26,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
@@ -53,12 +52,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String username = (String) claims.get("user_name");
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(username, null, null);
+                    new UsernamePasswordAuthenticationToken(username, null, List.of());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
