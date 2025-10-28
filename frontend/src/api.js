@@ -152,3 +152,18 @@ export const markNotificationRead = (notification_id) => api.patch(`/notificatio
 
 // ✅ 필요 시 기본 api 인스턴스 export
 export default api;
+
+// ✅ 루틴 생성
+export const createRoutine = (task_id, routine_type, start_date, end_date, user_id) =>
+    api
+        .post(`/tasks/routine/${task_id}`, {
+            routine_type,
+            start_date,
+            end_date,
+            user_id,
+        })
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error("루틴 생성 실패:", err);
+            throw err;
+        });

@@ -6,11 +6,12 @@ import AlarmIcon from "../assets/alarm.svg";
 import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 import EditIcon from "../assets/edit.svg";
+import { createRoutine } from "../api";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
+function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) {
   const [showEditor, setShowEditor] = useState(false);
   const [editorType, setEditorType] = useState("");
   const [showRepeatEditor, setShowRepeatEditor] = useState(false);
@@ -30,13 +31,44 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
   const [alarmDate, setAlarmDate] = useState(new Date());
 
   const repeatOptions = ["매일", "매주", "매월"];
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
   const getTitle = () => (editorType === "edit" ? "할일 수정" : "메모");
   const getPlaceholder = () =>
     editorType === "edit" ? "할일 이름을 입력하세요" : "작성 하기";
   const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
 
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  // ✅ 반복 루틴 생성
+  const handleCreateRoutine = async () => {
+    if (!taskId) {
+      alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
+      return;
+    }
+    if (!userId) {
+      alert("사용자 정보가 없습니다.");
+      return;
+    }
+    if (!selectedRepeatOption) {
+      alert("반복 주기를 선택해주세요.");
+      return;
+    }
+
+    try {
+      const res = await createRoutine(
+        taskId,
+        selectedRepeatOption,
+        periodStart.toISOString().split("T")[0],
+        periodEnd.toISOString().split("T")[0],
+        userId
+      );
+      console.log("루틴 생성 완료:", res);
+      alert("루틴 생성 완료!");
+      setShowRepeatEditor(false);
+    } catch (err) {
+      console.error("루틴 생성 실패:", err);
+      alert("루틴 생성 실패");
+    }
+  };
 
   return (
     <>
@@ -79,12 +111,8 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
           </button>
 
           <div className="task-options-footer">
-            <button className="cancel-btn" onClick={onClose}>
-              취소
-            </button>
-            <button className="confirm-btn" onClick={onClose}>
-              확인
-            </button>
+            <button className="cancel-btn" onClick={onClose}>취소</button>
+            <button className="confirm-btn" onClick={onClose}>확인</button>
           </div>
         </div>
       )}
@@ -110,9 +138,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
               </div>
 
               <div className="button-group">
-                <button className="cancel-button" onClick={() => setShowEditor(false)}>
-                  취소
-                </button>
+                <button className="cancel-button" onClick={() => setShowEditor(false)}>취소</button>
                 <button
                   className="confirm-button"
                   onClick={() => {
@@ -140,7 +166,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                   <span>반복 일정</span>
                 </div>
 
-                {/* 반복 주기 */}
+                {/* 반복 주기 선택 */}
                 <div
                   className="category-item"
                   onClick={() => setRepeatOptionsVisible(!repeatOptionsVisible)}
@@ -157,8 +183,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                       onClick={() => setSelectedRepeatOption(opt)}
                       style={{
                         padding: "8px 20px",
-                        border:
-                          selectedRepeatOption === opt ? "2px solid #4caf50" : "1px solid #ccc",
+                        border: selectedRepeatOption === opt ? "2px solid #4caf50" : "1px solid #ccc",
                         borderRadius: "8px",
                         cursor: "pointer",
                         marginTop: "4px",
@@ -178,15 +203,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                   <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                 </div>
                 {periodVisible && (
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "8px",
-                      marginTop: "8px",
-                      flexWrap: "wrap",
-                      maxWidth: "100%",
-                    }}
-                  >
+                  <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap", maxWidth: "100%" }}>
                     <DatePicker
                       selected={periodStart}
                       onChange={(date) => setPeriodStart(date)}
@@ -194,10 +211,8 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                       startDate={periodStart}
                       endDate={periodEnd}
                       dateFormat="yyyy/MM/dd"
-                      popperModifiers={[
-                        { name: "preventOverflow", options: { tether: false, altAxis: true } },
-                      ]}
-                       withPortal={isMobile}
+                      popperModifiers={[{ name: "preventOverflow", options: { tether: false, altAxis: true } }]}
+                      withPortal={isMobile}
                     />
                     <DatePicker
                       selected={periodEnd}
@@ -206,9 +221,7 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                       startDate={periodStart}
                       endDate={periodEnd}
                       dateFormat="yyyy/MM/dd"
-                      popperModifiers={[
-                        { name: "preventOverflow", options: { tether: false, altAxis: true } },
-                      ]}
+                      popperModifiers={[{ name: "preventOverflow", options: { tether: false, altAxis: true } }]}
                       withPortal={isMobile}
                     />
                   </div>
@@ -216,12 +229,8 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
               </div>
 
               <div className="button-group">
-                <button className="cancel-button" onClick={() => setShowRepeatEditor(false)}>
-                  취소
-                </button>
-                <button className="confirm-button" onClick={() => setShowRepeatEditor(false)}>
-                  확인
-                </button>
+                <button className="cancel-button" onClick={() => setShowRepeatEditor(false)}>취소</button>
+                <button className="confirm-button" onClick={handleCreateRoutine}>확인</button>
               </div>
             </div>
           </div>
@@ -241,20 +250,14 @@ function TaskOptionsPopup({ onClose, onDelete, onEditConfirm }) {
                   showTimeSelect
                   dateFormat="yyyy/MM/dd HH:mm"
                   popperPlacement="bottom-start"
-                  popperModifiers={[
-                    { name: "preventOverflow", options: { tether: false, altAxis: true } },
-                  ]}
-                  withPortal={isMobile} // 모바일에서 화면 밖으로 안 튀어나오게
+                  popperModifiers={[{ name: "preventOverflow", options: { tether: false, altAxis: true } }]}
+                  withPortal={isMobile}
                 />
               </div>
 
               <div className="button-group" style={{ marginTop: "16px" }}>
-                <button className="cancel-button" onClick={() => setShowAlarmEditor(false)}>
-                  취소
-                </button>
-                <button className="confirm-button" onClick={() => setShowAlarmEditor(false)}>
-                  확인
-                </button>
+                <button className="cancel-button" onClick={() => setShowAlarmEditor(false)}>취소</button>
+                <button className="confirm-button" onClick={() => setShowAlarmEditor(false)}>확인</button>
               </div>
             </div>
           </div>
