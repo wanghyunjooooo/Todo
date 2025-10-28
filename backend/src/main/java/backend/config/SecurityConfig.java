@@ -34,7 +34,7 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/signup", "/users/login").permitAll()
-                .requestMatchers("/categories/**", "/tasks/**").authenticated()
+                .requestMatchers("/categories/**", "/tasks/**", "/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthFilter(secretKey), UsernamePasswordAuthenticationFilter.class);
