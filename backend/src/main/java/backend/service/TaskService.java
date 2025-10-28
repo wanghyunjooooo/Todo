@@ -7,6 +7,7 @@ import backend.entity.User;
 import backend.repository.CategoryRepository;
 import backend.repository.TaskRepository;
 import backend.repository.UserRepository;
+import backend.scheduler.NotificationSchedulerService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,11 +22,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final NotificationSchedulerService notificationSchedulerService;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository, NotificationSchedulerService notificationSchedulerService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.notificationSchedulerService = notificationSchedulerService;
     }
 
     public Task createTask(TaskDTO dto) {
@@ -56,8 +59,8 @@ public class TaskService {
     }
 
     public List<Task> getTasksByDate(Long userId, LocalDate date) {
-    return taskRepository.findTasksByUserAndDateWithCategory(userId, date);
-}
+        return taskRepository.findTasksByUserAndDateWithCategory(userId, date);
+    }
 
     public List<Task> getCompletedTasks(Long userId) {
         return taskRepository.findByUser_UserIdAndStatus(userId, "완료");
@@ -84,7 +87,15 @@ public class TaskService {
             task.setCategory(category);
         }
 
-        return taskRepository.save(task);
+        Task updated = taskRepository.save(task);
+
+        notificationSchedulerService.cancelNotification(updated.getTaskId());
+
+        if ("알림".equals(updated.getNotificationType()) && updated.getNotificationTime() != null) {
+            notificationSchedulerService.scheduleNotification(updated);
+        }
+
+        return updated;
     }
 
     public void deleteTask(Long taskId) {
@@ -124,15 +135,14 @@ public class TaskService {
         double rate = tasks.isEmpty() ? 0 : Math.round(((double) completed / tasks.size()) * 1000.0) / 10.0;
 
         List<Map<String, Object>> categoryStats = tasks.stream()
-        .collect(Collectors.groupingBy(t -> t.getCategory().getCategoryName(), Collectors.counting())).entrySet().stream()
-        .map(e -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("category_name", e.getKey());
-            map.put("count", e.getValue());
-            return map;
-        })
-        .collect(Collectors.toList());
-
+                .collect(Collectors.groupingBy(t -> t.getCategory().getCategoryName(), Collectors.counting())).entrySet().stream()
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("category_name", e.getKey());
+                    map.put("count", e.getValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         result.put("user_id", userId);
         result.put("start_date", start);
