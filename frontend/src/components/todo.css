@@ -65,6 +65,10 @@
     padding: 0;
 }
 
+.task-check-btn.checked {
+    border: 0px;
+}
+
 /* “할일 01” 버튼 */
 .task-text-btn {
     flex: 1;
@@ -107,7 +111,6 @@
     color: var(--Grey-Darker, #2A2A2A);
     outline: none;
     padding-left: 10px;
-    /* 선택 시 테두리 제거 */
 }
 
 .task-text-input.checked {
