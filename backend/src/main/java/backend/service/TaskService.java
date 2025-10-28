@@ -122,6 +122,10 @@ public class TaskService {
         List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
         return buildStatsResponse(userId, start, end, tasks);
     }
+    
+    public List<Task> getTasksInRange(Long userId, LocalDate start, LocalDate end) {
+        return taskRepository.findTasksInRange(userId, start, end);
+    }
 
     public Map<String, Object> getRangeStats(Long userId, LocalDate start, LocalDate end) {
         List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);

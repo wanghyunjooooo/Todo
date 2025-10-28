@@ -101,4 +101,10 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getMonthlyStats(userId, startDate, endDate));
     }
 
+    @PostMapping("/{userId}/month")
+    public ResponseEntity<List<Task>> getTasksInMonth(@PathVariable Long userId, @RequestBody Map<String, String> body) {
+        LocalDate startDate = LocalDate.parse(body.get("start_date"));
+        LocalDate endDate = LocalDate.parse(body.get("end_date"));
+        return ResponseEntity.ok(taskService.getTasksInRange(userId, startDate, endDate));
+    }
 }
