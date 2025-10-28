@@ -14,7 +14,7 @@ import java.util.List;
 @Table(
     name = "\"Category\"",
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "category_name"})
+        @UniqueConstraint(columnNames = {"user_id", "categoryname"})
     }
 )
 @Getter

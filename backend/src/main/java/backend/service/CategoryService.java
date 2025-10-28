@@ -5,10 +5,10 @@ import backend.entity.Category;
 import backend.entity.User;
 import backend.repository.CategoryRepository;
 import backend.repository.UserRepository;
-import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,20 +21,25 @@ public class CategoryService {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     public Category createCategory(CategoryDTO dto) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        boolean exists = categoryRepository.existsByUser_UserIdAndCategoryName(user.getUserId(), dto.getCategoryName());
-        if (exists) {
-            throw new IllegalArgumentException("이미 동일한 이름의 카테고리가 존재합니다.");
-        }
-
         Category category = new Category();
         category.setCategoryName(dto.getCategoryName());
         category.setUser(user);
-        return categoryRepository.save(category);
+
+        try {
+            return categoryRepository.save(category);
+        } catch (Exception e) {
+            if (e.getCause() != null && e.getCause().getMessage().contains("unique constraint")) {
+                throw new IllegalArgumentException("이미 동일한 이름의 카테고리가 존재합니다.");
+            }
+            throw new RuntimeException("카테고리 저장 중 오류가 발생했습니다.", e);
+        }
     }
+
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();

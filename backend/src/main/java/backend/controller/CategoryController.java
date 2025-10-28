@@ -21,13 +21,15 @@ public class CategoryController {
     public ResponseEntity<?> createCategory(@RequestBody CategoryDTO dto) {
         try {
             Category category = categoryService.createCategory(dto);
+
             CategoryDTO response = new CategoryDTO(
                 category.getCategoryId(),
                 category.getCategoryName(),
-                category.getUser().getUserId(),
+                dto.getUserId(),
                 category.getCreatedAt(),
                 null
             );
+
             return ResponseEntity.ok(Map.of(
                 "message", "카테고리가 생성되었습니다.",
                 "category", response
@@ -35,9 +37,11 @@ public class CategoryController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of("error", "서버 오류가 발생했습니다."));
         }
     }
+
 
     @GetMapping
     public ResponseEntity<?> getAllCategories() {
