@@ -10,21 +10,7 @@ function Todo({ tasksByDate, selectedDate }) {
 
     useEffect(() => {
         if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
-            // ✅ 기본 카테고리 생성
-            setTasksByCategory([
-                {
-                    categoryName: "카테고리 01",
-                    category_id: null,
-                    tasks: [
-                        {
-                            text: "할일 01",
-                            checked: false,
-                            task_id: null,
-                            memo: "",
-                        },
-                    ],
-                },
-            ]);
+            setTasksByCategory([]);
             return;
         }
 

@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import MyCalendar from "../components/Calendar";
 import Todo from "../components/Todo";
 import BottomNav from "../components/Nav";
-import { getCategories, getTasksByDay, addCategory, getMonthlyTasks } from "../api";
+import { getCategories, getTasksByDay, addCategory, getMonthlyTasks, addTask } from "../api";
 
 function Home() {
     const [categories, setCategories] = useState([]);
@@ -59,7 +59,7 @@ function Home() {
             try {
                 const tasks = await getMonthlyTasks(userId, startDate, endDate);
                 setTasksByMonth(tasks || []);
-                console.log(`📆 ${month + 1}월 Task 목록:`, tasks);
+                console.log(`${month + 1}월 Task 목록:`, tasks);
             } catch (err) {
                 console.error("월간 Task 로드 실패:", err);
             }
@@ -68,14 +68,34 @@ function Home() {
         fetchTasksByMonth();
     }, [userId, year, month]);
 
-    /** ✅ 카테고리 추가 핸들러 */
     const handleCategoryAdded = async (categoryName) => {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) return alert("로그인이 필요합니다.");
+
         try {
-            const newCategory = await addCategory(userId, categoryName);
-            console.log("카테고리 추가:", newCategory);
+            // 1️⃣ 새 카테고리 생성
+            const categoryRes = await addCategory(user_id, categoryName);
+            const newCategory = categoryRes.category;
+
+            // 2️⃣ 카테고리 하위에 기본 할일 01 자동 추가
+            const dateStr = new Date().toISOString().split("T")[0];
+            const taskRes = await addTask({
+                task_name: "할 일 01",
+                memo: "",
+                task_date: dateStr,
+                category_id: newCategory.category_id,
+                user_id: Number(user_id),
+                notification_type: "미알림",
+                notification_time: null,
+            });
+
+            console.log("자동 생성된 할일:", taskRes.task);
+
+            // 3️⃣ 프론트 상태 업데이트
             setCategories((prev) => [...prev, newCategory]);
         } catch (err) {
-            console.error("카테고리 추가 실패:", err);
+            console.error("카테고리 생성 실패:", err);
+            alert("카테고리 추가 중 오류가 발생했습니다.");
         }
     };
 

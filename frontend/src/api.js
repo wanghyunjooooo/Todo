@@ -53,7 +53,7 @@ export const addCategory = (user_id, category_name) =>
     api
         .post("/categories", {
             user_id: Number(user_id),
-            category_name: category_name,
+            category_name: typeof category_name === "string" ? category_name : category_name?.category_name, // ✅ 객체일 경우에도 문자열만 보냄
         })
         .then((res) => res.data)
         .catch((err) => {
