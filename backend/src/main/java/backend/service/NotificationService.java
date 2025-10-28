@@ -28,6 +28,13 @@ public class NotificationService {
         return convertToDTO(notification);
     }
 
+    public NotificationDTO readNotification(Long id) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 알림이 없습니다."));
+        notification.setStatus("읽음");
+        return convertToDTO(notificationRepository.save(notification));
+    }
+
     private NotificationDTO convertToDTO(Notification n) {
         return NotificationDTO.builder()
                 .notificationId(n.getNotificationId())

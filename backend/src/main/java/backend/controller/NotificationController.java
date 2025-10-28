@@ -32,4 +32,13 @@ public class NotificationController {
     public NotificationDTO getNotificationDetail(@PathVariable Long userId, @PathVariable Long notificationId) {
         return notificationService.getNotificationDetail(userId, notificationId);
     }
+
+    @PatchMapping("/{id}/read")
+    public ResponseEntity<?> markAsRead(@PathVariable Long id) {
+        Notification n = notificationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 알림을 찾을 수 없습니다."));
+        n.setStatus("읽음");
+        notificationRepository.save(n);
+        return ResponseEntity.ok(Map.of("message", "알림이 읽음 처리되었습니다."));
+    }
 }
