@@ -1,229 +1,203 @@
 // src/components/ProgressBar.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 
 function ProgressBar({ userId }) {
-  const [stats, setStats] = useState(null);
-  const [period, setPeriod] = useState("weekly");
-  const [hoverIndex, setHoverIndex] = useState(null);
+    const [stats, setStats] = useState(null);
+    const [period, setPeriod] = useState("weekly");
 
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("토큰이 없습니다.");
-
-        const url = `http://localhost:8080/tasks/stats/${period}/${userId}`;
-        const today = new Date();
-        let body;
-
-        if (period === "weekly") {
-          const start = new Date(today);
-          start.setDate(today.getDate() - 6);
-          body = {
-            start_date: start.toISOString().split("T")[0],
-            end_date: today.toISOString().split("T")[0],
-          };
-        } else {
-          const start = new Date(today.getFullYear(), today.getMonth(), 1);
-          const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-          body = {
-            start_date: start.toISOString().split("T")[0],
-            end_date: end.toISOString().split("T")[0],
-          };
-        }
-
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        };
-
-        const response = await axios.post(url, body, { headers });
-        setStats(response.data);
-      } catch (err) {
-        console.error("Axios 에러:", err.response?.data || err.message);
-      }
+    // ✅ 날짜 포맷 함수
+    const formatLocalDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
     };
 
-    fetchData();
-  }, [userId, period]);
+    useEffect(() => {
+        if (!userId) return;
 
-  if (!stats) return <div>로딩중...</div>;
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) throw new Error("토큰이 없습니다.");
 
-  const completed = stats?.summary?.completed ?? 0;
-  const total = stats?.summary?.total_tasks ?? 0;
-  const completionRate = total > 0 ? (completed / total) * 100 : 0;
+                const url = `http://localhost:8080/tasks/stats/${period}/${userId}`;
+                const today = new Date();
+                let body;
 
-  const categories = stats?.categories || [];
+                // ✅ 주간 통계: 이번 주 일요일~토요일 기준
+                if (period === "weekly") {
+                    const dayOfWeek = today.getDay(); // 일요일=0
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - dayOfWeek); // 이번 주 일요일
+                    const end = new Date(start);
+                    end.setDate(start.getDate() + 6); // 이번 주 토요일
 
-  const labels =
-    period === "weekly"
-      ? ["월", "화", "수", "목", "금", "토", "일"]
-      : (() => {
-          const today = new Date();
-          const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-          return Array.from({ length: daysInMonth }, (_, i) => i + 1);
-        })();
+                    body = {
+                        start_date: formatLocalDate(start),
+                        end_date: formatLocalDate(end),
+                    };
+                }
+                // ✅ 월간 통계: 현재 달 1일 ~ 말일
+                else {
+                    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    body = {
+                        start_date: formatLocalDate(start),
+                        end_date: formatLocalDate(end),
+                    };
+                }
 
-  const totalBars = labels.length;
-  const svgWidth = 233;
-  const barGap = 2; // 막대 간격 좁힘
-  const barWidth = (svgWidth - barGap * (totalBars - 1)) / totalBars;
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        width: "350px",
-        padding: "21px 20px",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: "20px",
-        background: "#fff",
-        borderRadius: "8px",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: "Pretendard",
-          fontSize: "14px",
-          fontWeight: 600,
-          color: "#2A2A2A",
-        }}
-      >
-        달성률 통계 ({Math.round(completionRate)}%)
-      </span>
+                const response = await axios.post(url, body, { headers });
+                setStats(response.data);
+            } catch (err) {
+                console.error("Axios 에러:", err.response?.data || err.message);
+            }
+        };
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "310px",
-          padding: "20px",
-          gap: "20px",
-          background: "#F3F3F3",
-          borderRadius: "8px",
-          alignItems: "flex-start",
-          position: "relative",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "Pretendard",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: "#2A2A2A",
-            }}
-          >
-            {period === "weekly" ? "주간 통계" : "월간 통계"}
-          </span>
+        fetchData();
+    }, [userId, period]);
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <img
-              src={ArrowIcon}
-              alt="weekly"
-              style={{ width: "20px", height: "20px", transform: "rotate(180deg)", cursor: "pointer" }}
-              onClick={() => setPeriod("weekly")}
-            />
-            <img
-              src={ArrowIcon}
-              alt="monthly"
-              style={{ width: "20px", height: "20px", cursor: "pointer" }}
-              onClick={() => setPeriod("monthly")}
-            />
-          </div>
-        </div>
+    if (!stats) return <div>로딩중...</div>;
 
-        <svg width="100%" height="140" viewBox={`0 0 ${svgWidth} 140`} fill="none">
-          <line x1="0.5" y1="0" x2="0.5" y2="123" stroke="black" />
-          <line x1="0" y1="123.5" x2={svgWidth} y2="123.5" stroke="black" />
+    const completed = stats?.summary?.completed ?? 0;
+    const total = stats?.summary?.total_tasks ?? 0;
+    const completionRate = total > 0 ? (completed / total) * 100 : 0;
 
-          {categories.map((cat, idx) => {
-            const x = idx * (barWidth + barGap);
-            const height = total > 0 ? (cat.count / total) * 123 : 0;
-            const y = 123 - height;
-            return (
-              <g key={idx}>
-                <rect
-                  x={x}
-                  y={y}
-                  width={barWidth}
-                  height={height}
-                  fill={hoverIndex === idx ? "#2D8659" : "#36A862"}
-                  onMouseEnter={() => setHoverIndex(idx)}
-                  onMouseLeave={() => setHoverIndex(null)}
-                />
-                {hoverIndex === idx && (
-                  <text
-                    x={x + barWidth / 2}
-                    y={y - 6}
-                    textAnchor="middle"
-                    fontSize="10"
-                    fill="#2A2A2A"
-                    fontWeight="600"
-                  >
-                    {cat.count}
-                  </text>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-
-{/* ✅ 월간은 1,5,10... + 마지막 날만 표시 (30,31 중복 방지) */}
-<div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%",
-    fontSize: "10px",
-    color: "#2A2A2A",
-    fontFamily: "Pretendard",
-    fontWeight: 600,
-  }}
->
-  {labels.map((label, i) => {
-    const daysInMonth = labels.length;
-    const isLast = label === daysInMonth;
-
-    // 30일과 31일이 동시에 표시되는 문제 방지
-    if (
-      period === "monthly" &&
-      label % 5 !== 0 &&
-      label !== 1 &&
-      !isLast
-    ) {
-      return <span key={i} style={{ flex: 1 }}></span>;
-    }
-
-    // 만약 31일 달인데 30이 이미 표시되면 31은 생략
-    if (period === "monthly" && daysInMonth === 31 && label === 31) {
-      return null;
-    }
+    const graphData =
+        period === "weekly"
+            ? (() => {
+                  const days = ["일", "월", "화", "수", "목", "금", "토"];
+                  const dataMap = new Map((stats.weekly_data || []).map((d) => [d.day, d.rate]));
+                  return days.map((day) => ({
+                      label: day,
+                      rate: dataMap.get(day) || 0,
+                  }));
+              })()
+            : (() => {
+                  const today = new Date();
+                  const year = today.getFullYear();
+                  const month = today.getMonth();
+                  const daysInMonth = new Date(year, month + 1, 0).getDate();
+                  const dataMap = new Map((stats.daily_data || []).map((d) => [new Date(d.date).getDate(), d.rate]));
+                  return Array.from({ length: daysInMonth }, (_, i) => ({
+                      label: i + 1,
+                      rate: dataMap.get(i + 1) || 0,
+                  }));
+              })();
 
     return (
-      <span key={i} style={{ flex: 1, textAlign: "center" }}>
-        {label}
-      </span>
-    );
-  })}
-</div>
+        <div
+            style={{
+                display: "flex",
+                width: "350px",
+                padding: "21px 20px",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "20px",
+                background: "#fff",
+                borderRadius: "8px",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+            }}
+        >
+            <span
+                style={{
+                    fontFamily: "Pretendard",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    color: "#2A2A2A",
+                }}
+            >
+                달성률 통계
+            </span>
 
-      </div>
-    </div>
-  );
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "310px",
+                    padding: "20px",
+                    gap: "20px",
+                    background: "#F3F3F3",
+                    borderRadius: "8px",
+                    alignItems: "flex-start",
+                    position: "relative",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                    }}
+                >
+                    <span
+                        style={{
+                            fontFamily: "Pretendard",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            color: "#2A2A2A",
+                        }}
+                    >
+                        {period === "weekly" ? "주간 통계" : "월간 통계"}
+                    </span>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <img
+                            src={ArrowIcon}
+                            alt="weekly"
+                            style={{
+                                width: "20px",
+                                height: "20px",
+                                transform: "rotate(180deg)",
+                                cursor: "pointer",
+                                opacity: period === "weekly" ? 0.4 : 1,
+                            }}
+                            onClick={() => setPeriod("weekly")}
+                        />
+                        <img
+                            src={ArrowIcon}
+                            alt="monthly"
+                            style={{
+                                width: "20px",
+                                height: "20px",
+                                cursor: "pointer",
+                                opacity: period === "monthly" ? 0.4 : 1,
+                            }}
+                            onClick={() => setPeriod("monthly")}
+                        />
+                    </div>
+                </div>
+
+                {/* ✅ Recharts 막대 그래프 */}
+                <style>
+                    {`
+                        svg.recharts-surface:focus {
+                            outline: none !important;
+                            border: none !important;
+                        }
+                    `}
+                </style>
+                <ResponsiveContainer width="100%" height={150}>
+                    <BarChart data={graphData} margin={{ top: 10, right: 0, left: -30, bottom: 0 }}>
+                        <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#2A2A2A", fontWeight: 400 }} axisLine={false} tickLine={false} />
+                        <YAxis domain={[0, 100]} allowDecimals={false} interval={0} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: "#2A2A2A", fontWeight: 400 }} tickFormatter={(v) => `${v}`} />
+                        <Tooltip cursor={{ fill: "rgba(54,168,98,0.1)" }} contentStyle={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #ddd", fontSize: "10px", fontFamily: "Pretendard" }} formatter={(value) => [`${value.toFixed(1)}%`, "달성률"]} />
+                        <Bar dataKey="rate" fill="#36A862" barSize={28} animationDuration={500} />{" "}
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
 }
 
 export default ProgressBar;
