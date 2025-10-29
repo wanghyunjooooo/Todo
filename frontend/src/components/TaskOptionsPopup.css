@@ -265,21 +265,33 @@
 
 .repeat-option {
     display: flex;
-    height: 56px;
-    padding: 8px 20px;
+    /* flex로 정렬 */
+    width: 310px;
+    /* 폭 고정 */
     align-items: center;
+    /* 세로 중앙 정렬 */
     gap: 8px;
-    align-self: stretch;
+    /* 아이템 간격 */
+    padding: 8px 20px;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #F3F3F3) !important;
+    cursor: pointer;
+
+    /* 글씨 스타일 */
+    color: var(--Grey-Darker, #595959);
     font-family: Pretendard, sans-serif;
     font-size: 12px;
+    font-style: normal;
     font-weight: 500;
-    color: var(--Grey-Darker, #2A2A2A);
-    cursor: pointer;
-    transition: background 0.2s ease, border 0.2s ease;
+    line-height: normal;
+    box-sizing: border-box;
+    transition: all 0.2s;
 }
 
+.repeat-option.selected {
+    background: #DFF5E1;
+    border: 2px solid #4CAF50;
+}
 .repeat-options-list {
     display: flex;
     flex-direction: column;
@@ -290,9 +302,8 @@
 
 .repeat-option-popup .repeat-option {
     width: 100%;
-    padding: 12px 20px;
+    padding: 17px 20px;
     border-radius: 8px;
-    border: 1px solid #ccc;
     cursor: pointer;
     background: #fff;
     transition: all 0.2s ease;
@@ -317,3 +328,137 @@
     justify-content: flex-start;
     gap: 8px;
 }
+
+.repeat-title-box {
+    display: flex;
+    /* flex로 정렬 */
+    width: 310px;
+    /* 폭 고정 */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    gap: 8px;
+    /* 아이템 간격 */
+    padding: 8px 20px;
+    border-radius: 16px;
+    background: var(--Grey-Light, #FFf);
+
+    /* 글씨 스타일 */
+    color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    box-sizing: border-box;
+}
+
+/* CustomDatePicker.css */
+.react-datepicker {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    background: var(--Grey-Light, #F3F3F3)!important;
+}
+
+.react-datepicker__header {
+    background: transparent;
+    border-bottom: none !important;
+    width: 105%;
+    background: none;
+}
+/* 실제 날짜만 원형 흰색 박스 적용 */
+.react-datepicker__day:not(.react-datepicker__day--outside-month) {
+    background-color: #ffffff !important;
+    border-radius: 50% !important;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    margin: 2px;
+    cursor: pointer;
+    color: var(--Grey-Dark, #595959);
+}
+
+.react-datepicker__day:not(.react-datepicker__day--outside-month):hover {
+    background-color: #DFF5E1 !important;
+}
+
+.react-datepicker__day-names {
+    display: flex;
+    justify-content: space-between;
+    /* 요일 전체 폭에 맞게 균등 배치 */
+    margin-bottom: 12px;
+    /* 기존보다 아래 간격 조금 늘림 */
+    padding: 0 20px;
+    /* 좌우 여백 약간 추가 */
+}
+.react-datepicker__day,
+.react-datepicker__day-name {
+    border-radius: 0;
+    background: var(--Grey-Light, #F3F3F3);
+}
+
+.react-datepicker__day:hover {
+    background-color: #DFF5E1;
+    /* 필요시 하이라이트 */
+}
+
+/* 달력 박스 */
+.calendar-box {
+    width: 310px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: var(--Grey-Light, #F3F3F3);
+    border-radius: 8px;
+    margin: 0 auto;
+}
+
+/* 커스텀 헤더 */
+.datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    padding: 0 8px;
+    margin-bottom: 8px;
+}
+
+.header-month-year {
+    font-weight: 600;
+    font-family: Pretendard;
+}
+
+.header-buttons button {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    margin-left: 4px;
+}
+
+/* 달력 박스 전체 */
+.period-calendar-box {
+    width: 310px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    background: var(--Grey-Light, #F3F3F3);
+    border-radius: 8px;
+    margin: 0 auto;
+
+    /* 테두리 스타일 */
+    border: none !important;
+    /* 원하는 색으로 변경 가능 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    /* 선택 사항: 살짝 그림자 */
+}
+
+.react-datepicker__day--outside-month {
+    display: none !important;
+}
+

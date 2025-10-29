@@ -1,6 +1,6 @@
 // src/components/TaskOptionsPopup.js
 import React, { useState } from "react";
-import "./TaskOptionsPopup.css";
+
 import MemoIcon from "../assets/memo.svg";
 import RepeatIcon from "../assets/calendar.svg";
 import AlarmIcon from "../assets/alarm.svg";
@@ -11,7 +11,8 @@ import { createRoutine } from "../api";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { ko } from "date-fns/locale";
+import "./TaskOptionsPopup.css";
 function TaskOptionsPopup({
   taskId,
   userId,
@@ -258,22 +259,17 @@ function TaskOptionsPopup({
                     className="repeat-option-popup"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h3>기간 설정</h3>
+                    {/* 기간 설정 타이틀 박스 */}
+                    <div className="repeat-title-box">
+                      <img
+                        src={RepeatIcon}
+                        alt="캘린더"
+                        className="memo-icon"
+                      />
+                      <span>기간 설정</span>
+                    </div>
 
-                    <div
-                      style={{
-                        width: "310px",
-                        padding: "20px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "20px",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        background: "var(--Grey-Light, #F3F3F3)",
-                        borderRadius: "8px",
-                        margin: "0 auto",
-                      }}
-                    >
+                    <div className="calendar-box">
                       <DatePicker
                         selected={periodStart}
                         onChange={(dates) => {
@@ -285,6 +281,35 @@ function TaskOptionsPopup({
                         endDate={periodEnd}
                         selectsRange
                         inline
+                        locale={ko}
+                        showOutsideDays={false}
+                        renderCustomHeader={({
+                          date,
+                          decreaseMonth,
+                          increaseMonth,
+                          prevMonthButtonDisabled,
+                          nextMonthButtonDisabled,
+                        }) => (
+                          <div className="datepicker-header">
+                            <span className="header-month-year">
+                              {date.getFullYear()}년 {date.getMonth() + 1}월
+                            </span>
+                            <div className="header-buttons">
+                              <button
+                                onClick={decreaseMonth}
+                                disabled={prevMonthButtonDisabled}
+                              >
+                                &lt;
+                              </button>
+                              <button
+                                onClick={increaseMonth}
+                                disabled={nextMonthButtonDisabled}
+                              >
+                                &gt;
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       />
                     </div>
 
@@ -325,13 +350,17 @@ function TaskOptionsPopup({
         </div>
       )}
 
-      {/* 반복 주기 옵션 팝업 */}
+      {/* 반복 주기 옵션 서브 팝업 */}
       {repeatOptionsVisible && (
         <div
           className="repeat-option-popup"
           onClick={(e) => e.stopPropagation()}
         >
-          <h3>반복 주기 선택</h3>
+          <div className="repeat-title-box">
+            <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
+            <span>반복 주기</span>
+          </div>
+
           {repeatOptions.map((opt) => (
             <div
               key={opt}
@@ -346,6 +375,7 @@ function TaskOptionsPopup({
               {opt}
             </div>
           ))}
+
           <div className="button-group">
             <button
               className="cancel-button"
@@ -456,5 +486,4 @@ function TaskOptionsPopup({
     </>
   );
 }
-
 export default TaskOptionsPopup;
