@@ -128,3 +128,15 @@ li::marker {
     width: 11px;
     height: 7px;
 }
+
+.no-notifications {
+    margin-top: 16px;
+    /* 위쪽 여백 */
+    text-align: center;
+    /* 가운데 정렬 */
+    color: #999999;
+    /* 연한 회색 */
+    font-size: 14px;
+    padding: 20px 0;
+    /* 상하 여백 */
+}
