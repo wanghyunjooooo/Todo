@@ -325,13 +325,17 @@ function TaskOptionsPopup({
         </div>
       )}
 
-      {/* 반복 주기 옵션 팝업 */}
+      {/* 반복 주기 옵션 서브 팝업 */}
       {repeatOptionsVisible && (
         <div
           className="repeat-option-popup"
           onClick={(e) => e.stopPropagation()}
         >
-          <h3>반복 주기 선택</h3>
+          <div className="repeat-title-box">
+            <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
+            <span>반복 주기</span>
+          </div>
+
           {repeatOptions.map((opt) => (
             <div
               key={opt}
@@ -346,6 +350,7 @@ function TaskOptionsPopup({
               {opt}
             </div>
           ))}
+
           <div className="button-group">
             <button
               className="cancel-button"
@@ -456,5 +461,4 @@ function TaskOptionsPopup({
     </>
   );
 }
-
 export default TaskOptionsPopup;

@@ -265,21 +265,33 @@
 
 .repeat-option {
     display: flex;
-    height: 56px;
-    padding: 8px 20px;
+    /* flex로 정렬 */
+    width: 310px;
+    /* 폭 고정 */
     align-items: center;
+    /* 세로 중앙 정렬 */
     gap: 8px;
-    align-self: stretch;
+    /* 아이템 간격 */
+    padding: 8px 20px;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #F3F3F3) !important;
+    cursor: pointer;
+
+    /* 글씨 스타일 */
+    color: var(--Grey-Darker, #595959);
     font-family: Pretendard, sans-serif;
     font-size: 12px;
+    font-style: normal;
     font-weight: 500;
-    color: var(--Grey-Darker, #2A2A2A);
-    cursor: pointer;
-    transition: background 0.2s ease, border 0.2s ease;
+    line-height: normal;
+    box-sizing: border-box;
+    transition: all 0.2s;
 }
 
+.repeat-option.selected {
+    background: #DFF5E1;
+    border: 2px solid #4CAF50;
+}
 .repeat-options-list {
     display: flex;
     flex-direction: column;
@@ -290,9 +302,8 @@
 
 .repeat-option-popup .repeat-option {
     width: 100%;
-    padding: 12px 20px;
+    padding: 17px 20px;
     border-radius: 8px;
-    border: 1px solid #ccc;
     cursor: pointer;
     background: #fff;
     transition: all 0.2s ease;
@@ -316,4 +327,27 @@
     padding: 0 16px;
     justify-content: flex-start;
     gap: 8px;
+}
+
+.repeat-title-box {
+    display: flex;
+    /* flex로 정렬 */
+    width: 310px;
+    /* 폭 고정 */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    gap: 8px;
+    /* 아이템 간격 */
+    padding: 8px 20px;
+    border-radius: 16px;
+    background: var(--Grey-Light, #FFf);
+
+    /* 글씨 스타일 */
+    color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    box-sizing: border-box;
 }
