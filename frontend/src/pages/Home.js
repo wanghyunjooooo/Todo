@@ -108,7 +108,8 @@ function Home() {
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             {/* 상단 헤더 */}
-            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} />
+          <Header showMenu={true} />
+
 
             {/* 메인 콘텐츠 */}
             <div style={{ flex: 1, overflowY: "auto", paddingBottom: "100px", marginTop: "24px" }}>

@@ -91,7 +91,7 @@ function Notifications() {
 
   return (
     <div className="notifications-page">
-      <Header title="알림" />
+      <Header showMenu={false} />
 
       <div className="notifications-list">
         {sortedDates.map((date) => {
