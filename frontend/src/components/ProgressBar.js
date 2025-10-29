@@ -5,7 +5,8 @@ import ArrowIcon from "../assets/icon-arrow-right.svg";
 
 function ProgressBar({ userId }) {
   const [stats, setStats] = useState(null);
-  const [period, setPeriod] = useState("weekly"); // "weekly" 또는 "monthly"
+  const [period, setPeriod] = useState("weekly");
+  const [hoverIndex, setHoverIndex] = useState(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -16,20 +17,19 @@ function ProgressBar({ userId }) {
         if (!token) throw new Error("토큰이 없습니다.");
 
         const url = `http://localhost:8080/tasks/stats/${period}/${userId}`;
-
-        // 기간에 따른 body
-        let body;
         const today = new Date();
+        let body;
+
         if (period === "weekly") {
           const start = new Date(today);
-          start.setDate(today.getDate() - 6); // 지난 7일
+          start.setDate(today.getDate() - 6);
           body = {
             start_date: start.toISOString().split("T")[0],
             end_date: today.toISOString().split("T")[0],
           };
         } else {
-          const start = new Date(today.getFullYear(), today.getMonth(), 1); // 이번 달 1일
-          const end = new Date(today.getFullYear(), today.getMonth() + 1, 0); // 이번 달 마지막 날
+          const start = new Date(today.getFullYear(), today.getMonth(), 1);
+          const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
           body = {
             start_date: start.toISOString().split("T")[0],
             end_date: end.toISOString().split("T")[0],
@@ -59,7 +59,6 @@ function ProgressBar({ userId }) {
 
   const categories = stats?.categories || [];
 
-  // 라벨 생성 (주간: 월~일, 월간: 1~말일)
   const labels =
     period === "weekly"
       ? ["월", "화", "수", "목", "금", "토", "일"]
@@ -69,10 +68,9 @@ function ProgressBar({ userId }) {
           return Array.from({ length: daysInMonth }, (_, i) => i + 1);
         })();
 
-  // 막대 너비와 간격 계산
   const totalBars = labels.length;
   const svgWidth = 233;
-  const barGap = 5; // 막대 간격
+  const barGap = 2; // 막대 간격 좁힘
   const barWidth = (svgWidth - barGap * (totalBars - 1)) / totalBars;
 
   return (
@@ -156,26 +154,73 @@ function ProgressBar({ userId }) {
             const x = idx * (barWidth + barGap);
             const height = total > 0 ? (cat.count / total) * 123 : 0;
             const y = 123 - height;
-            return <rect key={idx} x={x} y={y} width={barWidth} height={height} fill="#36A862" />;
+            return (
+              <g key={idx}>
+                <rect
+                  x={x}
+                  y={y}
+                  width={barWidth}
+                  height={height}
+                  fill={hoverIndex === idx ? "#2D8659" : "#36A862"}
+                  onMouseEnter={() => setHoverIndex(idx)}
+                  onMouseLeave={() => setHoverIndex(null)}
+                />
+                {hoverIndex === idx && (
+                  <text
+                    x={x + barWidth / 2}
+                    y={y - 6}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill="#2A2A2A"
+                    fontWeight="600"
+                  >
+                    {cat.count}
+                  </text>
+                )}
+              </g>
+            );
           })}
         </svg>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "100%",
-            fontSize: "10px",
-            color: "#2A2A2A",
-            fontFamily: "Pretendard",
-            fontWeight: 600,
-            flexWrap: "wrap",
-          }}
-        >
-          {labels.map((label, i) => (
-            <span key={i}>{label}</span>
-          ))}
-        </div>
+{/* ✅ 월간은 1,5,10... + 마지막 날만 표시 (30,31 중복 방지) */}
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    fontSize: "10px",
+    color: "#2A2A2A",
+    fontFamily: "Pretendard",
+    fontWeight: 600,
+  }}
+>
+  {labels.map((label, i) => {
+    const daysInMonth = labels.length;
+    const isLast = label === daysInMonth;
+
+    // 30일과 31일이 동시에 표시되는 문제 방지
+    if (
+      period === "monthly" &&
+      label % 5 !== 0 &&
+      label !== 1 &&
+      !isLast
+    ) {
+      return <span key={i} style={{ flex: 1 }}></span>;
+    }
+
+    // 만약 31일 달인데 30이 이미 표시되면 31은 생략
+    if (period === "monthly" && daysInMonth === 31 && label === 31) {
+      return null;
+    }
+
+    return (
+      <span key={i} style={{ flex: 1, textAlign: "center" }}>
+        {label}
+      </span>
+    );
+  })}
+</div>
+
       </div>
     </div>
   );
