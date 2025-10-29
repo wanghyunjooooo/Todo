@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -115,13 +116,64 @@ public class TaskService {
 
     public Map<String, Object> getWeeklyStats(Long userId, LocalDate start, LocalDate end) {
         List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
-        return buildStatsResponse(userId, start, end, tasks);
+        Map<String, Object> result = buildStatsResponse(userId, start, end, tasks);
+
+        Map<String, Long> weeklyCounts = new LinkedHashMap<>();
+        String[] days = {"일", "월", "화", "수", "목", "금", "토"};
+
+        for (String day : days) {
+            weeklyCounts.put(day, 0L);
+        }
+
+        tasks.stream()
+            .filter(t -> "완료".equals(t.getStatus()))
+            .forEach(t -> {
+                int dayOfWeek = t.getTaskDate().getDayOfWeek().getValue() % 7; // 일요일=0
+                String dayName = days[dayOfWeek];
+                weeklyCounts.put(dayName, weeklyCounts.get(dayName) + 1);
+            });
+
+        List<Map<String, Object>> weeklyData = weeklyCounts.entrySet().stream()
+        .map(e -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("day", e.getKey());
+            map.put("count", e.getValue());
+            return map;
+        })
+        .collect(Collectors.toList());
+
+        result.put("weekly_data", weeklyData);
+        return result;
     }
 
     public Map<String, Object> getMonthlyStats(Long userId, LocalDate start, LocalDate end) {
         List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
-        return buildStatsResponse(userId, start, end, tasks);
+        Map<String, Object> result = buildStatsResponse(userId, start, end, tasks);
+
+        Map<LocalDate, Long> dailyCounts = new LinkedHashMap<>();
+        LocalDate current = start;
+        while (!current.isAfter(end)) {
+            dailyCounts.put(current, 0L);
+            current = current.plusDays(1);
+        }
+
+        tasks.stream()
+            .filter(t -> "완료".equals(t.getStatus()))
+            .forEach(t -> dailyCounts.put(t.getTaskDate(), dailyCounts.get(t.getTaskDate()) + 1));
+
+        List<Map<String, Object>> dailyData = dailyCounts.entrySet().stream()
+        .map(e -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("date", e.getKey().toString());
+            map.put("count", e.getValue());
+            return map;
+        })
+        .collect(Collectors.toList());
+
+        result.put("daily_data", dailyData);
+        return result;
     }
+
     
     public List<Task> getTasksInRange(Long userId, LocalDate start, LocalDate end) {
         return taskRepository.findTasksInRange(userId, start, end);
