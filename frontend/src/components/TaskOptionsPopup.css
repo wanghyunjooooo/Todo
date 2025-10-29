@@ -26,9 +26,7 @@
     gap: 8px;
     z-index: 9999;
     height: auto;
-    /* 고정 height 제거 */
     max-height: 90vh;
-    /* 화면 넘치면 스크롤 */
     overflow-y: auto;
 }
 
@@ -59,7 +57,6 @@
 .task-options-footer {
     display: flex;
     justify-content: space-between;
-    /* 왼쪽-오른쪽 배치 */
     width: 100%;
     gap: 12px;
 }
@@ -162,26 +159,28 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    margin-top: 8px;
+    width: 100%;
+    margin-top: auto;
+    /* 버튼 맨 아래 고정 */
 }
 
 .cancel-button,
 .confirm-button {
+    display: flex;
     width: 151px;
     height: 40px;
-    border-radius: 16px;
+    padding: 0 20px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-}
-
-.cancel-button {
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
     background: #fff;
-    color: #2a2a2a;
-}
-
-.confirm-button {
-    background: #fff;
-    color: #2a2a2a;
+    color: var(--Grey-Darker, #2A2A2A);
 }
 
 /* ---------------------------------- */
@@ -224,18 +223,96 @@
     height: 20px;
     margin-left: auto;
     transition: transform 0.2s ease;
-    position: relative;
-    /* 추가 */
     z-index: 10;
-    /* 추가 */
-}
-
-.white-bg{
-
 }
 
 .react-datepicker-popper {
     max-width: 50%;
     box-sizing: border-box;
     z-index: 9999;
+}
+
+/* ---------------------------------- */
+/* 반복 주기 서브 팝업 */
+/* ---------------------------------- */
+
+.repeat-option-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    min-height: 200px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    z-index: 10001;
+}
+
+.repeat-option-popup .repeat-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* 옵션 사이 간격 */
+    width: 100%;
+}
+
+.repeat-option {
+    display: flex;
+    height: 56px;
+    padding: 8px 20px;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: 16px;
+    background: var(--Grey-Light, #F3F3F3);
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--Grey-Darker, #2A2A2A);
+    cursor: pointer;
+    transition: background 0.2s ease, border 0.2s ease;
+}
+
+.repeat-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* 옵션 사이 간격 */
+    width: 100%;
+}
+
+.repeat-option-popup .repeat-option {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+    /* 옵션 사이 간격 */
+}
+
+
+.repeat-option.selected {
+    border: 2px solid #4caf50;
+}
+
+.repeat-option:hover {
+    background: #e0e0e0;
+    /* 선택/hover 시 살짝 색 변화 */
+}
+.category-item.repeat-btn {
+    /* white-bg 상속 + 필요시 추가 조정 */
+    height: 40px;
+    padding: 0 16px;
+    justify-content: flex-start;
+    gap: 8px;
 }
