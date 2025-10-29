@@ -319,35 +319,95 @@ function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) 
           </div>
         )}
 
-        {/* 알림 설정 */}
+        {/* 알람 시간 설정 서브 팝업 */}
         {showAlarmEditor && (
           <div
-            className="editor-overlay"
-            onClick={() => setShowAlarmEditor(false)}
+            className="repeat-option-popup"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="editor-box" onClick={(e) => e.stopPropagation()}>
-              <label>알림 날짜/시간 선택</label>
-              <DatePicker
-                selected={alarmDate}
-                onChange={setAlarmDate}
-                showTimeSelect
-                dateFormat="yyyy/MM/dd HH:mm"
-                withPortal={isMobile}
-              />
-              <div className="button-group" style={{ marginTop: "16px" }}>
+            <h3>알람 시간 설정</h3>
+
+            {/* 시 선택 */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                marginBottom: "12px",
+              }}
+            >
+              {Array.from({ length: 24 }, (_, i) => (
                 <button
-                  className="cancel-button"
-                  onClick={() => setShowAlarmEditor(false)}
+                  key={i}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "4px",
+                    border:
+                      alarmDate.getHours() === i
+                        ? "2px solid #4CAF50"
+                        : "1px solid #ccc",
+                    background: alarmDate.getHours() === i ? "#DFF5E1" : "#fff",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    const newDate = new Date(alarmDate);
+                    newDate.setHours(i);
+                    setAlarmDate(newDate);
+                  }}
                 >
-                  취소
+                  {i}
                 </button>
+              ))}
+            </div>
+
+            {/* 분 선택 */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                marginBottom: "16px",
+              }}
+            >
+              {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
                 <button
-                  className="confirm-button"
-                  onClick={() => setShowAlarmEditor(false)}
+                  key={m}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "4px",
+                    border:
+                      alarmDate.getMinutes() === m
+                        ? "2px solid #4CAF50"
+                        : "1px solid #ccc",
+                    background:
+                      alarmDate.getMinutes() === m ? "#DFF5E1" : "#fff",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    const newDate = new Date(alarmDate);
+                    newDate.setMinutes(m);
+                    setAlarmDate(newDate);
+                  }}
                 >
-                  확인
+                  {m}
                 </button>
-              </div>
+              ))}
+            </div>
+
+            {/* 버튼 */}
+            <div className="button-group">
+              <button
+                className="cancel-button"
+                onClick={() => setShowAlarmEditor(false)}
+              >
+                취소
+              </button>
+              <button
+                className="confirm-button"
+                onClick={() => setShowAlarmEditor(false)}
+              >
+                확인
+              </button>
             </div>
           </div>
         )}
