@@ -79,7 +79,15 @@
     aspect-ratio: 1 / 1;
 }
 
-.category-item:not(:nth-child(2)) .arrow-icon {
+.category-item .arrow-icon {
+    display: inline-block;
+        width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
+}
+
+.category-item.no-arrow .arrow-icon {
     display: none;
 }
 
