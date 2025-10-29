@@ -399,7 +399,10 @@ function TaskOptionsPopup({
           className="repeat-option-popup"
           onClick={(e) => e.stopPropagation()}
         >
-          <h3>알람 시간 설정</h3>
+          <div className="repeat-title-box">
+            <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
+            <span>알람 설정</span>
+          </div>
 
           {/* 시 선택 */}
           <div
