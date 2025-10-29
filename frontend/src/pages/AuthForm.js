@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "./AuthForm.css";
 import { Eye, EyeOff } from "lucide-react";
+import BigLogo from "../assets/biglogo.svg"; // 로고 import
 
 function AuthForm({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,75 +23,63 @@ function AuthForm({ onLogin }) {
     setLoading(true);
     setError("");
 
-    console.log("📌 제출 시작", { isLogin, email, password, username });
-
     try {
       if (isLogin) {
-        // ✅ 로그인 요청
-        console.log("🔑 로그인 요청 전");
-
         const res = await api.post("/users/login", {
           user_email: email,
           user_password: password,
         });
 
-        console.log("✅ 로그인 응답:", res.data);
-
         const { token, user_id, user_name, user_email } = res.data;
 
-        // ✅ localStorage에 저장
         localStorage.setItem("token", token);
         localStorage.setItem("user_id", user_id);
         localStorage.setItem("user_name", user_name);
         localStorage.setItem("user_email", user_email);
 
-        console.log("📦 localStorage 저장 완료:", {
-          token: localStorage.getItem("token"),
-          userId: localStorage.getItem("userId"),
-        });
-
         alert(`${user_name}님, 로그인 성공!`);
         if (onLogin) onLogin();
         navigate("/");
       } else {
-        // ✅ 회원가입 요청
         if (password !== confirmPassword) {
           setError("비밀번호가 일치하지 않습니다.");
-          console.warn("⚠️ 비밀번호 불일치");
           setLoading(false);
           return;
         }
 
-        console.log("📝 회원가입 요청 전", { username, email, password });
-
-        const res = await api.post("/users/signup", {
+        await api.post("/users/signup", {
           user_name: username,
           user_email: email,
           user_password: password,
         });
 
-        console.log("✅ 회원가입 응답:", res.data);
         alert("회원가입 성공! 로그인해주세요.");
         setIsLogin(true);
       }
 
-      // ✅ 입력값 초기화
       setEmail("");
       setPassword("");
       setConfirmPassword("");
       setUsername("");
     } catch (err) {
-      console.error("❌ 요청 실패:", err);
-      console.error("🔍 err.response:", err.response);
       setError(err.response?.data?.message || "오류가 발생했습니다.");
     } finally {
       setLoading(false);
-      console.log("⏹️ 제출 종료");
     }
   };
 
   return (
     <div className="auth-page">
+      {/* 로고: 인풋 위 */}
+      <div
+        className="auth-logo-container"
+        style={{
+          top: isLogin ? "210px" : "150px", // 로그인 vs 회원가입 위치
+        }}
+      >
+        <img src={BigLogo} alt="로고" />
+      </div>
+
       <form onSubmit={handleSubmit} className="auth-form" id="auth-form">
         {!isLogin && (
           <input

@@ -120,3 +120,26 @@
     align-items: center;
     justify-content: center;
 }
+
+
+/* AuthForm.css */
+.auth-logo-container {
+    position: absolute;
+    /* 절대 위치 */
+    top: 30%;
+    /* 화면 상단에서 50px 아래 */
+    left: 50%;
+    /* 수평 중앙 */
+    transform: translateX(-50%);
+    /* 정확히 중앙 맞춤 */
+    text-align: center;
+    z-index: 10;
+    /* 폼 위로 나오게 */
+}
+
+.auth-logo-container img {
+    width: 100%;
+    /* 컨테이너에 맞춰 늘리기 */
+    height: 100%;
+    /* 컨테이너 높이에 맞추기 */
+}
