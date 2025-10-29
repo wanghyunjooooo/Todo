@@ -208,27 +208,30 @@
     font-size: 12px;
     font-weight: 500;
     color: #2a2a2a;
-    background: #fbfbfb;
+    background: var(--Grey-Light, #F3F3F3);
     box-sizing: border-box;
 }
 
-.category-item.white-bg {
-    background: #fff;
+.category-item.white-bg,
+.category-item.repeat-bg {
+    background: #fff !important;
     justify-content: flex-start;
     gap: 8px;
 }
 
-/* 아이콘 */
 .arrow-icon {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    object-fit: contain;
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+    position: relative;
+    /* 추가 */
+    z-index: 10;
+    /* 추가 */
 }
 
-/* 반복 일정만 화살표 숨김 */
-.category-item.white-bg .arrow-icon {
-    display: none;
+.white-bg{
+
 }
 
 .react-datepicker-popper {
