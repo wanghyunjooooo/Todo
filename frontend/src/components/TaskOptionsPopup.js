@@ -354,6 +354,7 @@ function TaskOptionsPopup({
       {repeatOptionsVisible && (
         <div
           className="repeat-option-popup"
+            style={{ top: "78%" }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="repeat-title-box">

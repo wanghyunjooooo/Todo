@@ -238,7 +238,7 @@
 
 .repeat-option-popup {
     position: fixed;
-    top: 40%;
+    top: 70%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 350px;
@@ -389,8 +389,9 @@
     /* 요일 전체 폭에 맞게 균등 배치 */
     margin-bottom: 12px;
     /* 기존보다 아래 간격 조금 늘림 */
-    padding: 0 20px;
+    padding: 5px 20px;
     /* 좌우 여백 약간 추가 */
+
 }
 .react-datepicker__day,
 .react-datepicker__day-name {
@@ -459,6 +460,6 @@
 }
 
 .react-datepicker__day--outside-month {
-    display: none !important;
+    visibility: hidden !important;
 }
 
