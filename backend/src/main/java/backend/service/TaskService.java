@@ -118,29 +118,37 @@ public class TaskService {
         List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
         Map<String, Object> result = buildStatsResponse(userId, start, end, tasks);
 
-        Map<String, Long> weeklyCounts = new LinkedHashMap<>();
         String[] days = {"일", "월", "화", "수", "목", "금", "토"};
+        Map<String, Double> weeklyRates = new LinkedHashMap<>();
 
         for (String day : days) {
-            weeklyCounts.put(day, 0L);
+            weeklyRates.put(day, 0.0);
         }
 
-        tasks.stream()
-            .filter(t -> "완료".equals(t.getStatus()))
-            .forEach(t -> {
-                int dayOfWeek = t.getTaskDate().getDayOfWeek().getValue() % 7; // 일요일=0
-                String dayName = days[dayOfWeek];
-                weeklyCounts.put(dayName, weeklyCounts.get(dayName) + 1);
-            });
+        // ✅ 요일별 완료율 계산
+        for (int i = 0; i < days.length; i++) {
+            int dayIndex = i == 0 ? 7 : i; // 일요일=7 (LocalDate 기준)
+            List<Task> dailyTasks = tasks.stream()
+                    .filter(t -> t.getTaskDate().getDayOfWeek().getValue() == dayIndex)
+                    .collect(Collectors.toList());
 
-        List<Map<String, Object>> weeklyData = weeklyCounts.entrySet().stream()
-        .map(e -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("day", e.getKey());
-            map.put("count", e.getValue());
-            return map;
-        })
-        .collect(Collectors.toList());
+            long total = dailyTasks.size();
+            long completed = dailyTasks.stream()
+                    .filter(t -> "완료".equals(t.getStatus()))
+                    .count();
+
+            double rate = total == 0 ? 0.0 : ((double) completed / total) * 100.0;
+            weeklyRates.put(days[i], Math.round(rate * 10.0) / 10.0); // 소수점 1자리 반올림
+        }
+
+        List<Map<String, Object>> weeklyData = weeklyRates.entrySet().stream()
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("day", e.getKey());
+                    map.put("rate", e.getValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         result.put("weekly_data", weeklyData);
         return result;
@@ -150,31 +158,41 @@ public class TaskService {
         List<Task> tasks = taskRepository.findTasksInRange(userId, start, end);
         Map<String, Object> result = buildStatsResponse(userId, start, end, tasks);
 
-        Map<LocalDate, Long> dailyCounts = new LinkedHashMap<>();
-        LocalDate current = start;
-        while (!current.isAfter(end)) {
-            dailyCounts.put(current, 0L);
-            current = current.plusDays(1);
+        Map<LocalDate, Double> dailyRates = new LinkedHashMap<>();
+        LocalDate tempDate = start;
+
+        while (!tempDate.isAfter(end)) {
+            // ✅ 하루치만 직접 계산 (람다 안에서 tempDate를 수정하지 않음)
+            final LocalDate currentDate = tempDate;
+
+            List<Task> dailyTasks = tasks.stream()
+                    .filter(t -> t.getTaskDate().equals(currentDate))
+                    .collect(Collectors.toList());
+
+            long total = dailyTasks.size();
+            long completed = dailyTasks.stream()
+                    .filter(t -> "완료".equals(t.getStatus()))
+                    .count();
+
+            double rate = total == 0 ? 0.0 : ((double) completed / total) * 100.0;
+            dailyRates.put(currentDate, Math.round(rate * 10.0) / 10.0);
+
+            tempDate = tempDate.plusDays(1); // ✅ 스트림 외부에서 안전하게 증가
         }
 
-        tasks.stream()
-            .filter(t -> "완료".equals(t.getStatus()))
-            .forEach(t -> dailyCounts.put(t.getTaskDate(), dailyCounts.get(t.getTaskDate()) + 1));
-
-        List<Map<String, Object>> dailyData = dailyCounts.entrySet().stream()
-        .map(e -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("date", e.getKey().toString());
-            map.put("count", e.getValue());
-            return map;
-        })
-        .collect(Collectors.toList());
+        List<Map<String, Object>> dailyData = dailyRates.entrySet().stream()
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("date", e.getKey().toString());
+                    map.put("rate", e.getValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         result.put("daily_data", dailyData);
         return result;
     }
 
-    
     public List<Task> getTasksInRange(Long userId, LocalDate start, LocalDate end) {
         return taskRepository.findTasksInRange(userId, start, end);
     }
@@ -189,10 +207,11 @@ public class TaskService {
 
         long completed = tasks.stream().filter(t -> "완료".equals(t.getStatus())).count();
         long incomplete = tasks.stream().filter(t -> !"완료".equals(t.getStatus())).count();
-        double rate = tasks.isEmpty() ? 0 : Math.round(((double) completed / tasks.size()) * 1000.0) / 10.0;
+        double rate = tasks.isEmpty() ? 0.0 : Math.round(((double) completed / tasks.size()) * 1000.0) / 10.0;
 
         List<Map<String, Object>> categoryStats = tasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getCategory().getCategoryName(), Collectors.counting())).entrySet().stream()
+                .collect(Collectors.groupingBy(t -> t.getCategory().getCategoryName(), Collectors.counting()))
+                .entrySet().stream()
                 .map(e -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("category_name", e.getKey());
@@ -204,15 +223,14 @@ public class TaskService {
         result.put("user_id", userId);
         result.put("start_date", start);
         result.put("end_date", end);
-
         result.put("summary", Map.of(
                 "total_tasks", tasks.size(),
                 "completed", completed,
                 "incomplete", incomplete,
                 "completion_rate", rate
         ));
-
         result.put("categories", categoryStats);
+
         return result;
     }
 }
