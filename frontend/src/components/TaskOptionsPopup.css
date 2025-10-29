@@ -40,13 +40,13 @@
     width: 310px;
     height: 40px;
     gap: 8px;
-    padding: 0 12px;
+    padding: 0px;
     border: none;
     border-radius: 8px;
     background: #fff;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--Grey-Dark, #595959);
     text-align: left;
     cursor: pointer;
@@ -61,9 +61,9 @@
     justify-content: space-between;
     /* 왼쪽-오른쪽 배치 */
     width: 100%;
-    margin-top: 20px;
     gap: 12px;
 }
+
 .cancel-btn,
 .confirm-btn {
     width: 151px;
@@ -74,6 +74,7 @@
     font-family: Pretendard, sans-serif;
     font-size: 12px;
     font-weight: 600;
+    padding: 13px 20px;
 }
 
 .cancel-btn {
@@ -106,7 +107,7 @@
 .editor-box {
     width: 350px;
     border-radius: 16px;
-    background: #fbfbfb;
+    background: #fff;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -207,7 +208,7 @@
     font-size: 12px;
     font-weight: 500;
     color: #2a2a2a;
-    background: #f3f3f3;
+    background: #fbfbfb;
     box-sizing: border-box;
 }
 

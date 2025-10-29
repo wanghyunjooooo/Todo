@@ -77,7 +77,7 @@ function Home() {
             const categoryRes = await addCategory(user_id, categoryName);
             const newCategory = categoryRes.category;
 
-            // 2️⃣ 카테고리 하위에 기본 할일 01 자동 추가
+            // 2️⃣ 카테고리 하위에 기본 할 일 01 자동 추가
             const dateStr = new Date().toISOString().split("T")[0];
             const taskRes = await addTask({
                 task_name: "할 일 01",
@@ -89,7 +89,7 @@ function Home() {
                 notification_time: null,
             });
 
-            console.log("자동 생성된 할일:", taskRes.task);
+            console.log("자동 생성된 할 일:", taskRes.task);
 
             // 3️⃣ 프론트 상태 업데이트
             setCategories((prev) => [...prev, newCategory]);
