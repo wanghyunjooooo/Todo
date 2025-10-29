@@ -129,7 +129,7 @@ li::marker {
     height: 7px;
 }
 
-.no-notifications {
+.no-task-text {
     margin-top: 16px;
     /* 위쪽 여백 */
     text-align: center;

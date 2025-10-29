@@ -93,10 +93,8 @@ function MyCalendar({ selectedDate, onDateChange, tasksByDate = [] }) {
 
             <div className="calendar-weekdays">
                 {weekdays.map((wd) => (
-                    <div className="weekday-container">
-                        <div key={wd} className="weekday">
-                            {wd}
-                        </div>
+                    <div key={wd} className="weekday-container">
+                        <div className="weekday">{wd}</div>
                     </div>
                 ))}
             </div>

@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
 import { addTask, deleteTask, updateTaskStatus } from "../api";
 
-function Todo({ tasksByDate, selectedDate }) {
+function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
     const [tasksByCategory, setTasksByCategory] = useState([]);
     const [popupIndex, setPopupIndex] = useState({ category: null, index: null });
+    const inputRefs = useRef({});
+
+    const setInputRef = (id, el) => {
+        if (el) inputRefs.current[id] = el;
+    };
 
     /** ✅ tasksByDate → tasksByCategory 변환 */
     useEffect(() => {
@@ -21,7 +26,6 @@ function Todo({ tasksByDate, selectedDate }) {
         const grouped = tasksByDate.reduce((acc, task) => {
             const categoryName = task.category?.category_name || "미분류";
             if (!acc[categoryName]) acc[categoryName] = [];
-
             acc[categoryName].push({
                 text: task.task_name,
                 checked: task.status === "완료",
@@ -43,6 +47,19 @@ function Todo({ tasksByDate, selectedDate }) {
         setTasksByCategory(newTasksByCategory);
     }, [tasksByDate]);
 
+    /** ✅ tasksByCategory가 렌더 완료된 뒤 focusedTaskId 포커스 */
+    useLayoutEffect(() => {
+        if (!focusedTaskId) return;
+
+        const inputEl = inputRefs.current[focusedTaskId];
+        if (inputEl) {
+            setTimeout(() => {
+                inputEl.focus();
+                inputEl.select();
+            }, 120);
+        }
+    }, [focusedTaskId, tasksByCategory]);
+
     /** ✅ 체크 토글 */
     const toggleChecked = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
@@ -61,8 +78,10 @@ function Todo({ tasksByDate, selectedDate }) {
         }
     };
 
-    /** ✅ 새 Task 추가 */
+    /** ✅ 새 Task 추가 (자동 포커스) */
     const handleAddTask = (catIdx) => {
+        const tempId = Date.now() + Math.random();
+
         setTasksByCategory((prev) => {
             const updated = [...prev];
             if (updated[catIdx].tasks.some((t) => t.isNew)) return updated;
@@ -72,42 +91,44 @@ function Todo({ tasksByDate, selectedDate }) {
                 checked: false,
                 isNew: true,
                 category_id: updated[catIdx].tasks[0]?.category_id || null,
-                _tempId: Date.now() + Math.random(),
+                _tempId: tempId,
             };
             updated[catIdx].tasks.push(newTask);
             return updated;
         });
+
+        // ✅ 렌더 후 자동 포커스
+        setTimeout(() => {
+            const el = inputRefs.current[tempId];
+            if (el) el.focus();
+        }, 50);
     };
 
     /** ✅ Task 삭제 */
-const handleDeleteTask = async (catIdx, taskIdx) => {
-  const task = tasksByCategory[catIdx].tasks[taskIdx];
+    const handleDeleteTask = async (catIdx, taskIdx) => {
+        const task = tasksByCategory[catIdx].tasks[taskIdx];
 
-  if (task.task_id) {
-    try {
-      await deleteTask(task.task_id);
-    } catch (err) {
-      console.error("Task 삭제 실패:", err);
-    }
-  }
+        if (task.task_id) {
+            try {
+                await deleteTask(task.task_id);
+            } catch (err) {
+                console.error("Task 삭제 실패:", err);
+            }
+        }
 
-  setTasksByCategory((prev) => {
-    return prev.map((cat, idx) => {
-      if (idx !== catIdx) return cat;
-      return {
-        ...cat,
-        tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx),
-      };
-    });
-  });
+        setTasksByCategory((prev) =>
+            prev.map((cat, idx) => {
+                if (idx !== catIdx) return cat;
+                return {
+                    ...cat,
+                    tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx),
+                };
+            })
+        );
 
-  setPopupIndex((prev) => {
-    if (prev.category === catIdx && prev.index === taskIdx) {
-      return { category: null, index: null };
-    }
-    return prev;
-  });
-};
+        setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : prev));
+    };
+
     /** ✅ 팝업 토글 */
     const togglePopup = (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
@@ -143,9 +164,9 @@ const handleDeleteTask = async (catIdx, taskIdx) => {
 
                                     <input
                                         type="text"
+                                        ref={(el) => setInputRef(task.task_id || task._tempId, el)}
                                         className={`task-text-input ${task.checked ? "checked" : ""}`}
                                         value={task.text}
-                                        autoFocus={task.isNew}
                                         onChange={(e) => {
                                             const newText = e.target.value;
                                             setTasksByCategory((prev) => {
@@ -155,9 +176,11 @@ const handleDeleteTask = async (catIdx, taskIdx) => {
                                             });
                                         }}
                                         onKeyDown={async (e) => {
-                                            if (e.key === "Enter" && task.text.trim() !== "" && task.isNew) {
+                                            // ✅ Enter → 저장
+                                            if (e.key === "Enter" && task.text.trim()) {
                                                 const user_id = localStorage.getItem("user_id");
                                                 if (!user_id) return alert("로그인이 필요합니다.");
+
                                                 const category_id = task.category_id || group.tasks[0]?.category_id;
                                                 const dateStr = selectedDate.toISOString().split("T")[0];
 
@@ -190,6 +213,7 @@ const handleDeleteTask = async (catIdx, taskIdx) => {
                                                 }
                                             }
 
+                                            // ✅ ESC → 추가 취소
                                             if (e.key === "Escape" && task.isNew) {
                                                 setTasksByCategory((prev) => {
                                                     const updated = [...prev];
@@ -211,10 +235,6 @@ const handleDeleteTask = async (catIdx, taskIdx) => {
                                     <img src={ThreeIcon} alt="menu" style={{ width: "20px" }} />
                                 </button>
                             </div>
-
-                            {task.notification_type === "알림" && task.notification_time && <p className="task-time">{task.notification_time}</p>}
-
-                            {task.memo && <p className="task-memo">{task.memo}</p>}
 
                             {popupIndex.category === catIdx && popupIndex.index === taskIdx && (
                                 <TaskOptionsPopup

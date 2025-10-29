@@ -10,6 +10,7 @@ function Home() {
     const [tasksByDate, setTasksByDate] = useState([]);
     const [tasksByMonth, setTasksByMonth] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [focusedTaskId, setFocusedTaskId] = useState(null);
     const userId = localStorage.getItem("user_id");
 
     const year = selectedDate.getFullYear();
@@ -73,12 +74,10 @@ function Home() {
         if (!user_id) return alert("로그인이 필요합니다.");
 
         try {
-            // 1️⃣ 새 카테고리 생성
             const categoryRes = await addCategory(user_id, categoryName);
             const newCategory = categoryRes.category;
 
-            // 2️⃣ 카테고리 하위에 기본 할 일 01 자동 추가
-            const dateStr = new Date().toISOString().split("T")[0];
+            const dateStr = selectedDate.toISOString().split("T")[0];
             const taskRes = await addTask({
                 task_name: "할 일 01",
                 memo: "",
@@ -89,10 +88,16 @@ function Home() {
                 notification_time: null,
             });
 
-            console.log("자동 생성된 할 일:", taskRes.task);
+            const newTaskId = taskRes.task.task_id;
+            setFocusedTaskId(newTaskId);
 
-            // 3️⃣ 프론트 상태 업데이트
+            // 상태 업데이트
             setCategories((prev) => [...prev, newCategory]);
+            const updatedTasks = await getTasksByDay(user_id, dateStr);
+            setTasksByDate(updatedTasks || []);
+
+            // 💡 포커스 1회용: 다음 렌더에서는 다시 발동하지 않게 초기화
+            setTimeout(() => setFocusedTaskId(null), 500);
         } catch (err) {
             console.error("카테고리 생성 실패:", err);
             alert("카테고리 추가 중 오류가 발생했습니다.");
@@ -108,8 +113,7 @@ function Home() {
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             {/* 상단 헤더 */}
-          <Header showMenu={true} />
-
+            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} />
 
             {/* 메인 콘텐츠 */}
             <div style={{ flex: 1, overflowY: "auto", paddingBottom: "100px", marginTop: "24px" }}>
@@ -118,7 +122,7 @@ function Home() {
 
                 {/* 할 일 목록 */}
                 <div style={{ marginTop: "8px" }}>
-                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} />
+                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} focusedTaskId={focusedTaskId} />
                 </div>
             </div>
 
