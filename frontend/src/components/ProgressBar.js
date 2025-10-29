@@ -104,8 +104,7 @@ function ProgressBar({ userId }) {
                 alignItems: "flex-start",
                 gap: "20px",
                 background: "#fff",
-                borderRadius: "8px",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                borderRadius: "16px",
             }}
         >
             <span
