@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./calendar.css";
+import ArrowIcon from "../assets/icon-arrow-right.svg";
 
 function MyCalendar({ selectedDate, onDateChange, tasksByDate = [] }) {
     const [isMonthly, setIsMonthly] = useState(true);
@@ -61,12 +62,29 @@ function MyCalendar({ selectedDate, onDateChange, tasksByDate = [] }) {
                     {year}년 {month + 1}월
                 </div>
                 <div className="nav-buttons">
-                    <button className="arrow-btn" onClick={prevMonth}>
-                        &lt;
-                    </button>
-                    <button className="arrow-btn" onClick={nextMonth}>
-                        &gt;
-                    </button>
+                    <div className="arrow-btn">
+                        <img
+                            src={ArrowIcon}
+                            alt="weekly"
+                            style={{
+                                width: "20px",
+                                height: "20px",
+                                transform: "rotate(180deg)",
+                                cursor: "pointer",
+                            }}
+                            onClick={prevMonth}
+                        />
+                        <img
+                            src={ArrowIcon}
+                            alt="monthly"
+                            style={{
+                                width: "20px",
+                                height: "20px",
+                                cursor: "pointer",
+                            }}
+                            onClick={nextMonth}
+                        />
+                    </div>
                     <button className="view-toggle-btn" onClick={() => setIsMonthly(!isMonthly)}>
                         {isMonthly ? "월간" : "주간"}
                     </button>
@@ -75,8 +93,10 @@ function MyCalendar({ selectedDate, onDateChange, tasksByDate = [] }) {
 
             <div className="calendar-weekdays">
                 {weekdays.map((wd) => (
-                    <div key={wd} className="weekday">
-                        {wd}
+                    <div className="weekday-container">
+                        <div key={wd} className="weekday">
+                            {wd}
+                        </div>
                     </div>
                 ))}
             </div>
