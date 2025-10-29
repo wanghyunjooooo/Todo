@@ -80,23 +80,34 @@ function Todo({ tasksByDate, selectedDate }) {
     };
 
     /** ✅ Task 삭제 */
-    const handleDeleteTask = async (catIdx, taskIdx) => {
-        const task = tasksByCategory[catIdx].tasks[taskIdx];
-        if (task.task_id) {
-            try {
-                await deleteTask(task.task_id);
-            } catch (err) {
-                console.error("Task 삭제 실패:", err);
-            }
-        }
-        setTasksByCategory((prev) => {
-            const updated = [...prev];
-            updated[catIdx].tasks.splice(taskIdx, 1);
-            return updated;
-        });
-        setPopupIndex({ category: null, index: null });
-    };
+const handleDeleteTask = async (catIdx, taskIdx) => {
+  const task = tasksByCategory[catIdx].tasks[taskIdx];
 
+  if (task.task_id) {
+    try {
+      await deleteTask(task.task_id);
+    } catch (err) {
+      console.error("Task 삭제 실패:", err);
+    }
+  }
+
+  setTasksByCategory((prev) => {
+    return prev.map((cat, idx) => {
+      if (idx !== catIdx) return cat;
+      return {
+        ...cat,
+        tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx),
+      };
+    });
+  });
+
+  setPopupIndex((prev) => {
+    if (prev.category === catIdx && prev.index === taskIdx) {
+      return { category: null, index: null };
+    }
+    return prev;
+  });
+};
     /** ✅ 팝업 토글 */
     const togglePopup = (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
