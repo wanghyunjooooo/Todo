@@ -1,115 +1,60 @@
 .auth-page {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
     background-color: #ffffff;
-    position: relative;
 }
 
-/* 입력폼: 화면 중앙 배치 */
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    transform: translateY(-60px);
-    /* 살짝 위로 올려서 중앙에 자연스럽게 */
-}
-
-/* 인풋 스타일 */
-.auth-input {
-    width: 350px;
-    height: 48px;
-    padding: 0 12px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    outline: none;
-}
-
-/* 버튼들을 화면 아래쪽으로 내리기 */
-.auth-buttons {
+.auth-logo-container {
+    width: 226px;
+    height: 26px;
     position: absolute;
-    bottom: 60px;
+    top: 210px;
+    left: 82px;
+    text-align: center;
+    z-index: 10;
+}
+
+.auth-logo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.auth-form {
+    position: absolute;
+    width: 350px;
+    height: 248px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 8px;
+    margin: 296px 20px 300px 20px;
+    bottom: 0px;
 }
 
-/* 로그인 버튼 */
-.auth-button {
-    display: flex;
+.auth-input,
+.password-input {
     width: 350px;
     height: 56px;
-    padding: 0 20px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-    border-radius: 16px;
+    padding: 21px 20px;
+    font-size: 12px;
+    font-weight: 500;
     border: none;
-    background-color: #36a862;
-    color: #ebf6ef;
-    text-align: center;
-    font-family: Pretendard, sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    cursor: pointer;
+    outline: none;
+    border-radius: 16px;
 }
 
-/* 회원가입 버튼 */
-.auth-signup-button {
-    display: flex;
-    width: 350px;
-    height: 56px;
-    padding: 0 20px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-    border-radius: 16px;
-    border: none;
-    background-color: #fff;
-    color: #36a862;
-    text-align: center;
-    font-family: Pretendard, sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    cursor: pointer;
-}
-
-/* 에러 메시지 */
-.auth-error {
-    color: red;
-    font-size: 13px;
-    margin-top: 8px;
-}
 .password-container {
     position: relative;
     width: 350px;
 }
 
-.password-input {
-    width: 100%;
-    height: 48px;
-    padding: 0 40px 0 12px;
-    /* 오른쪽 여백 확보 */
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    outline: none;
-}
-
 .eye-btn {
+    width: 40px;
+    height: 40px;
+    padding: 14px 13px;
     position: absolute;
-    right: 10px;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -121,25 +66,45 @@
     justify-content: center;
 }
 
-
-/* AuthForm.css */
-.auth-logo-container {
+.auth-buttons {
     position: absolute;
-    /* 절대 위치 */
-    top: 30%;
-    /* 화면 상단에서 50px 아래 */
-    left: 50%;
-    /* 수평 중앙 */
-    transform: translateX(-50%);
-    /* 정확히 중앙 맞춤 */
-    text-align: center;
-    z-index: 10;
-    /* 폼 위로 나오게 */
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
-.auth-logo-container img {
-    width: 100%;
-    /* 컨테이너에 맞춰 늘리기 */
-    height: 100%;
-    /* 컨테이너 높이에 맞추기 */
+.auth-button,
+.auth-signup-button {
+    display: flex;
+    width: 350px;
+    height: 56px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: Pretendard, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.auth-button {
+    background-color: #36a862;
+    color: #ebf6ef;
+}
+
+.auth-signup-button {
+    background-color: #fbfbfb;
+    color: #36a862;
+}
+
+.auth-error {
+    color: red;
+    font-size: 13px;
+    margin-top: 8px;
 }
