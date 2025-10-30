@@ -379,8 +379,11 @@ function TaskOptionsPopup({
 
                                 {/* 반복 주기 */}
                                 <div
-                                    className="category-item"
+                                    className={`category-item ${
+                                        !repeatEnabled ? "disabled-item" : ""
+                                    }`}
                                     onClick={(e) => {
+                                        if (!repeatEnabled) return; // 토글 꺼져있으면 무시
                                         e.stopPropagation();
                                         setRepeatOptionsVisible(true);
                                     }}
@@ -399,10 +402,13 @@ function TaskOptionsPopup({
 
                                 {/* 기간 설정 */}
                                 <div
-                                    className="category-item"
-                                    onClick={() =>
-                                        setPeriodVisible(!periodVisible)
-                                    }
+                                    className={`category-item ${
+                                        !repeatEnabled ? "disabled-item" : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (!repeatEnabled) return; // 토글 꺼져있으면 무시
+                                        setPeriodVisible(!periodVisible);
+                                    }}
                                 >
                                     <span>기간 설정</span>
                                     <img
@@ -663,18 +669,15 @@ function TaskOptionsPopup({
                                 />
                                 <span className="option-title">알람 설정</span>
                             </div>
-
                             {/* 토글 */}
                             <div
                                 className="toggle"
-                                onClick={() =>
-                                    setRepeatEnabled((prev) => !prev)
-                                }
+                                onClick={() => setAlarmEnabled((prev) => !prev)} // ✅ repeatEnabled → alarmEnabled
                             >
                                 <div
                                     className="toggle-container"
                                     style={{
-                                        background: repeatEnabled
+                                        background: alarmEnabled
                                             ? "#4CAF50"
                                             : "#CCC",
                                     }}
@@ -682,16 +685,14 @@ function TaskOptionsPopup({
                                     <div
                                         className="toggle-switch"
                                         style={{
-                                            left: repeatEnabled
-                                                ? "14px"
-                                                : "2px",
+                                            left: alarmEnabled ? "14px" : "2px",
                                         }}
                                     ></div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* ✅ 시/분 선택 전체 박스 */}
+                        {/* 시/분 선택 전체 박스 */}
                         <div
                             style={{
                                 display: "flex",
@@ -702,7 +703,11 @@ function TaskOptionsPopup({
                                 alignItems: "flex-start",
                                 gap: "20px",
                                 borderRadius: "16px",
-                                background: "var(--Grey-Light, #F3F3F3)",
+                                background: alarmEnabled
+                                    ? "var(--Grey-Light, #F3F3F3)"
+                                    : "#E0E0E0",
+                                pointerEvents: alarmEnabled ? "auto" : "none", // 꺼져있으면 클릭 불가
+                                opacity: alarmEnabled ? 1 : 0.5, // 비활성화 느낌
                             }}
                         >
                             <p className="hour-title">시</p>
@@ -716,6 +721,7 @@ function TaskOptionsPopup({
                                         }`}
                                         key={i}
                                         onClick={() => {
+                                            if (!alarmEnabled) return;
                                             const newDate = new Date(alarmDate);
                                             newDate.setHours(i);
                                             setAlarmDate(newDate);
@@ -740,6 +746,7 @@ function TaskOptionsPopup({
                                         }`}
                                         key={m}
                                         onClick={() => {
+                                            if (!alarmEnabled) return;
                                             const newDate = new Date(alarmDate);
                                             newDate.setMinutes(m);
                                             setAlarmDate(newDate);

@@ -543,3 +543,8 @@
     color: #ccc;
     pointer-events: none;
 }
+
+.disabled-item {
+    pointer-events: none; /* 클릭 불가 */
+    opacity: 0.5; /* 회색 처리 */
+}
