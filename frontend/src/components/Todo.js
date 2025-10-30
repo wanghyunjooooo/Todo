@@ -189,8 +189,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                 if (!user_id) return alert("로그인이 필요합니다.");
 
                                                 const category_id = task.category_id || group.tasks[0]?.category_id;
-                                                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-                                                const dateStr = localDate.toISOString().split("T")[0];
+                                                const dateStr = selectedDate.toLocaleDateString("sv-SE");
 
                                                 try {
                                                     const result = await addTask({
