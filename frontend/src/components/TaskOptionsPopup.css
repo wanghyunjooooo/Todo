@@ -59,12 +59,12 @@
 }
 
 .option-btn.delete-btn span {
-    color: #FD5344;
+    color: #fd5344;
 }
 
 .option-title {
     width: 214px;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
@@ -91,19 +91,28 @@
     font-size: 12px;
     font-weight: 500;
     background: #fff;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
 }
 
 .title-box {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
 }
 
 /* ===========================
    🔹 에디터 박스
 =========================== */
+.editor-box {
+    width: 350px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
 .rename-box {
     display: flex;
@@ -199,9 +208,9 @@
     padding: 10px;
     border: none;
     border-radius: 14px;
-    background: var(--grey-white-hover, #FBFBFB);
+    background: var(--grey-white-hover, #fbfbfb);
     cursor: pointer;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     font-family: Pretendard;
     font-size: 10px;
     font-weight: 500;
@@ -226,7 +235,7 @@
     gap: 8px;
     align-self: stretch;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
     cursor: pointer;
     color: var(--Grey-Dark, #595959);
     font-family: Pretendard;
@@ -249,6 +258,16 @@
     aspect-ratio: 1/1;
 }
 
+.category-span {
+    flex: 1 0 0;
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
 .arrow-icon {
     margin-left: auto;
     width: 24px;
@@ -264,15 +283,15 @@
     padding: 17px 20px;
     border-radius: 8px;
     cursor: pointer;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
     margin-bottom: 12px;
     color: var(--Grey-Darker, #595959);
     transition: all 0.2s;
 }
 
 .repeat-option.selected {
-    background: #DFF5E1;
-    border: 2px solid #4CAF50;
+    background: #dff5e1;
+    border: 2px solid #4caf50;
 }
 
 .repeat-option:hover {
@@ -292,7 +311,7 @@
     align-items: flex-start;
     gap: 20px;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
 }
 
 .react-datepicker {
@@ -318,9 +337,9 @@
     align-items: center;
     gap: 10px;
     border-radius: 14px;
-    background: var(--grey-white-hover, #FBFBFB);
+    background: var(--grey-white-hover, #fbfbfb);
 
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 10px;
@@ -330,7 +349,7 @@
 }
 
 .react-datepicker__day:not(.react-datepicker__day--outside-month):hover {
-    background-color: #DFF5E1 !important;
+    background-color: #dff5e1 !important;
 }
 
 .react-datepicker__day,
@@ -342,7 +361,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
     margin: 0;
 }
 
@@ -360,7 +379,7 @@
 .react-datepicker__day-name span {
     margin: 0;
     align-self: stretch;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 12px;
@@ -423,7 +442,6 @@
     visibility: hidden !important;
 }
 
-
 /* ===========================
 🔹 토글 스위치
 ===========================*/
@@ -456,15 +474,77 @@
     height: 14px;
     aspect-ratio: 1/1;
     border-radius: 10px;
-    background: var(--Grey-White, #FFF);
+    background: var(--Grey-White, #fff);
     position: absolute;
     transition: left 0.3s;
 }
 
-
 .hour-btn.selected,
 .minute-btn.selected {
-    background-color: #36A862;
+    background-color: #36a862;
     color: white;
     font-weight: bold;
+}
+
+.header-buttons {
+    display: flex;
+}
+
+.arrow-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arrow-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* 왼쪽 버튼은 아이콘 회전 */
+.arrow-btn.left img {
+    transform: rotate(180deg);
+}
+
+/* 시작일 이전 날짜 비활성화 느낌 */
+.disabled-day {
+    color: #ccc !important;
+    background: #f5f5f5 !important;
+    cursor: not-allowed !important;
+}
+
+/* 선택 가능한 날짜 */
+.selectable-day {
+    color: #000;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* 선택된 날짜 (시작일, 종료일, 범위) */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+    background: #4caf50;
+    color: white;
+    border-radius: 50%;
+}
+
+.selected-range-day {
+    background-color: #4caf50 !important;
+    color: #fff !important;
+    border-radius: 50%;
+}
+
+.disabled-day {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.disabled-item {
+    pointer-events: none; /* 클릭 불가 */
+    opacity: 0.5; /* 회색 처리 */
 }
