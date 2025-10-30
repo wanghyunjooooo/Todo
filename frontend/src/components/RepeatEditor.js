@@ -1,47 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TaskOptionsPopup.css";
 import RepeatIcon from "../assets/calendar.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 import EditIcon from "../assets/edit.svg";
 import MemoIcon from "../assets/memo.svg";
-import AlarmIcon from "../assets/alarm.svg";
 import DeleteIcon from "../assets/delete.svg";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
-function TaskOptionsPopup({
-    taskId,
-    userId,
-    onClose,
-    onDelete,
-    onEditConfirm,
-}) {
+function TaskOptionsPopup({ taskData, onClose, onDelete, onEditConfirm }) {
     const [showEditor, setShowEditor] = useState(false);
-    const [editorType, setEditorType] = useState("");
+    const [editorType, setEditorType] = useState(null); // 'edit' | 'memo'
     const [showRepeatEditor, setShowRepeatEditor] = useState(false);
-    const [newText, setNewText] = useState("");
 
-    // 반복 주기
+    const [editText, setEditText] = useState(""); // 할 일
+    const [memoText, setMemoText] = useState(""); // 메모
+
     const [showRepeatOptions, setShowRepeatOptions] = useState(false);
     const [selectedRepeatOption, setSelectedRepeatOption] = useState("");
 
-    // 기간 설정
-    const [periodStart, setPeriodStart] = useState(new Date());
-    const [periodEnd, setPeriodEnd] = useState(new Date());
-
     const repeatOptions = ["매일", "매주", "매달"];
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+    // --- 안정적으로 기존 메모 불러오기 ---
+    useEffect(() => {
+        if (editorType === "edit") {
+            setEditText(taskData?.title || "");
+        } else if (editorType === "memo") {
+            setMemoText(taskData?.memo || "");
+        }
+    }, [editorType, taskData]);
+
+    const openEditor = (type) => {
+        setEditorType(type);
+        setShowEditor(true);
+        setShowRepeatOptions(false);
+    };
+
+    const handleConfirm = () => {
+        if (editorType === "edit") {
+            onEditConfirm(editText, "edit");
+        } else if (editorType === "memo") {
+            onEditConfirm(memoText, "memo");
+        }
+        setShowEditor(false);
+        setEditorType(null);
+    };
 
     const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
+    const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
     const getPlaceholder = () =>
         editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기";
-    const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
 
     return (
         <>
             <div className="overlay" onClick={onClose}></div>
 
-            {/* 옵션 팝업 */}
             {!showEditor && !showRepeatEditor && (
                 <div
                     className="task-options-popup"
@@ -49,25 +60,20 @@ function TaskOptionsPopup({
                 >
                     <button
                         className="option-btn"
-                        onClick={() => {
-                            setShowEditor(true);
-                            setEditorType("edit");
-                            setNewText(initialText || ""); // ✅ 기존 할 일 내용 세팅
-                        }}
+                        onClick={() => openEditor("edit")}
                     >
                         <img src={EditIcon} alt="할 일 수정" />
                         <span>할 일 수정</span>
                     </button>
+
                     <button
                         className="option-btn"
-                        onClick={() => {
-                            setShowEditor(true);
-                            setEditorType("memo");
-                        }}
+                        onClick={() => openEditor("memo")}
                     >
                         <img src={MemoIcon} alt="메모" />
                         <span>메모</span>
                     </button>
+
                     <button
                         className="option-btn"
                         onClick={() => setShowRepeatEditor(true)}
@@ -75,24 +81,15 @@ function TaskOptionsPopup({
                         <img src={RepeatIcon} alt="반복 설정" />
                         <span>반복 설정</span>
                     </button>
+
                     <button className="option-btn" onClick={onDelete}>
                         <img src={DeleteIcon} alt="삭제" />
                         <span>삭제</span>
                     </button>
-
-                    <div className="task-options-footer">
-                        <button className="cancel-btn" onClick={onClose}>
-                            취소
-                        </button>
-                        <button className="confirm-btn" onClick={onClose}>
-                            확인
-                        </button>
-                    </div>
                 </div>
             )}
 
-            {/* 메모/할 일 수정 */}
-            {showEditor && (
+            {showEditor && editorType && (
                 <div
                     className="editor-overlay"
                     onClick={() => setShowEditor(false)}
@@ -115,8 +112,16 @@ function TaskOptionsPopup({
                                 <input
                                     type="text"
                                     className="rename-input"
-                                    value={newText}
-                                    onChange={(e) => setNewText(e.target.value)}
+                                    value={
+                                        editorType === "edit"
+                                            ? editText
+                                            : memoText
+                                    }
+                                    onChange={(e) =>
+                                        editorType === "edit"
+                                            ? setEditText(e.target.value)
+                                            : setMemoText(e.target.value)
+                                    }
                                     placeholder={getPlaceholder()}
                                 />
                             </div>
@@ -124,21 +129,16 @@ function TaskOptionsPopup({
                             <div className="button-group">
                                 <button
                                     className="cancel-button"
-                                    onClick={() => setShowEditor(false)}
+                                    onClick={() => {
+                                        setShowEditor(false);
+                                        setEditorType(null);
+                                    }}
                                 >
                                     취소
                                 </button>
                                 <button
                                     className="confirm-button"
-                                    onClick={() => {
-                                        if (
-                                            editorType === "edit" &&
-                                            onEditConfirm
-                                        )
-                                            onEditConfirm(newText);
-                                        setNewText("");
-                                        setShowEditor(false);
-                                    }}
+                                    onClick={handleConfirm}
                                 >
                                     확인
                                 </button>
@@ -148,7 +148,7 @@ function TaskOptionsPopup({
                 </div>
             )}
 
-            {/* 반복 설정 + 서브 반복 주기 팝업 */}
+            {/* 반복 설정 */}
             {showRepeatEditor && (
                 <div
                     className="editor-overlay"
@@ -159,7 +159,6 @@ function TaskOptionsPopup({
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="rename-box">
-                            {/* 상단 반복 일정 */}
                             <div className="category-item white-bg">
                                 <img
                                     src={RepeatIcon}
@@ -169,7 +168,6 @@ function TaskOptionsPopup({
                                 <span>반복 일정</span>
                             </div>
 
-                            {/* 반복 주기 */}
                             <div
                                 className="category-item clickable"
                                 onClick={() =>
@@ -188,17 +186,6 @@ function TaskOptionsPopup({
                                 />
                             </div>
 
-                            {/* 기간 설정 */}
-                            <div className="category-item">
-                                <span>기간 설정</span>
-                                <img
-                                    src={ArrowIcon}
-                                    alt="arrow"
-                                    className="arrow-icon"
-                                />
-                            </div>
-
-                            {/* 서브 옵션 */}
                             {showRepeatOptions && (
                                 <div className="repeat-options-list">
                                     {repeatOptions.map((opt) => (
@@ -219,7 +206,6 @@ function TaskOptionsPopup({
                                 </div>
                             )}
 
-                            {/* 버튼 맨 아래 */}
                             <div className="button-group">
                                 <button
                                     className="cancel-button"
