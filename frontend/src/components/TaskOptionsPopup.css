@@ -460,3 +460,11 @@
     position: absolute;
     transition: left 0.3s;
 }
+
+
+.hour-btn.selected,
+.minute-btn.selected {
+    background-color: #36A862;
+    color: white;
+    font-weight: bold;
+}

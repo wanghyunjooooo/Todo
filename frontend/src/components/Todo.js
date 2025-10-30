@@ -251,8 +251,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
 
                         const category_id =
                           task.category_id || group.tasks[0]?.category_id;
-                        const dateStr =
-                          selectedDate.toLocaleDateString("sv-SE");
+                        const dateStr = selectedDate.toLocaleDateString("sv-SE");
 
                         try {
                           const result = await addTask({

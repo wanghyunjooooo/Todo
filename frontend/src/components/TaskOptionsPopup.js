@@ -280,7 +280,12 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
 
                                     {/* 토글 */}
                                     <div className="toggle" onClick={() => setRepeatEnabled((prev) => !prev)}>
-                                        <div className="toggle-container" style={{ background: repeatEnabled ? "#4CAF50" : "#CCC" }}>
+                                        <div
+                                            className="toggle-container"
+                                            style={{
+                                                background: repeatEnabled ? "#4CAF50" : "#CCC",
+                                            }}
+                                        >
                                             <div className="toggle-switch" style={{ left: repeatEnabled ? "14px" : "2px" }}></div>
                                         </div>
                                     </div>
@@ -453,7 +458,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                             <div className="hour-container">
                                 {Array.from({ length: 24 }, (_, i) => (
                                     <button
-                                        className="hour-btn"
+                                        className={`hour-btn ${alarmDate.getHours() === i ? "selected" : ""}`}
                                         key={i}
                                         onClick={() => {
                                             const newDate = new Date(alarmDate);
@@ -470,7 +475,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                             <div className="minute-container">
                                 {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
                                     <button
-                                        className="minute-btn"
+                                        className={`minute-btn ${alarmDate.getMinutes() === m ? "selected" : ""}`}
                                         key={m}
                                         onClick={() => {
                                             const newDate = new Date(alarmDate);
