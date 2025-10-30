@@ -19,7 +19,6 @@ public class TaskDTO {
     private String taskName;
 
     private String status;
-    
     private String memo;
 
     @JsonProperty("task_date")
@@ -36,6 +35,9 @@ public class TaskDTO {
 
     @JsonProperty("category_id")
     private Long categoryId;
+
+    @JsonProperty("category_name")
+    private String categoryName;
 
     @JsonProperty("routine_id")
     private Long routineId;

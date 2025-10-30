@@ -26,8 +26,15 @@ public class CategoryService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
+        List<Category> existingCategories = categoryRepository.findByUser_UserId(user.getUserId());
+        for (Category c : existingCategories) {
+            if (c.getCategoryName().equalsIgnoreCase(dto.getCategoryName().trim())) {
+                return c;
+            }
+        }
+
         Category category = new Category();
-        category.setCategoryName(dto.getCategoryName());
+        category.setCategoryName(dto.getCategoryName().trim());
         category.setUser(user);
 
         return categoryRepository.save(category);

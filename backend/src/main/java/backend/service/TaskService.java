@@ -43,8 +43,24 @@ public class TaskService {
     public Task createTask(TaskDTO dto) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+        if (category == null && dto.getCategoryId() == null && dto.getCategoryName() != null) {
+            List<Category> existing = categoryRepository.findByUser_UserId(user.getUserId());
+            category = existing.stream()
+                    .filter(c -> c.getCategoryName().equalsIgnoreCase(dto.getCategoryName().trim()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        Category newCat = new Category();
+                        newCat.setCategoryName(dto.getCategoryName().trim());
+                        newCat.setUser(user);
+                        return categoryRepository.save(newCat);
+                    });
+        }
+
+        if (category == null) {
+            throw new IllegalArgumentException("유효한 카테고리를 찾을 수 없습니다.");
+        }
 
         Task task = new Task();
         task.setTaskName(dto.getTaskName());
@@ -58,6 +74,7 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
@@ -129,8 +146,6 @@ public class TaskService {
             }
         }
     }
-
-
 
     public Task toggleStatus(Long taskId, String newStatus) {
         Task task = taskRepository.findById(taskId)
