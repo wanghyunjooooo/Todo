@@ -177,3 +177,18 @@ export const getWeeklyStats = (user_id) =>
             console.error("주간 Task 통계 조회 실패:", err);
             throw err;
         });
+
+
+export const updateTask = async (taskId, data) => {
+  const token = localStorage.getItem("token"); // JWT 등
+  const response = await fetch(`http://localhost:8080/tasks/${taskId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Task 업데이트 실패");
+  return await response.json();
+};
