@@ -26,7 +26,8 @@ function TaskOptionsPopup({
     const [editorType, setEditorType] = useState("");
     const [showRepeatEditor, setShowRepeatEditor] = useState(false);
     const [showAlarmEditor, setShowAlarmEditor] = useState(false);
-    const [newText, setNewText] = useState(taskData?.text || "");
+    const [editText, setEditText] = useState(""); // 할 일 수정용
+    const [memoText, setMemoText] = useState(""); // 메모용
 
     // 반복 관련 상태
     const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
@@ -45,6 +46,19 @@ function TaskOptionsPopup({
     const getPlaceholder = () =>
         editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기";
     const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
+
+    // 수정 → editorType이 바뀔 때 taskData 반영
+    const [newText, setNewText] = useState(""); // 초기에는 빈 문자열
+
+    useEffect(() => {
+        if (!editorType || !taskData) return;
+
+        if (editorType === "edit") {
+            setNewText(taskData.task_name || "");
+        } else if (editorType === "memo") {
+            setNewText(taskData.memo || ""); // ✅ 기존 메모 가져오기
+        }
+    }, [editorType, taskData]);
 
     // =========================
     // 반복/알람 초기값 세팅
