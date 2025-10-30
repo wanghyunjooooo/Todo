@@ -30,16 +30,8 @@ public class CategoryService {
         category.setCategoryName(dto.getCategoryName());
         category.setUser(user);
 
-        try {
-            return categoryRepository.save(category);
-        } catch (Exception e) {
-            if (e.getCause() != null && e.getCause().getMessage().contains("unique constraint")) {
-                throw new IllegalArgumentException("이미 동일한 이름의 카테고리가 존재합니다.");
-            }
-            throw new RuntimeException("카테고리 저장 중 오류가 발생했습니다.", e);
-        }
+        return categoryRepository.save(category);
     }
-
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -68,12 +60,10 @@ public class CategoryService {
             throw new IllegalArgumentException("해당 사용자의 카테고리가 아닙니다.");
         }
 
-        boolean exists = categoryRepository.existsByUser_UserIdAndCategoryName(userId, dto.getCategoryName());
-        if (exists && !category.getCategoryName().equals(dto.getCategoryName())) {
-            throw new IllegalArgumentException("이미 동일한 이름의 카테고리가 존재합니다.");
+        if (dto.getCategoryName() != null && !dto.getCategoryName().isBlank()) {
+            category.setCategoryName(dto.getCategoryName());
         }
 
-        category.setCategoryName(dto.getCategoryName());
         return categoryRepository.save(category);
     }
 
@@ -87,5 +77,15 @@ public class CategoryService {
         }
 
         categoryRepository.delete(category);
+    }
+
+    @Transactional
+    public void deleteEmptyCategories(Long userId) {
+        List<Category> categories = categoryRepository.findByUser_UserId(userId);
+        for (Category category : categories) {
+            if (category.getTasks() == null || category.getTasks().isEmpty()) {
+                categoryRepository.delete(category);
+            }
+        }
     }
 }

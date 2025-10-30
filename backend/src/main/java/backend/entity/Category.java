@@ -11,12 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(
-    name = "\"Category\"",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "categoryname"})
-    }
-)
+@Table(name = "\"Category\"")
 @Getter
 @Setter
 @NoArgsConstructor

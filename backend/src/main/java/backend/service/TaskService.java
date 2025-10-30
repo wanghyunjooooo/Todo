@@ -5,10 +5,12 @@ import backend.entity.Category;
 import backend.entity.Task;
 import backend.entity.User;
 import backend.repository.CategoryRepository;
+import backend.repository.NotificationRepository;
 import backend.repository.TaskRepository;
 import backend.repository.UserRepository;
 import backend.scheduler.NotificationSchedulerService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -20,16 +22,22 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
 
+    private final NotificationRepository notificationRepository;
+
+    private final CategoryService categoryService;
+
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final NotificationSchedulerService notificationSchedulerService;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository, NotificationSchedulerService notificationSchedulerService) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository, NotificationSchedulerService notificationSchedulerService, CategoryService categoryService, NotificationRepository notificationRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.notificationSchedulerService = notificationSchedulerService;
+        this.categoryService = categoryService;
+        this.notificationRepository = notificationRepository;
     }
 
     public Task createTask(TaskDTO dto) {
@@ -99,13 +107,30 @@ public class TaskService {
         return updated;
     }
 
+    @Transactional
     public void deleteTask(Long taskId) {
-        if (!taskRepository.existsById(taskId)) {
-            throw new IllegalArgumentException("삭제할 할 일을 찾을 수 없습니다.");
-        }
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("삭제할 할 일을 찾을 수 없습니다."));
+
         notificationSchedulerService.cancelNotification(taskId);
-        taskRepository.deleteById(taskId);
+
+        notificationRepository.deleteByTask_TaskId(taskId);
+
+        Category category = task.getCategory();
+        Long userId = task.getUser().getUserId();
+
+        taskRepository.delete(task);
+        taskRepository.flush();
+
+        if (category != null) {
+            Category refreshed = categoryRepository.findById(category.getCategoryId()).orElse(null);
+            if (refreshed != null && (refreshed.getTasks() == null || refreshed.getTasks().isEmpty())) {
+                categoryService.deleteCategory(userId, category.getCategoryId());
+            }
+        }
     }
+
+
 
     public Task toggleStatus(Long taskId, String newStatus) {
         Task task = taskRepository.findById(taskId)
