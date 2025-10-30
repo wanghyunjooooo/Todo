@@ -3,7 +3,8 @@ import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
 import { addTask, deleteTask, updateTaskStatus, updateTask } from "../api";
-function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
+
+function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
     const [tasksByCategory, setTasksByCategory] = useState([]);
     const [popupIndex, setPopupIndex] = useState({ category: null, index: null });
     const inputRefs = useRef({});
@@ -67,6 +68,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
         const newChecked = !task.checked;
         try {
             await updateTaskStatus(task.task_id, { status: newChecked ? "완료" : "미완료" });
+            if (onDataUpdated) onDataUpdated();
             setTasksByCategory((prev) => {
                 const updated = [...prev];
                 updated[catIdx].tasks[taskIdx].checked = newChecked;
@@ -110,6 +112,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
+                if (onDataUpdated) onDataUpdated();
             } catch (err) {
                 console.error("Task 삭제 실패:", err);
             }
@@ -199,6 +202,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
                                                         notification_type: "미알림",
                                                         notification_time: null,
                                                     });
+                                                    if (onDataUpdated) onDataUpdated();
 
                                                     const savedTask = result.task;
                                                     setTasksByCategory((prev) => {

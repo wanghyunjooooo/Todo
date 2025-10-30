@@ -110,6 +110,20 @@ function Home() {
         setSelectedDate(newDate);
     };
 
+    const refreshData = async () => {
+        const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+
+        try {
+            const [tasks, monthlyTasks, categoryList] = await Promise.all([getTasksByDay(userId, dateStr), getMonthlyTasks(userId, `${year}-${String(month + 1).padStart(2, "0")}-01`, `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`), getCategories(userId)]);
+
+            setTasksByDate(tasks || []);
+            setTasksByMonth(monthlyTasks || []);
+            setCategories(categoryList || []);
+        } catch (err) {
+            console.error("데이터 새로고침 실패:", err);
+        }
+    };
+
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             {/* 상단 헤더 */}
@@ -122,7 +136,7 @@ function Home() {
 
                 {/* 할 일 목록 */}
                 <div style={{ marginTop: "8px" }}>
-                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} focusedTaskId={focusedTaskId} />
+                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} focusedTaskId={focusedTaskId} onDataUpdated={refreshData} />
                 </div>
             </div>
 
