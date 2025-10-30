@@ -23,7 +23,7 @@ function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) 
     const [periodStart, setPeriodStart] = useState(new Date());
     const [periodEnd, setPeriodEnd] = useState(new Date());
 
-    const repeatOptions = ["매일", "매주", "매월"];
+    const repeatOptions = ["매일", "매주", "매달"];
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
     const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
@@ -57,10 +57,7 @@ function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) 
                         <img src={MemoIcon} alt="메모" />
                         <span>메모</span>
                     </button>
-                    <button
-                        className="option-btn"
-                        onClick={() => setShowRepeatEditor(true)}
-                    >
+                    <button className="option-btn" onClick={() => setShowRepeatEditor(true)}>
                         <img src={RepeatIcon} alt="반복 설정" />
                         <span>반복 설정</span>
                     </button>
@@ -91,13 +88,7 @@ function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) 
                             </div>
 
                             <div className="rename-input-container">
-                                <input
-                                    type="text"
-                                    className="rename-input"
-                                    value={newText}
-                                    onChange={(e) => setNewText(e.target.value)}
-                                    placeholder={getPlaceholder()}
-                                />
+                                <input type="text" className="rename-input" value={newText} onChange={(e) => setNewText(e.target.value)} placeholder={getPlaceholder()} />
                             </div>
 
                             <div className="button-group">
@@ -132,10 +123,7 @@ function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) 
                             </div>
 
                             {/* 반복 주기 */}
-                            <div
-                                className="category-item clickable"
-                                onClick={() => setShowRepeatOptions(!showRepeatOptions)}
-                            >
+                            <div className="category-item clickable" onClick={() => setShowRepeatOptions(!showRepeatOptions)}>
                                 <span>반복 주기 {selectedRepeatOption && `: ${selectedRepeatOption}`}</span>
                                 <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                             </div>
@@ -150,11 +138,7 @@ function TaskOptionsPopup({ taskId, userId, onClose, onDelete, onEditConfirm }) 
                             {showRepeatOptions && (
                                 <div className="repeat-options-list">
                                     {repeatOptions.map((opt) => (
-                                        <div
-                                            key={opt}
-                                            className={`repeat-option ${selectedRepeatOption === opt ? "selected" : ""}`}
-                                            onClick={() => setSelectedRepeatOption(opt)}
-                                        >
+                                        <div key={opt} className={`repeat-option ${selectedRepeatOption === opt ? "selected" : ""}`} onClick={() => setSelectedRepeatOption(opt)}>
                                             {opt}
                                         </div>
                                     ))}

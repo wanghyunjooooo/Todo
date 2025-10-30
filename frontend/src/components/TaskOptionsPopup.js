@@ -32,7 +32,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
     // 알람 설정
     const [alarmDate, setAlarmDate] = useState(new Date());
     const [alarmEnabled, setAlarmEnabled] = useState(false);
-    const repeatOptions = ["매일", "매주", "매월"];
+    const repeatOptions = ["매일", "매주", "매달"];
 
     const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
     const getPlaceholder = () => (editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기");
@@ -44,7 +44,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
     useEffect(() => {
         if (!taskData) return;
 
-        const repeatTypes = ["매일", "매주", "매월"];
+        const repeatTypes = ["매일", "매주", "매달"];
         const routineType = taskData.routine_type?.trim();
         const isRepeat = repeatTypes.includes(routineType);
         setRepeatEnabled(isRepeat);
