@@ -34,9 +34,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
             else setCategories([]);
         } catch (err) {
             console.error("카테고리 조회 실패:", err.response || err.message);
-            setError(
-                err.response?.data?.message || "카테고리 조회 중 오류 발생"
-            );
+            setError(err.response?.data?.message || "카테고리 조회 중 오류 발생");
         }
     };
 
@@ -54,10 +52,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
             onClose();
         } catch (err) {
             console.error("카테고리 추가 실패:", err.response || err.message);
-            setError(
-                err.response?.data?.message ||
-                    "동일한 이름의 카테고리가 이미 존재합니다"
-            );
+            setError(err.response?.data?.message || "동일한 이름의 카테고리가 이미 존재합니다");
         } finally {
             setLoading(false);
         }
@@ -85,9 +80,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
             fetchCategories();
         } catch (err) {
             console.error("카테고리 수정 실패:", err.response || err.message);
-            setError(
-                err.response?.data?.message || "카테고리 수정 중 오류 발생"
-            );
+            setError(err.response?.data?.message || "카테고리 수정 중 오류 발생");
         } finally {
             setLoading(false);
         }
@@ -98,18 +91,14 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
         setLoading(true);
         setError("");
         try {
-            await api.delete(
-                `/categories/${userId}/${selectedCategory.category_id}`
-            );
+            await api.delete(`/categories/${userId}/${selectedCategory.category_id}`);
             setSelectedCategory(null);
             setShowActionButtons(false);
             setShowDeleteConfirm(false);
             fetchCategories();
         } catch (err) {
             console.error("카테고리 삭제 실패:", err.response || err.message);
-            setError(
-                err.response?.data?.message || "카테고리 삭제 중 오류 발생"
-            );
+            setError(err.response?.data?.message || "카테고리 삭제 중 오류 발생");
         } finally {
             setLoading(false);
         }
@@ -127,34 +116,17 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                     <div className="rename-box">
                         <div className="rename-title-with-icon">
                             <MemoIcon className="memo-icon" />
-                            <span className="rename-title-text">
-                                카테고리 추가하기
-                            </span>
+                            <span className="rename-title-text">카테고리 추가하기</span>
                         </div>
                         <div className="rename-input-container">
-                            <input
-                                type="text"
-                                className="rename-input"
-                                value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
-                                placeholder="카테고리 이름 입력"
-                                disabled={loading}
-                            />
+                            <input type="text" className="rename-input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="카테고리 이름 입력" disabled={loading} />
                         </div>
                         {error && <p className="error-text">{error}</p>}
                         <div className="button-group">
-                            <button
-                                className="cancel-button"
-                                onClick={onClose}
-                                disabled={loading}
-                            >
+                            <button className="cancel-button" onClick={onClose} disabled={loading}>
                                 취소
                             </button>
-                            <button
-                                className="confirm-button"
-                                onClick={handleAddCategory}
-                                disabled={loading}
-                            >
+                            <button className="confirm-button" onClick={handleAddCategory} disabled={loading}>
                                 {loading ? "처리 중..." : "확인"}
                             </button>
                         </div>
@@ -164,19 +136,16 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                 {/* 카테고리 선택 */}
                 {!isAddMode && !selectedCategory && (
                     <div className="category-list">
+                        <div className="rename-title-with-icon">
+                            <MemoIcon className="memo-icon" />
+                            <span className="rename-title-text">카테고리 추가하기</span>
+                        </div>
                         {categories.length === 0 ? (
                             <p>카테고리가 없습니다.</p>
                         ) : (
                             categories.map((cat) => (
-                                <div
-                                    key={cat.category_id}
-                                    className="category-item"
-                                    onClick={() => handleSelectCategory(cat)}
-                                >
-                                    <div className="text-with-icon">
-                                        <MemoIcon className="memo-icon" />
-                                        <span>{cat.category_name}</span>
-                                    </div>
+                                <div key={cat.category_id} className="category-item name" style={{ background: "var(--grey-white-hover, #FBFBFB)" }} onClick={() => handleSelectCategory(cat)}>
+                                    <span>{cat.category_name}</span>
                                     <ArrowIcon className="arrow-icon" />
                                 </div>
                             ))
@@ -185,67 +154,39 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                 )}
 
                 {/* 선택한 카테고리: 이름변경/삭제 버튼 */}
-                {selectedCategory &&
-                    showActionButtons &&
-                    !isEditingName &&
-                    !showDeleteConfirm && (
-                        <div className="rename-box">
-                            <div className="rename-title-with-icon">
-                                <MemoIcon className="memo-icon" />
-                                <span className="rename-title-text">
-                                    {selectedCategory.category_name}
-                                </span>
-                            </div>
-                            <div
-                                className="category-item"
-                                onClick={() => setIsEditingName(true)}
-                            >
-                                <span>이름 변경</span>
-                                <ArrowIcon className="arrow-icon" />
-                            </div>
-                            <div
-                                className="category-item delete"
-                                onClick={() => setShowDeleteConfirm(true)}
-                            >
-                                <span>카테고리 삭제</span>
-                                <ArrowIcon className="arrow-icon" />
-                            </div>
+                {selectedCategory && showActionButtons && !isEditingName && !showDeleteConfirm && (
+                    <div className="rename-box">
+                        <div className="rename-title-with-icon">
+                            <MemoIcon className="memo-icon" />
+                            <span className="rename-title-text">{selectedCategory.category_name}</span>
                         </div>
-                    )}
+                        <div className="category-item" onClick={() => setIsEditingName(true)}>
+                            <span>이름 변경</span>
+                            <ArrowIcon className="arrow-icon" />
+                        </div>
+                        <div className="category-item delete" onClick={() => setShowDeleteConfirm(true)}>
+                            <span>카테고리 삭제</span>
+                            <ArrowIcon className="arrow-icon" />
+                        </div>
+                    </div>
+                )}
 
                 {/* 이름 변경 폼 */}
                 {selectedCategory && isEditingName && (
                     <div className="rename-box">
                         <div className="rename-title-with-icon">
                             <MemoIcon className="memo-icon" />
-                            <span className="rename-title-text">
-                                {selectedCategory.category_name} 이름 변경
-                            </span>
+                            <span className="rename-title-text">이름 변경</span>
                         </div>
                         <div className="rename-input-container">
-                            <input
-                                type="text"
-                                className="rename-input"
-                                value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
-                                placeholder="새 이름을 입력하세요"
-                                disabled={loading}
-                            />
+                            <input type="text" className="rename-input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="새 이름을 입력하세요" disabled={loading} />
                         </div>
                         {error && <p className="error-text">{error}</p>}
                         <div className="button-group">
-                            <button
-                                className="cancel-button"
-                                onClick={() => setIsEditingName(false)}
-                                disabled={loading}
-                            >
+                            <button className="cancel-button" onClick={() => setIsEditingName(false)} disabled={loading}>
                                 취소
                             </button>
-                            <button
-                                className="confirm-button"
-                                onClick={handleUpdateCategoryName}
-                                disabled={loading}
-                            >
+                            <button className="confirm-button" onClick={handleUpdateCategoryName} disabled={loading}>
                                 {loading ? "처리 중..." : "확인"}
                             </button>
                         </div>
@@ -257,25 +198,15 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                     <div className="rename-box">
                         <div className="rename-title-with-icon">
                             <MemoIcon className="memo-icon" />
-                            <span className="rename-title-text">
-                                카테고리 삭제 확인
-                            </span>
+                            <span className="rename-title-text">카테고리 삭제 확인</span>
                         </div>
                         <p>선택한 카테고리를 영구적으로 삭제하시겠습니까?</p>
                         {error && <p className="error-text">{error}</p>}
                         <div className="button-group">
-                            <button
-                                className="cancel-button"
-                                onClick={() => setShowDeleteConfirm(false)}
-                                disabled={loading}
-                            >
+                            <button className="cancel-button" onClick={() => setShowDeleteConfirm(false)} disabled={loading}>
                                 취소
                             </button>
-                            <button
-                                className="confirm-button delete"
-                                onClick={handleDeleteCategory}
-                                disabled={loading}
-                            >
+                            <button className="confirm-button delete" onClick={handleDeleteCategory} disabled={loading}>
                                 {loading ? "처리 중..." : "삭제"}
                             </button>
                         </div>
