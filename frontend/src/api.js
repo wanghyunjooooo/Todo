@@ -168,13 +168,12 @@ export const createRoutine = (task_id, routine_type, start_date, end_date, user_
             throw err;
         });
 
-
-        // ✅ 주간 Task 통계 조회
+// ✅ 주간 Task 통계 조회
 export const getWeeklyStats = (user_id) =>
-  api
-    .get(`/tasks/stats/weekly/${user_id}`)
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error("주간 Task 통계 조회 실패:", err);
-      throw err;
-    });
+    api
+        .get(`/tasks/stats/weekly/${user_id}`)
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error("주간 Task 통계 조회 실패:", err);
+            throw err;
+        });

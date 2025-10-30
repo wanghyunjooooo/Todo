@@ -167,7 +167,9 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
                                         ref={(el) => setInputRef(task.task_id || task._tempId, el)}
                                         className={`task-text-input ${task.checked ? "checked" : ""}`}
                                         value={task.text}
+                                        disabled={!!task.task_id} // ✅ 서버에 저장된 task면 항상 잠금
                                         onChange={(e) => {
+                                            if (task.task_id) return; // ✅ 이미 저장된 항목은 수정 불가
                                             const newText = e.target.value;
                                             setTasksByCategory((prev) => {
                                                 const updated = [...prev];
@@ -176,6 +178,9 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
                                             });
                                         }}
                                         onKeyDown={async (e) => {
+                                            // ✅ 이미 저장된 task는 키 입력 차단
+                                            if (task.task_id) return;
+
                                             // ✅ Enter → 저장
                                             if (e.key === "Enter" && task.text.trim()) {
                                                 const user_id = localStorage.getItem("user_id");
