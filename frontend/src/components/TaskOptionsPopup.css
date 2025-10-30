@@ -2,8 +2,8 @@
    🔹 기본 설정
 =========================== */
 * {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /* ===========================
@@ -11,20 +11,20 @@
 =========================== */
 .overlay,
 .editor-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(42, 42, 42, 0.2);
-  z-index: 9998;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(42, 42, 42, 0.2);
+    z-index: 9998;
 }
 
 .editor-overlay {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
 }
 
 .editor-box {
@@ -42,34 +42,34 @@
 =========================== */
 
 .option-btn {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 310px;
-  height: 40px;
-  gap: 8px;
-  border: none;
-  border-radius: 8px;
-  background: #fff;
-  font-family: Pretendard, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--Grey-Dark, #595959);
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 310px;
+    height: 40px;
+    gap: 8px;
+    border: none;
+    border-radius: 8px;
+    background: #fff;
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--Grey-Dark, #595959);
+    cursor: pointer;
 }
 
 .option-btn.delete-btn span {
-  color: #fd5344;
+    color: #fd5344;
 }
 
 .option-title {
-  width: 214px;
-  color: var(--Grey-Darker, #2a2a2a);
-  font-family: Pretendard;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
+    width: 214px;
+    color: var(--Grey-Darker, #2a2a2a);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 /* ===========================
@@ -79,88 +79,88 @@
 .confirm-btn,
 .cancel-button,
 .confirm-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 151px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: Pretendard, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  background: #fff;
-  color: var(--Grey-Darker, #2a2a2a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 151px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    background: #fff;
+    color: var(--Grey-Darker, #2a2a2a);
 }
 
 .title-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--Grey-Darker, #2a2a2a);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--Grey-Darker, #2a2a2a);
 }
 
 /* ===========================
    🔹 에디터 박스
 =========================== */
 .editor-box {
-  width: 350px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    width: 350px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .rename-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  font-family: Pretendard, sans-serif;
-  font-size: 12px;
-  color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    color: #2a2a2a;
 }
 
 .rename-title-with-icon {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .memo-icon {
-  width: 40px;
-  height: 40px;
+    width: 40px;
+    height: 40px;
 }
 
 .rename-input-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 56px;
-  padding: 8px 16px;
-  border-radius: 16px;
-  background: #f3f3f3;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    padding: 8px 16px;
+    border-radius: 16px;
+    background: #f3f3f3;
 }
 
 .rename-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: Pretendard, sans-serif;
-  font-size: 12px;
-  color: #2a2a2a;
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    color: #2a2a2a;
 }
 
 .button-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  width: 100%;
-  margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
 }
 
 /* ===========================
@@ -168,63 +168,63 @@
 =========================== */
 .hour-container,
 .minute-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  width: 270px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 270px;
 }
 
 .hour-container {
-  column-gap: 15.71px;
-  row-gap: 20px;
+    column-gap: 15.71px;
+    row-gap: 20px;
 }
 
 .minute-container {
-  column-gap: 30px;
-  row-gap: 20px;
+    column-gap: 30px;
+    row-gap: 20px;
 }
 
 .hour-title,
 .minute-title {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  align-self: stretch;
-  color: #000;
-  font-family: Pretendard;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    align-self: stretch;
+    color: #000;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
 }
 
 .hour-btn,
 .minute-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 20px;
-  height: 20px;
-  padding: 10px;
-  border: none;
-  border-radius: 14px;
-  background: var(--grey-white-hover, #fbfbfb);
-  cursor: pointer;
-  color: var(--Grey-Darker, #2a2a2a);
-  font-family: Pretendard;
-  font-size: 10px;
-  font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 14px;
+    background: var(--grey-white-hover, #fbfbfb);
+    cursor: pointer;
+    color: var(--Grey-Darker, #2a2a2a);
+    font-family: Pretendard;
+    font-size: 10px;
+    font-weight: 500;
 }
 
 /* ===========================
    🔹 반복 설정 / 카테고리
 =========================== */
 .category-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  gap: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
 }
 
 .category-item {
@@ -235,7 +235,7 @@
     gap: 8px;
     align-self: stretch;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
     cursor: pointer;
     color: var(--Grey-Dark, #595959);
     font-family: Pretendard;
@@ -246,32 +246,32 @@
 }
 
 .category-item.white-bg {
-  background: #fff !important;
-  justify-content: flex-start;
-  gap: 8px;
+    background: #fff !important;
+    justify-content: flex-start;
+    gap: 8px;
 }
 
 .category-item.repeat-btn {
-  width: 40px;
-  height: 40px;
-  transform: rotate(90deg);
-  aspect-ratio: 1/1;
+    width: 40px;
+    height: 40px;
+    transform: rotate(90deg);
+    aspect-ratio: 1/1;
 }
 
 .category-span {
-  flex: 1 0 0;
-  color: var(--Grey-Dark, #595959);
-  font-family: Pretendard;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
+    flex: 1 0 0;
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 .arrow-icon {
-  margin-left: auto;
-  width: 24px;
-  height: 24px;
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
 }
 
 /* ===========================
@@ -279,23 +279,23 @@
 =========================== */
 
 .repeat-option {
-  width: 100%;
-  padding: 17px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  background: var(--Grey-Light, #f3f3f3);
-  margin-bottom: 12px;
-  color: var(--Grey-Darker, #595959);
-  transition: all 0.2s;
+    width: 100%;
+    padding: 17px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--Grey-Light, #f3f3f3);
+    margin-bottom: 12px;
+    color: var(--Grey-Darker, #595959);
+    transition: all 0.2s;
 }
 
 .repeat-option.selected {
-  background: #dff5e1;
-  border: 2px solid #4caf50;
+    background: #dff5e1;
+    border: 2px solid #4caf50;
 }
 
 .repeat-option:hover {
-  background: #e0e0e0;
+    background: #e0e0e0;
 }
 
 /* ===========================
@@ -311,7 +311,7 @@
     align-items: flex-start;
     gap: 20px;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
 }
 
 .react-datepicker {
@@ -337,9 +337,9 @@
     align-items: center;
     gap: 10px;
     border-radius: 14px;
-    background: var(--grey-white-hover, #FBFBFB);
+    background: var(--grey-white-hover, #fbfbfb);
 
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 10px;
@@ -349,7 +349,7 @@
 }
 
 .react-datepicker__day:not(.react-datepicker__day--outside-month):hover {
-  background-color: #dff5e1 !important;
+    background-color: #dff5e1 !important;
 }
 
 .react-datepicker__day,
@@ -361,7 +361,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
     margin: 0;
 }
 
@@ -379,7 +379,7 @@
 .react-datepicker__day-name span {
     margin: 0;
     align-self: stretch;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 12px;
@@ -439,7 +439,7 @@
 }
 
 .react-datepicker__day--outside-month {
-  visibility: hidden !important;
+    visibility: hidden !important;
 }
 
 /* ===========================
@@ -447,67 +447,88 @@
 ===========================*/
 
 .toggle {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  padding: 10px 5px 12px 5px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  cursor: pointer;
+    display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 10px 5px 12px 5px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
 .toggle-container {
-  display: flex;
-  width: 30px;
-  height: 18px;
-  border-radius: 10px;
-  position: relative;
-  justify-content: flex-end;
-  align-items: center;
-  background: var(--Grey-Normal, #777);
-  transition: background 0.3s;
+    display: flex;
+    width: 30px;
+    height: 18px;
+    border-radius: 10px;
+    position: relative;
+    justify-content: flex-end;
+    align-items: center;
+    background: var(--Grey-Normal, #777);
+    transition: background 0.3s;
 }
 
 .toggle-switch {
-  width: 14px;
-  height: 14px;
-  aspect-ratio: 1/1;
-  border-radius: 10px;
-  background: var(--Grey-White, #fff);
-  position: absolute;
-  transition: left 0.3s;
+    width: 14px;
+    height: 14px;
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    background: var(--Grey-White, #fff);
+    position: absolute;
+    transition: left 0.3s;
 }
 
 .hour-btn.selected,
 .minute-btn.selected {
-  background-color: #36a862;
-  color: white;
-  font-weight: bold;
+    background-color: #36a862;
+    color: white;
+    font-weight: bold;
 }
 
-
-
 .header-buttons {
-  display: flex;
+    display: flex;
 }
 
 .arrow-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .arrow-btn img {
-  width: 20px;
-  height: 20px;
+    width: 20px;
+    height: 20px;
 }
 
 /* 왼쪽 버튼은 아이콘 회전 */
 .arrow-btn.left img {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+/* 시작일 이전 날짜 비활성화 느낌 */
+.disabled-day {
+    color: #ccc !important;
+    background: #f5f5f5 !important;
+    cursor: not-allowed !important;
+}
+
+/* 선택 가능한 날짜 */
+.selectable-day {
+    color: #000;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* 선택된 날짜 (시작일, 종료일, 범위) */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+    background: #4caf50;
+    color: white;
+    border-radius: 50%;
 }
