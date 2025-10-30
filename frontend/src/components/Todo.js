@@ -13,6 +13,19 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
         if (el) inputRefs.current[id] = el;
     };
 
+    const formatTime = (timeStr) => {
+        if (!timeStr) return "";
+
+        const [hourStr, minuteStr] = timeStr.split(":");
+        let hour = parseInt(hourStr, 10);
+        const minute = minuteStr.padStart(2, "0");
+
+        const ampm = hour >= 12 ? "PM" : "AM";
+        hour = hour % 12 || 12; // 0시는 12로 표시
+
+        return `${ampm} ${hour}:${minute}`;
+    };
+
     /** ✅ tasksByDate → tasksByCategory 변환 */
     useEffect(() => {
         if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
@@ -244,6 +257,10 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                 </button>
                             </div>
 
+                            {task.notification_type === "알림" && task.notification_time && <p className="task-time">{formatTime(task.notification_time)}</p>}
+
+                            {task.memo && <p className="task-memo">{task.memo}</p>}
+
                             {popupIndex.category === catIdx && popupIndex.index === taskIdx && (
                                 <TaskOptionsPopup
                                     style={{ top: "40px", right: "0" }}
@@ -252,23 +269,21 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                     userId={localStorage.getItem("user_id")}
                                     onClose={() => setPopupIndex({ category: null, index: null })}
                                     onDelete={() => handleDeleteTask(catIdx, taskIdx)}
-                                    onEditConfirm={async (newText) => {
+                                    onEditConfirm={async (newData) => {
                                         try {
                                             if (!task.task_id) return;
 
-                                            // 서버 업데이트
-                                            await updateTask(task.task_id, {
-                                                task_name: newText,
-                                            });
+                                            const fixedText = typeof newData === "string" ? newData : newData.task_name || task.text;
 
-                                            // 로컬 상태 업데이트
+                                            await updateTask(task.task_id, { task_name: fixedText });
+
                                             setTasksByCategory((prev) => {
                                                 const updated = [...prev];
-                                                updated[catIdx].tasks[taskIdx].text = newText;
+                                                updated[catIdx].tasks[taskIdx].text = fixedText;
                                                 return updated;
                                             });
 
-                                            alert("할 일 수정 완료!");
+                                            if (onDataUpdated) onDataUpdated();
                                         } catch (err) {
                                             console.error("할 일 수정 실패:", err);
                                             alert("할 일 수정 중 오류가 발생했습니다.");
