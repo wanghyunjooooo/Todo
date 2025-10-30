@@ -52,11 +52,13 @@ function TaskOptionsPopup({
     useEffect(() => {
         if (!taskData) return;
 
+        // 반복
         const repeatTypes = ["매일", "매주", "매월"];
         const routineType = taskData.routine_type?.trim();
         const isRepeat = repeatTypes.includes(routineType);
-        setRepeatEnabled(isRepeat);
+        setRepeatEnabled(isRepeat); // 반복이 없으면 false
         setSelectedRepeatOption(isRepeat ? routineType : "");
+
         setPeriodStart(
             taskData.period_start ? new Date(taskData.period_start) : new Date()
         );
@@ -64,7 +66,8 @@ function TaskOptionsPopup({
             taskData.period_end ? new Date(taskData.period_end) : new Date()
         );
 
-        setAlarmEnabled(taskData.notification_type === "알림");
+        // 알람
+        setAlarmEnabled(taskData.notification_type === "알림"); // "미알림"이면 false
         if (taskData.notification_time) {
             const [hours, minutes] = taskData.notification_time.split(":");
             const date = new Date();
@@ -73,29 +76,6 @@ function TaskOptionsPopup({
             setAlarmDate(date);
         }
     }, [taskData]);
-
-    // =========================
-    // 반복 토글 → DB & Todo 동기화
-    // =========================
-    const handleToggleRepeat = async () => {
-        const newValue = !repeatEnabled;
-        setRepeatEnabled(newValue);
-
-        if (!taskId) return;
-        try {
-            const payload = {
-                ...taskData,
-                routine_type: newValue
-                    ? selectedRepeatOption || "매주"
-                    : "반복없음",
-            };
-            await updateTask(taskId, payload, userId);
-            if (onEditConfirm) onEditConfirm(payload);
-        } catch (err) {
-            console.error("반복 토글 DB 업데이트 실패:", err);
-        }
-    };
-
     // =========================
     // 반복 주기 선택 → DB & Todo 동기화
     // =========================
