@@ -7,7 +7,7 @@ import AlarmIcon from "../assets/alarm.svg";
 import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 import EditIcon from "../assets/edit.svg";
-import { createRoutine } from "../api";
+import { createRoutine, updateTask } from "../api";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,6 +15,7 @@ import { ko } from "date-fns/locale";
 import "./TaskOptionsPopup.css";
 function TaskOptionsPopup({
   taskId,
+  taskData,
   userId,
   onClose,
   onDelete,
@@ -36,7 +37,7 @@ function TaskOptionsPopup({
 
   // 알림 설정
   const [alarmDate, setAlarmDate] = useState(new Date());
-const [alarmEnabled, setAlarmEnabled] = useState(false);
+  const [alarmEnabled, setAlarmEnabled] = useState(false);
   const repeatOptions = ["매일", "매주", "매월"];
 
   const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
@@ -144,11 +145,33 @@ const [alarmEnabled, setAlarmEnabled] = useState(false);
                 </button>
                 <button
                   className="confirm-button"
-                  onClick={() => {
-                    if (editorType === "edit" && onEditConfirm)
-                      onEditConfirm(newText);
-                    setNewText("");
-                    setShowEditor(false);
+                  onClick={async () => {
+                    try {
+                      const payload = {};
+
+                      if (editorType === "edit") {
+                        payload.task_name = newText;
+                        payload.memo = taskData.memo; // 기존 메모 유지
+                      } else if (editorType === "memo") {
+                        payload.memo = newText;
+                        payload.task_name = taskData.task_name; // 기존 task_name 유지
+                      }
+
+                      // 기타 필드도 필요하면 추가
+                      payload.task_date = taskData.task_date;
+                      payload.notification_type = taskData.notification_type;
+                      payload.notification_time = taskData.notification_time;
+
+                      const result = await updateTask(taskId, payload, userId);
+                      alert("수정 완료!");
+                      setShowEditor(false);
+                      setNewText("");
+
+                      if (onEditConfirm) onEditConfirm(result.task);
+                    } catch (err) {
+                      console.error("수정 실패:", err);
+                      alert("수정 실패");
+                    }
                   }}
                 >
                   확인
@@ -587,7 +610,47 @@ const [alarmEnabled, setAlarmEnabled] = useState(false);
               </button>
               <button
                 className="confirm-button"
-                onClick={() => setShowAlarmEditor(false)}
+                onClick={async () => {
+                  try {
+                    if (!taskId) return alert("할 일을 먼저 선택해주세요.");
+
+                 const payload = {
+                   task_name:
+                     typeof newText === "string" && newText.trim() !== ""
+                       ? newText
+                       : typeof taskData.task_name === "string"
+                       ? taskData.task_name
+                       : "제목 없음", // 기본값
+                   memo: typeof taskData.memo === "string" ? taskData.memo : "",
+                   task_date:
+                     typeof taskData.task_date === "string" &&
+                     taskData.task_date
+                       ? taskData.task_date
+                       : new Date().toISOString().split("T")[0],
+                   notification_type: alarmEnabled ? "알림" : "미알림",
+                   notification_time: alarmEnabled
+                     ? alarmDate.toTimeString().split(" ")[0]
+                     : null,
+                 };
+
+                    console.log("보낼 payload:", payload);
+                    console.log(
+                      "updateTask 호출 - taskId:",
+                      taskId,
+                      "payload:",
+                      payload
+                    );
+
+                    const result = await updateTask(taskId, payload, userId);
+                    alert("알람 설정 완료!");
+                    setShowAlarmEditor(false);
+
+                    if (onEditConfirm) onEditConfirm(result.task);
+                  } catch (err) {
+                    console.error("알람 설정 실패:", err);
+                    alert("알람 설정 실패");
+                  }
+                }}
               >
                 확인
               </button>
