@@ -447,14 +447,16 @@ function TaskOptionsPopup({
                               <button
                                 onClick={decreaseMonth}
                                 disabled={prevMonthButtonDisabled}
+                                className="arrow-btn left"
                               >
-                                &lt;
+                                <img src={ArrowIcon} alt="이전 달" />
                               </button>
                               <button
                                 onClick={increaseMonth}
                                 disabled={nextMonthButtonDisabled}
+                                className="arrow-btn right"
                               >
-                                &gt;
+                                <img src={ArrowIcon} alt="다음 달" />
                               </button>
                             </div>
                           </div>
