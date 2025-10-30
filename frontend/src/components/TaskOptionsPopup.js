@@ -26,7 +26,7 @@ function TaskOptionsPopup({
     const [editorType, setEditorType] = useState("");
     const [showRepeatEditor, setShowRepeatEditor] = useState(false);
     const [showAlarmEditor, setShowAlarmEditor] = useState(false);
-    const [newText, setNewText] = useState("");
+    const [newText, setNewText] = useState(taskData?.text || "");
 
     // 반복 관련 상태
     const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
