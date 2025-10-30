@@ -273,6 +273,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId }) {
                     <TaskOptionsPopup
                       style={{ top: "40px", right: "0" }}
                       taskId={task.task_id}
+                      taskData={task}
                       userId={localStorage.getItem("user_id")}
                       onClose={() =>
                         setPopupIndex({ category: null, index: null })
