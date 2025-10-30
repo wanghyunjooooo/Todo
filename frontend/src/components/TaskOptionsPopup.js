@@ -1,5 +1,5 @@
 // src/components/TaskOptionsPopup.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import MemoIcon from "../assets/memo.svg";
 import RepeatIcon from "../assets/calendar.svg";
@@ -15,44 +15,166 @@ import { ko } from "date-fns/locale";
 import "./TaskOptionsPopup.css";
 
 function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditConfirm }) {
-    const [showEditor, setShowEditor] = useState(false);
-    const [editorType, setEditorType] = useState("");
-    const [showRepeatEditor, setShowRepeatEditor] = useState(false);
-    const [showAlarmEditor, setShowAlarmEditor] = useState(false);
-    const [newText, setNewText] = useState("");
+  const [showEditor, setShowEditor] = useState(false);
+  const [editorType, setEditorType] = useState("");
+  const [showRepeatEditor, setShowRepeatEditor] = useState(false);
+  const [showAlarmEditor, setShowAlarmEditor] = useState(false);
+  const [newText, setNewText] = useState("");
 
-    // 반복 관련 상태
-    const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
-    const [selectedRepeatOption, setSelectedRepeatOption] = useState("");
-    const [periodVisible, setPeriodVisible] = useState(false);
-    const [periodStart, setPeriodStart] = useState(new Date());
-    const [periodEnd, setPeriodEnd] = useState(new Date());
-    const [repeatEnabled, setRepeatEnabled] = useState(false);
+  // 반복 관련 상태
+  const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
+  const [selectedRepeatOption, setSelectedRepeatOption] = useState("");
+  const [periodVisible, setPeriodVisible] = useState(false);
+  const [periodStart, setPeriodStart] = useState(new Date());
+  const [periodEnd, setPeriodEnd] = useState(new Date());
+  const [repeatEnabled, setRepeatEnabled] = useState(false);
 
-    // 알림 설정
-    const [alarmDate, setAlarmDate] = useState(new Date());
-    const [alarmEnabled, setAlarmEnabled] = useState(false);
-    const repeatOptions = ["매일", "매주", "매월"];
+  // 알람 설정
+  const [alarmDate, setAlarmDate] = useState(new Date());
+  const [alarmEnabled, setAlarmEnabled] = useState(false);
+  const repeatOptions = ["매일", "매주", "매월"];
 
-    const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
-    const getPlaceholder = () => (editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기");
-    const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
+  const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
+  const getPlaceholder = () => (editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기");
+  const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
 
-    // 반복 루틴 생성
-    const handleCreateRoutine = async () => {
-        if (!taskId || !userId || !selectedRepeatOption) {
-            alert("모든 정보를 선택해주세요.");
-            return;
-        }
-        try {
-            await createRoutine(taskId, selectedRepeatOption, periodStart.toISOString().split("T")[0], periodEnd.toISOString().split("T")[0], userId);
-            alert("루틴 생성 완료!");
-            setShowRepeatEditor(false);
-        } catch (err) {
-            console.error(err);
-            alert("루틴 생성 실패");
-        }
-    };
+  // =========================
+  // 반복/알람 초기값 세팅
+  // =========================
+  useEffect(() => {
+    if (!taskData) return;
+
+    const repeatTypes = ["매일", "매주", "매월"];
+    const routineType = taskData.routine_type?.trim();
+    const isRepeat = repeatTypes.includes(routineType);
+    setRepeatEnabled(isRepeat);
+    setSelectedRepeatOption(isRepeat ? routineType : "");
+    setPeriodStart(taskData.period_start ? new Date(taskData.period_start) : new Date());
+    setPeriodEnd(taskData.period_end ? new Date(taskData.period_end) : new Date());
+
+    setAlarmEnabled(taskData.notification_type === "알림");
+    if (taskData.notification_time) {
+      const [hours, minutes] = taskData.notification_time.split(":");
+      const date = new Date();
+      date.setHours(parseInt(hours));
+      date.setMinutes(parseInt(minutes));
+      setAlarmDate(date);
+    }
+  }, [taskData]);
+
+  // =========================
+  // 반복 토글 → DB & Todo 동기화
+  // =========================
+  const handleToggleRepeat = async () => {
+    const newValue = !repeatEnabled;
+    setRepeatEnabled(newValue);
+
+    if (!taskId) return;
+    try {
+      const payload = {
+        ...taskData,
+        routine_type: newValue ? selectedRepeatOption || "매주" : "반복없음",
+      };
+      await updateTask(taskId, payload, userId);
+      if (onEditConfirm) onEditConfirm(payload);
+    } catch (err) {
+      console.error("반복 토글 DB 업데이트 실패:", err);
+    }
+  };
+
+  // =========================
+  // 반복 주기 선택 → DB & Todo 동기화
+  // =========================
+  const handleConfirmRepeatOption = async () => {
+    if (!taskId) return;
+    try {
+      const payload = {
+        ...taskData,
+        routine_type: selectedRepeatOption,
+      };
+      await updateTask(taskId, payload, userId);
+      setRepeatOptionsVisible(false);
+      if (onEditConfirm) onEditConfirm(payload);
+    } catch (err) {
+      console.error("반복 주기 DB 업데이트 실패:", err);
+    }
+  };
+
+  // =========================
+  // 기간 설정 → DB & Todo 동기화
+  // =========================
+  const handleConfirmPeriod = async () => {
+    if (!taskId) return;
+    try {
+      const payload = {
+        ...taskData,
+        period_start: periodStart.toISOString().split("T")[0],
+        period_end: periodEnd.toISOString().split("T")[0],
+      };
+      await updateTask(taskId, payload, userId);
+      setPeriodVisible(false);
+      if (onEditConfirm) onEditConfirm(payload);
+    } catch (err) {
+      console.error("기간 DB 업데이트 실패:", err);
+    }
+  };
+
+  // =========================
+  // 알람 설정 → DB & Todo 동기화
+  // =========================
+  const handleConfirmAlarm = async () => {
+    if (!taskId) return;
+    try {
+      const hours = alarmDate.getHours().toString().padStart(2, "0");
+      const minutes = alarmDate.getMinutes().toString().padStart(2, "0");
+
+      const payload = {
+        ...taskData,
+        notification_type: alarmEnabled ? "알림" : "미알림",
+        notification_time: alarmEnabled ? `${hours}:${minutes}` : null,
+      };
+
+      await updateTask(taskId, payload, userId);
+      if (onEditConfirm) onEditConfirm(payload);
+    } catch (err) {
+      console.error("알람 DB 업데이트 실패:", err);
+    }
+  };
+
+  // =========================
+  // 반복 루틴 생성 → DB & Todo 동기화
+  // =========================
+  const handleCreateRoutine = async () => {
+    if (!taskId || !userId || !selectedRepeatOption) {
+      alert("모든 정보를 선택해주세요.");
+      return;
+    }
+    try {
+      await createRoutine(
+        taskId,
+        selectedRepeatOption,
+        periodStart.toISOString().split("T")[0],
+        periodEnd.toISOString().split("T")[0],
+        userId
+      );
+      alert("루틴 생성 완료!");
+      setShowRepeatEditor(false);
+
+      // Todo 화면 갱신
+      if (onEditConfirm) {
+        const payload = {
+          ...taskData,
+          routine_type: selectedRepeatOption,
+          period_start: periodStart.toISOString().split("T")[0],
+          period_end: periodEnd.toISOString().split("T")[0],
+        };
+        onEditConfirm(payload);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("루틴 생성 실패");
+    }
+  };
 
     return (
         <>
