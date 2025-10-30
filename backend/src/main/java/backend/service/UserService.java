@@ -66,6 +66,7 @@ public class UserService {
     public User updateProfile(Long userId, UserDTO dto) {
         User user = getProfile(userId);
         if (dto.getUserName() != null) user.setUserName(dto.getUserName());
+        if (dto.getUserEmail() != null) user.setUserEmail(dto.getUserEmail());
         if (dto.getUserPassword() != null)
             user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
         return userRepository.save(user);
