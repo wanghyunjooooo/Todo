@@ -532,3 +532,14 @@
     color: white;
     border-radius: 50%;
 }
+
+.selected-range-day {
+    background-color: #4caf50 !important;
+    color: #fff !important;
+    border-radius: 50%;
+}
+
+.disabled-day {
+    color: #ccc;
+    pointer-events: none;
+}

@@ -480,7 +480,7 @@ function TaskOptionsPopup({
                                         className="editor-box"
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        {/* 기간 설정 타이틀 박스 */}
+                                        {/* 기간 설정 타이틀 */}
                                         <div className="title-box">
                                             <img
                                                 src={RepeatIcon}
@@ -494,42 +494,36 @@ function TaskOptionsPopup({
 
                                         <div className="calendar-box">
                                             <DatePicker
-                                                selectsRange
-                                                startDate={periodStart}
-                                                endDate={periodEnd}
-                                                onChange={(dates) => {
-                                                    const [start, end] = dates;
-
-                                                    // 시작일은 이미 정해져 있으므로 변경 불가
-                                                    setPeriodStart(periodStart);
-
-                                                    // 첫 클릭 시 종료일로 인식
-                                                    if (!end) {
-                                                        if (
-                                                            start &&
-                                                            start.getTime() !==
-                                                                periodStart.getTime()
-                                                        ) {
-                                                            setPeriodEnd(start);
-                                                        }
-                                                        return;
-                                                    }
-
-                                                    // 종료일 선택 시 구간 자동 설정
-                                                    setPeriodEnd(end);
-                                                }}
                                                 inline
                                                 locale={ko}
                                                 showOutsideDays={false}
-                                                minDate={periodStart} // 시작일 이전 클릭 불가
+                                                selected={periodEnd}
+                                                startDate={periodStart} // 시작일 고정
+                                                endDate={periodEnd} // 종료일 선택
+                                                minDate={periodStart} // 시작일 이전 선택 불가
                                                 filterDate={(date) =>
                                                     date >= periodStart
                                                 } // 안전장치
-                                                dayClassName={(date) =>
-                                                    date < periodStart
-                                                        ? "disabled-day"
-                                                        : "selectable-day"
-                                                }
+                                                onChange={(date) => {
+                                                    // 클릭 시 종료일로 설정
+                                                    if (
+                                                        date &&
+                                                        date >= periodStart
+                                                    ) {
+                                                        setPeriodEnd(date);
+                                                    }
+                                                }}
+                                                dayClassName={(date) => {
+                                                    if (date < periodStart)
+                                                        return "disabled-day";
+                                                    if (
+                                                        periodEnd &&
+                                                        date >= periodStart &&
+                                                        date <= periodEnd
+                                                    )
+                                                        return "selected-range-day";
+                                                    return "";
+                                                }}
                                                 renderCustomHeader={({
                                                     date,
                                                     decreaseMonth,
