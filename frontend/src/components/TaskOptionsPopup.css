@@ -1,7 +1,16 @@
-/* 기존 TaskOptionsPopup CSS 그대로 유지 */
+/* ===========================
+   🔹 기본 설정
+=========================== */
+* {
+    margin: 0;
+    padding: 0;
+}
 
-/* 오버레이 */
-.overlay {
+/* ===========================
+   🔹 오버레이 / 팝업 공통
+=========================== */
+.overlay,
+.editor-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,26 +20,17 @@
     z-index: 9998;
 }
 
-/* 팝업 */
-.task-options-popup {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 350px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 20px;
+.editor-overlay {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    z-index: 9999;
-    height: auto;
-    max-height: 90vh;
-    overflow-y: auto;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
 }
 
-/* 옵션 버튼 */
+/* ===========================
+   🔹 메인 옵션 팝업
+=========================== */
+
 .option-btn {
     display: flex;
     align-items: center;
@@ -38,7 +38,6 @@
     width: 310px;
     height: 40px;
     gap: 8px;
-    padding: 0px;
     border: none;
     border-radius: 8px;
     background: #fff;
@@ -46,81 +45,72 @@
     font-size: 12px;
     font-weight: 500;
     color: var(--Grey-Dark, #595959);
-    text-align: left;
     cursor: pointer;
 }
 
-.task-options-popup>.option-btn.delete-btn span {
+.option-btn.delete-btn span {
     color: #FD5344;
 }
 
-.task-options-footer {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: 12px;
+.option-title {
+    width: 214px;
+    color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
+/* ===========================
+   🔹 공통 버튼
+=========================== */
 .cancel-btn,
-.confirm-btn {
+.confirm-btn,
+.cancel-button,
+.confirm-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 151px;
     height: 40px;
-    border-radius: 8px;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
-    font-weight: 600;
-    padding: 13px 20px;
-}
-
-.cancel-btn {
+    font-weight: 500;
     background: #fff;
-    color: var(--Grey-Dark, #595959);
+    color: var(--Grey-Darker, #2A2A2A);
 }
 
-.confirm-btn {
-    background: #fff;
-    color: var(--Grey-Dark, #595959);
-}
-
-/* ---------------------------------- */
-/* 이름 변경 / 카테고리 팝업 CSS */
-/* ---------------------------------- */
-
-.editor-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(42, 42, 42, 0.2);
+.title-box {
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 10000;
+    gap: 8px;
+    color: var(--Grey-Darker, #2A2A2A);
 }
 
+/* ===========================
+   🔹 에디터 박스
+=========================== */
 .editor-box {
     width: 350px;
-    border-radius: 16px;
+    padding: 20px;
     background: #fff;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
-    padding: 20px;
     gap: 12px;
-    box-shadow: 0 4px 12px rgba(42, 42, 42, 0.2);
 }
 
 .rename-box {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
     gap: 8px;
+    width: 100%;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
-    font-weight: 500;
     color: #2a2a2a;
 }
 
@@ -161,32 +151,64 @@
     gap: 8px;
     width: 100%;
     margin-top: auto;
-    /* 버튼 맨 아래 고정 */
 }
 
-.cancel-button,
-.confirm-button {
+/* ===========================
+   🔹 시간 선택 (알람)
+=========================== */
+.hour-container,
+.minute-container {
     display: flex;
-    width: 151px;
-    height: 40px;
-    padding: 0 20px;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-family: Pretendard, sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    background: #fff;
-    color: var(--Grey-Darker, #2A2A2A);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 270px;
 }
 
-/* ---------------------------------- */
-/* 카테고리 리스트 스타일 */
-/* ---------------------------------- */
+.hour-container {
+    column-gap: 15.71px;
+    row-gap: 20px;
+}
 
+.minute-container {
+    column-gap: 30px;
+    row-gap: 20px;
+}
+
+.hour-title,
+.minute-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    align-self: stretch;
+    color: #000;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.hour-btn,
+.minute-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 14px;
+    background: var(--grey-white-hover, #FBFBFB);
+    cursor: pointer;
+    color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* ===========================
+   🔹 반복 설정 / 카테고리
+=========================== */
 .category-list {
     display: flex;
     flex-direction: column;
@@ -197,94 +219,57 @@
 
 .category-item {
     display: flex;
+    height: 56px;
+    padding: 8px 20px;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 40px;
-    padding: 0 16px;
-    border-radius: 8px;
-    font-family: Pretendard, sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: #2a2a2a;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: 16px;
     background: var(--Grey-Light, #F3F3F3);
-    box-sizing: border-box;
+    cursor: pointer;
 }
 
-.category-item.white-bg,
-.category-item.repeat-bg {
+.category-item.white-bg {
     background: #fff !important;
     justify-content: flex-start;
     gap: 8px;
 }
 
-.arrow-icon {
-    width: 20px;
-    height: 20px;
-    margin-left: auto;
-    transition: transform 0.2s ease;
-    z-index: 10;
+.category-item.repeat-btn {
+    width: 40px;
+    height: 40px;
+    transform: rotate(90deg);
+    aspect-ratio: 1/1;
 }
 
-.react-datepicker-popper {
-    max-width: 50%;
-    box-sizing: border-box;
-    z-index: 9999;
-}
-
-/* ---------------------------------- */
-/* 반복 주기 서브 팝업 */
-/* ---------------------------------- */
-
-.repeat-option-popup {
-    position: fixed;
-    top: 68%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 350px;
-    min-height: 200px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 16px;
-    color: var(--Grey-Darker, #2A2A2A);
+.category-span {
+    flex: 1 0 0;
+    color: var(--Grey-Dark, #595959);
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    z-index: 10001;
 }
 
-.repeat-option-popup .repeat-options-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    /* 옵션 사이 간격 */
-    width: 100%;
+.arrow-icon {
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
 }
+
+/* ===========================
+   🔹 반복 주기 팝업
+=========================== */
 
 .repeat-option {
-    display: flex;
-    /* flex로 정렬 */
-    width: 310px;
-    /* 폭 고정 */
-    align-items: center;
-    /* 세로 중앙 정렬 */
-    gap: 8px;
-    /* 아이템 간격 */
-    padding: 8px 20px;
-    border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3) !important;
+    width: 100%;
+    padding: 17px 20px;
+    border-radius: 8px;
     cursor: pointer;
-
-    /* 글씨 스타일 */
+    background: var(--Grey-Light, #F3F3F3);
+    margin-bottom: 12px;
     color: var(--Grey-Darker, #595959);
-    font-family: Pretendard, sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    box-sizing: border-box;
     transition: all 0.2s;
 }
 
@@ -292,84 +277,28 @@
     background: #DFF5E1;
     border: 2px solid #4CAF50;
 }
-.repeat-options-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    /* 옵션 사이 간격 */
-    width: 100%;
-}
-
-.repeat-option-popup .repeat-option {
-    width: 100%;
-    padding: 17px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #fff;
-    transition: all 0.2s ease;
-    margin-bottom: 12px;
-    /* 옵션 사이 간격 */
-}
-
-
-.repeat-option.selected {
-    border: 2px solid #4caf50;
-}
 
 .repeat-option:hover {
     background: #e0e0e0;
-    /* 선택/hover 시 살짝 색 변화 */
 }
 
-.category-item.repeat-btn {
-    /* white-bg 상속 + 필요시 추가 조정 */
-    height: 40px;
-    padding: 0 16px;
-    justify-content: flex-start;
-    gap: 8px;
-}
-
-.repeat-title-box {
-    display: flex;
-    /* flex로 정렬 */
-    width: 310px;
-    /* 폭 고정 */
-    align-items: center;
-    /* 세로 중앙 정렬 */
-    gap: 8px;
-    /* 아이템 간격 */
-    padding: 8px 20px;
-    border-radius: 16px;
-    background: var(--Grey-Light, #FFf);
-
-    /* 글씨 스타일 */
-    color: var(--Grey-Darker, #2A2A2A);
-    font-family: Pretendard, sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    box-sizing: border-box;
-}
-
-/* CustomDatePicker.css */
+/* ===========================
+   🔹 달력 (DatePicker)
+=========================== */
 .react-datepicker {
     border: none !important;
     box-shadow: none !important;
-    background: transparent;
-    background: var(--Grey-Light, #F3F3F3)!important;
+    background: var(--Grey-Light, #F3F3F3) !important;
 }
 
 .react-datepicker__header {
     background: transparent;
     border-bottom: none !important;
-    width: 105%;
-    background: none;
 }
-/* 실제 날짜만 원형 흰색 박스 적용 */
+
 .react-datepicker__day:not(.react-datepicker__day--outside-month) {
-    background-color: #ffffff !important;
-    border-radius: 50% !important;
+    background-color: #fff !important;
+    border-radius: 50%;
     width: 32px;
     height: 32px;
     line-height: 32px;
@@ -386,34 +315,13 @@
 .react-datepicker__day-names {
     display: flex;
     justify-content: space-between;
-    /* 요일 전체 폭에 맞게 균등 배치 */
     margin-bottom: 12px;
-    /* 기존보다 아래 간격 조금 늘림 */
     padding: 5px 20px;
-    /* 좌우 여백 약간 추가 */
-
 }
+
 .react-datepicker__day,
 .react-datepicker__day-name {
-    border-radius: 0;
     background: var(--Grey-Light, #F3F3F3);
-}
-
-.react-datepicker__day:hover {
-    background-color: #DFF5E1;
-    /* 필요시 하이라이트 */
-}
-
-/* 달력 박스 */
-.calendar-box {
-    width: 310px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background: var(--Grey-Light, #F3F3F3);
-    border-radius: 8px;
-    margin: 0 auto;
 }
 
 /* 커스텀 헤더 */
@@ -432,33 +340,51 @@
 }
 
 .header-buttons button {
-    cursor: pointer;
     border: none;
     background: transparent;
     font-size: 16px;
+    cursor: pointer;
     margin-left: 4px;
-}
-
-/* 달력 박스 전체 */
-.period-calendar-box {
-    width: 310px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-    background: var(--Grey-Light, #F3F3F3);
-    border-radius: 8px;
-    margin: 0 auto;
-
-    /* 테두리 스타일 */
-    border: none !important;
-    /* 원하는 색으로 변경 가능 */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    /* 선택 사항: 살짝 그림자 */
 }
 
 .react-datepicker__day--outside-month {
     visibility: hidden !important;
+}
+
+
+/* ===========================
+🔹 토글 스위치
+===========================*/
+
+.toggle {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 10px 5px 12px 5px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.toggle-container {
+    display: flex;
+    width: 30px;
+    height: 18px;
+    border-radius: 10px;
+    position: relative;
+    justify-content: flex-end;
+    align-items: center;
+    background: var(--Grey-Normal, #777);
+    transition: background 0.3s;
+}
+
+.toggle-switch {
+    width: 14px;
+    height: 14px;
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    background: var(--Grey-White, #FFF);
+    position: absolute;
+    transition: left 0.3s;
 }

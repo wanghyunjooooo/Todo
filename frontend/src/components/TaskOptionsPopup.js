@@ -60,7 +60,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
 
             {/* 메인 옵션 팝업 */}
             {!showEditor && !showRepeatEditor && !showAlarmEditor && (
-                <div className="task-options-popup" onClick={(e) => e.stopPropagation()}>
+                <div className="editor-box" onClick={(e) => e.stopPropagation()}>
                     <button
                         className="option-btn"
                         onClick={() => {
@@ -158,90 +158,74 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                         <div className="rename-box">
                             <div className="category-list">
                                 {/* ✅ 반복 일정 + 토글 */}
-                                <div
-                                    className="category-item white-bg"
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                        }}
-                                    >
-                                        <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
-                                        <span>반복 일정</span>
-                                    </div>
+                                <div className="title-box">
+                                    <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
+                                    <span className="option-title">반복 일정</span>
 
                                     {/* 토글 */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            width: "40px",
-                                            height: "40px",
-                                            padding: "10px 5px 12px 5px",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            flexShrink: 0,
-                                            cursor: "pointer",
-                                        }}
-                                        onClick={() => setRepeatEnabled((prev) => !prev)}
-                                    >
-                                        <div
-                                            style={{
-                                                width: "28px",
-                                                height: "16px",
-                                                borderRadius: "20px",
-                                                background: repeatEnabled ? "#4CAF50" : "#CCC",
-                                                position: "relative",
-                                                transition: "background 0.3s",
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    width: "12px",
-                                                    height: "12px",
-                                                    borderRadius: "50%",
-                                                    background: "#FFF",
-                                                    position: "absolute",
-                                                    top: "2px",
-                                                    left: repeatEnabled ? "14px" : "2px",
-                                                    transition: "left 0.3s",
-                                                }}
-                                            ></div>
+                                    <div className="toggle" onClick={() => setRepeatEnabled((prev) => !prev)}>
+                                        <div className="toggle-container" style={{ background: repeatEnabled ? "#4CAF50" : "#CCC" }}>
+                                            <div className="toggle-switch" style={{ left: repeatEnabled ? "14px" : "2px" }}></div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* 반복 주기 */}
                                 <div
-                                    className="category-item repeat-btn"
+                                    className="category-item"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setRepeatOptionsVisible(true);
                                     }}
-                                    style={{ cursor: "pointer" }}
                                 >
-                                    <span>반복 주기 {selectedRepeatOption && `: ${selectedRepeatOption}`}</span>
+                                    <span className="category-span">반복 주기 {selectedRepeatOption && `: ${selectedRepeatOption}`}</span>
                                     <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                                 </div>
 
                                 {/* 기간 설정 */}
-                                <div className="category-item" onClick={() => setPeriodVisible(!periodVisible)} style={{ cursor: "pointer" }}>
-                                    <span>기간 설정</span>
+                                <div className="category-item" onClick={() => setPeriodVisible(!periodVisible)}>
+                                    <span className="category-span">기간 설정</span>
                                     <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                                 </div>
 
-                                {periodVisible && (
-                                    <div className="repeat-option-popup" onClick={(e) => e.stopPropagation()}>
-                                        {/* 기간 설정 타이틀 박스 */}
-                                        <div className="repeat-title-box">
+                                {/* 반복 주기 옵션 서브 팝업 */}
+                                {repeatOptionsVisible && (
+                                    <div className="editor-box" onClick={(e) => e.stopPropagation()}>
+                                        <div className="title-box">
                                             <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
-                                            <span>기간 설정</span>
+                                            <span className="option-title">반복 주기</span>
+                                        </div>
+
+                                        {repeatOptions.map((opt) => (
+                                            <div
+                                                key={opt}
+                                                className={`repeat-option ${selectedRepeatOption === opt ? "selected" : ""}`}
+                                                onClick={() => {
+                                                    setSelectedRepeatOption(opt);
+                                                    setRepeatOptionsVisible(false);
+                                                }}
+                                            >
+                                                {opt}
+                                            </div>
+                                        ))}
+
+                                        <div className="button-group">
+                                            <button className="cancel-button" onClick={() => setRepeatOptionsVisible(false)}>
+                                                취소
+                                            </button>
+                                            <button className="confirm-button" onClick={() => setRepeatOptionsVisible(false)}>
+                                                확인
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {periodVisible && (
+                                    <div className="editor-box" onClick={(e) => e.stopPropagation()}>
+                                        {/* 기간 설정 타이틀 박스 */}
+                                        <div className="title-box">
+                                            <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
+                                            <span className="option-title">기간 설정</span>
                                         </div>
 
                                         <div className="calendar-box">
@@ -300,92 +284,20 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                 </div>
             )}
 
-            {/* 반복 주기 옵션 서브 팝업 */}
-            {repeatOptionsVisible && (
-                <div className="repeat-option-popup" style={{ top: "78%" }} onClick={(e) => e.stopPropagation()}>
-                    <div className="repeat-title-box">
-                        <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
-                        <span>반복 주기</span>
-                    </div>
-
-                    {repeatOptions.map((opt) => (
-                        <div
-                            key={opt}
-                            className={`repeat-option ${selectedRepeatOption === opt ? "selected" : ""}`}
-                            onClick={() => {
-                                setSelectedRepeatOption(opt);
-                                setRepeatOptionsVisible(false);
-                            }}
-                        >
-                            {opt}
-                        </div>
-                    ))}
-
-                    <div className="button-group">
-                        <button className="cancel-button" onClick={() => setRepeatOptionsVisible(false)}>
-                            취소
-                        </button>
-                        <button className="confirm-button" onClick={() => setRepeatOptionsVisible(false)}>
-                            확인
-                        </button>
-                    </div>
-                </div>
-            )}
-
             {showAlarmEditor && (
                 <div className="editor-overlay" onClick={() => setShowAlarmEditor(false)}>
                     <div className="editor-box" onClick={(e) => e.stopPropagation()}>
                         {/* 알람 설정 타이틀 + 토글 */}
-                        <div
-                            className="repeat-title-box"
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "12px",
-                            }}
-                        >
+                        <div className="title-box">
                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                 <img src={AlarmIcon} alt="알람" className="memo-icon" />
-                                <span>알람 설정</span>
+                                <span className="option-title">알람 설정</span>
                             </div>
 
                             {/* 토글 */}
-                            <div
-                                style={{
-                                    display: "flex",
-                                    width: "40px",
-                                    height: "40px",
-                                    padding: "10px 5px 12px 5px",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    flexShrink: 0,
-                                    cursor: "pointer",
-                                }}
-                                onClick={() => setAlarmEnabled((prev) => !prev)}
-                            >
-                                <div
-                                    style={{
-                                        width: "28px",
-                                        height: "16px",
-                                        borderRadius: "20px",
-                                        background: alarmEnabled ? "#4CAF50" : "#CCC",
-                                        position: "relative",
-                                        transition: "background 0.3s",
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            width: "12px",
-                                            height: "12px",
-                                            borderRadius: "50%",
-                                            background: "#FFF",
-                                            position: "absolute",
-                                            top: "2px",
-                                            left: alarmEnabled ? "14px" : "2px",
-                                            transition: "left 0.3s",
-                                        }}
-                                    ></div>
+                            <div className="toggle" onClick={() => setRepeatEnabled((prev) => !prev)}>
+                                <div className="toggle-container" style={{ background: repeatEnabled ? "#4CAF50" : "#CCC" }}>
+                                    <div className="toggle-switch" style={{ left: repeatEnabled ? "14px" : "2px" }}></div>
                                 </div>
                             </div>
                         </div>
@@ -401,105 +313,41 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                                 alignItems: "flex-start",
                                 gap: "20px",
                                 borderRadius: "16px",
-                                background: "#F3F3F3",
+                                background: "var(--Grey-Light, #F3F3F3)",
                             }}
                         >
-                            {/* 시 선택 */}
-                            <div style={{ width: "100%" }}>
-                                <p
-                                    style={{
-                                        color: "#000",
-                                        fontFamily: "Pretendard",
-                                        fontSize: "14px",
-                                        fontStyle: "normal",
-                                        fontWeight: 600,
-                                        lineHeight: "normal",
-                                        marginBottom: "8px",
-                                    }}
-                                >
-                                    시
-                                </p>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexWrap: "wrap",
-                                        gap: "8px",
-                                    }}
-                                >
-                                    {Array.from({ length: 24 }, (_, i) => (
-                                        <button
-                                            key={i}
-                                            style={{
-                                                width: "32px",
-                                                height: "32px",
-                                                borderRadius: "50%",
-                                                border: alarmDate.getHours() === i ? "2px solid #4CAF50" : "none",
-                                                background: alarmDate.getHours() === i ? "#DFF5E1" : "#fff",
-                                                color: "#000",
-                                                fontFamily: "Pretendard",
-                                                fontSize: "13px",
-                                                fontWeight: 500,
-                                                cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                                const newDate = new Date(alarmDate);
-                                                newDate.setHours(i);
-                                                setAlarmDate(newDate);
-                                            }}
-                                        >
-                                            {i}
-                                        </button>
-                                    ))}
-                                </div>
+                            <p className="hour-title">시</p>
+                            <div className="hour-container">
+                                {Array.from({ length: 24 }, (_, i) => (
+                                    <button
+                                        className="hour-btn"
+                                        key={i}
+                                        onClick={() => {
+                                            const newDate = new Date(alarmDate);
+                                            newDate.setHours(i);
+                                            setAlarmDate(newDate);
+                                        }}
+                                    >
+                                        {i}
+                                    </button>
+                                ))}
                             </div>
 
-                            {/* 분 선택 */}
-                            <div style={{ width: "100%" }}>
-                                <p
-                                    style={{
-                                        color: "#000",
-                                        fontFamily: "Pretendard",
-                                        fontSize: "14px",
-                                        fontStyle: "normal",
-                                        fontWeight: 600,
-                                        lineHeight: "normal",
-                                        marginBottom: "8px",
-                                    }}
-                                >
-                                    분
-                                </p>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexWrap: "wrap",
-                                        gap: "8px",
-                                    }}
-                                >
-                                    {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
-                                        <button
-                                            key={m}
-                                            style={{
-                                                width: "32px",
-                                                height: "32px",
-                                                borderRadius: "50%",
-                                                border: alarmDate.getMinutes() === m ? "2px solid #4CAF50" : "1px solid #ccc",
-                                                background: alarmDate.getMinutes() === m ? "#DFF5E1" : "#fff",
-                                                color: "#000",
-                                                fontFamily: "Pretendard",
-                                                fontSize: "13px",
-                                                fontWeight: 500,
-                                                cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                                const newDate = new Date(alarmDate);
-                                                newDate.setMinutes(m);
-                                                setAlarmDate(newDate);
-                                            }}
-                                        >
-                                            {m}
-                                        </button>
-                                    ))}
-                                </div>
+                            <p className="minute-title">분</p>
+                            <div className="minute-container">
+                                {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
+                                    <button
+                                        className="minute-btn"
+                                        key={m}
+                                        onClick={() => {
+                                            const newDate = new Date(alarmDate);
+                                            newDate.setMinutes(m);
+                                            setAlarmDate(newDate);
+                                        }}
+                                    >
+                                        {m}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
