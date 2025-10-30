@@ -27,6 +27,16 @@
     z-index: 10000;
 }
 
+.editor-box {
+    width: 350px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 /* ===========================
    🔹 메인 옵션 팝업
 =========================== */
@@ -94,15 +104,6 @@
 /* ===========================
    🔹 에디터 박스
 =========================== */
-.editor-box {
-    width: 350px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
 
 .rename-box {
     display: flex;
@@ -227,6 +228,12 @@
     border-radius: 16px;
     background: var(--Grey-Light, #F3F3F3);
     cursor: pointer;
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 .category-item.white-bg {
@@ -240,16 +247,6 @@
     height: 40px;
     transform: rotate(90deg);
     aspect-ratio: 1/1;
-}
-
-.category-span {
-    flex: 1 0 0;
-    color: var(--Grey-Dark, #595959);
-    font-family: Pretendard;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
 }
 
 .arrow-icon {
@@ -285,66 +282,141 @@
 /* ===========================
    🔹 달력 (DatePicker)
 =========================== */
+.calendar-box {
+    display: flex;
+    width: 310px;
+    height: 300px;
+    padding: 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    border-radius: 16px;
+    background: var(--Grey-Light, #F3F3F3);
+}
+
 .react-datepicker {
     border: none !important;
     box-shadow: none !important;
-    background: var(--Grey-Light, #F3F3F3) !important;
+    background: transparent !important;
+    gap: 20px;
 }
 
 .react-datepicker__header {
     background: transparent;
     border-bottom: none !important;
+    padding: 0;
 }
 
 .react-datepicker__day:not(.react-datepicker__day--outside-month) {
-    background-color: #fff !important;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 14px;
+    background: var(--grey-white-hover, #FBFBFB);
+
+    color: var(--Grey-Darker, #2A2A2A);
     text-align: center;
-    margin: 2px;
-    cursor: pointer;
-    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 .react-datepicker__day:not(.react-datepicker__day--outside-month):hover {
     background-color: #DFF5E1 !important;
 }
 
-.react-datepicker__day-names {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 5px 20px;
-}
-
 .react-datepicker__day,
 .react-datepicker__day-name {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background: var(--Grey-Light, #F3F3F3);
+    margin: 0;
 }
 
-/* 커스텀 헤더 */
-.datepicker-header {
+.react-datepicker__day-name {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.react-datepicker__day-name span {
+    margin: 0;
+    align-self: stretch;
+    color: var(--Grey-Darker, #2A2A2A);
+    text-align: center;
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.react-datepicker__month {
+    margin: 0;
+}
+
+.react-datepicker__day-names,
+.react-datepicker__week {
+    gap: 21.67px;
+    margin: 0;
+    margin-top: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 90%;
-    padding: 0 8px;
-    margin-bottom: 8px;
+    align-self: stretch;
+}
+
+.datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    align-self: stretch;
 }
 
 .header-month-year {
-    font-weight: 600;
+    color: #000;
     font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.arrow-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .header-buttons button {
-    border: none;
     background: transparent;
-    font-size: 16px;
-    cursor: pointer;
-    margin-left: 4px;
+    width: 20px;
+    height: 20px;
+    transform: rotate(90deg);
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    align-self: stretch;
+    border: none;
 }
 
 .react-datepicker__day--outside-month {
