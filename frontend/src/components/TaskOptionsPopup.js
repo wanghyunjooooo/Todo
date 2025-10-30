@@ -36,7 +36,7 @@ function TaskOptionsPopup({
 
   // 알림 설정
   const [alarmDate, setAlarmDate] = useState(new Date());
-
+const [alarmEnabled, setAlarmEnabled] = useState(false);
   const repeatOptions = ["매일", "매주", "매월"];
 
   const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
@@ -271,15 +271,14 @@ function TaskOptionsPopup({
 
                     <div className="calendar-box">
                       <DatePicker
-                        selected={periodStart}
+                        selectsRange
+                        startDate={periodStart}
+                        endDate={periodEnd}
                         onChange={(dates) => {
                           const [start, end] = dates;
                           setPeriodStart(start);
                           setPeriodEnd(end);
                         }}
-                        startDate={periodStart}
-                        endDate={periodEnd}
-                        selectsRange
                         inline
                         locale={ko}
                         showOutsideDays={false}
@@ -354,7 +353,7 @@ function TaskOptionsPopup({
       {repeatOptionsVisible && (
         <div
           className="repeat-option-popup"
-            style={{ top: "78%" }}
+          style={{ top: "78%" }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="repeat-title-box">
@@ -394,96 +393,205 @@ function TaskOptionsPopup({
         </div>
       )}
 
-      {/* 알람 설정 */}
       {showAlarmEditor && (
         <div
-          className="repeat-option-popup"
-          onClick={(e) => e.stopPropagation()}
+          className="editor-overlay"
+          onClick={() => setShowAlarmEditor(false)}
         >
-          <div className="repeat-title-box">
-            <img src={RepeatIcon} alt="캘린더" className="memo-icon" />
-            <span>알람 설정</span>
-          </div>
+          <div className="editor-box" onClick={(e) => e.stopPropagation()}>
+            {/* 알람 설정 타이틀 + 토글 */}
+            <div
+              className="repeat-title-box"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <img src={AlarmIcon} alt="알람" className="memo-icon" />
+                <span>알람 설정</span>
+              </div>
 
-          {/* 시 선택 */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              marginBottom: "12px",
-            }}
-          >
-            {Array.from({ length: 24 }, (_, i) => (
-              <button
-                key={i}
+              {/* 토글 */}
+              <div
                 style={{
-                  padding: "6px 10px",
-                  borderRadius: "4px",
-                  border:
-                    alarmDate.getHours() === i
-                      ? "2px solid #4CAF50"
-                      : "1px solid #ccc",
-                  background: alarmDate.getHours() === i ? "#DFF5E1" : "#fff",
+                  display: "flex",
+                  width: "40px",
+                  height: "40px",
+                  padding: "10px 5px 12px 5px",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexShrink: 0,
                   cursor: "pointer",
                 }}
-                onClick={() => {
-                  const newDate = new Date(alarmDate);
-                  newDate.setHours(i);
-                  setAlarmDate(newDate);
-                }}
+                onClick={() => setAlarmEnabled((prev) => !prev)}
               >
-                {i}
-              </button>
-            ))}
-          </div>
+                <div
+                  style={{
+                    width: "28px",
+                    height: "16px",
+                    borderRadius: "20px",
+                    background: alarmEnabled ? "#4CAF50" : "#CCC",
+                    position: "relative",
+                    transition: "background 0.3s",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "12px",
+                      height: "12px",
+                      borderRadius: "50%",
+                      background: "#FFF",
+                      position: "absolute",
+                      top: "2px",
+                      left: alarmEnabled ? "14px" : "2px",
+                      transition: "left 0.3s",
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
 
-          {/* 분 선택 */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              marginBottom: "16px",
-            }}
-          >
-            {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
+            {/* ✅ 시/분 선택 전체 박스 */}
+            <div
+              style={{
+                display: "flex",
+                width: "310px",
+                padding: "20px",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                gap: "20px",
+                borderRadius: "16px",
+                background: "#F3F3F3",
+              }}
+            >
+              {/* 시 선택 */}
+              <div style={{ width: "100%" }}>
+                <p
+                  style={{
+                    color: "#000",
+                    fontFamily: "Pretendard",
+                    fontSize: "14px",
+                    fontStyle: "normal",
+                    fontWeight: 600,
+                    lineHeight: "normal",
+                    marginBottom: "8px",
+                  }}
+                >
+                  시
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                  }}
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <button
+                      key={i}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        border:
+                          alarmDate.getHours() === i
+                            ? "2px solid #4CAF50"
+                            : "none",
+                        background:
+                          alarmDate.getHours() === i ? "#DFF5E1" : "#fff",
+                        color: "#000",
+                        fontFamily: "Pretendard",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        const newDate = new Date(alarmDate);
+                        newDate.setHours(i);
+                        setAlarmDate(newDate);
+                      }}
+                    >
+                      {i}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 분 선택 */}
+              <div style={{ width: "100%" }}>
+                <p
+                  style={{
+                    color: "#000",
+                    fontFamily: "Pretendard",
+                    fontSize: "14px",
+                    fontStyle: "normal",
+                    fontWeight: 600,
+                    lineHeight: "normal",
+                    marginBottom: "8px",
+                  }}
+                >
+                  분
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                  }}
+                >
+                  {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
+                    <button
+                      key={m}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        border:
+                          alarmDate.getMinutes() === m
+                            ? "2px solid #4CAF50"
+                            : "1px solid #ccc",
+                        background:
+                          alarmDate.getMinutes() === m ? "#DFF5E1" : "#fff",
+                        color: "#000",
+                        fontFamily: "Pretendard",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        const newDate = new Date(alarmDate);
+                        newDate.setMinutes(m);
+                        setAlarmDate(newDate);
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 버튼 그룹 */}
+            <div className="button-group">
               <button
-                key={m}
-                style={{
-                  padding: "6px 10px",
-                  borderRadius: "4px",
-                  border:
-                    alarmDate.getMinutes() === m
-                      ? "2px solid #4CAF50"
-                      : "1px solid #ccc",
-                  background: alarmDate.getMinutes() === m ? "#DFF5E1" : "#fff",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  const newDate = new Date(alarmDate);
-                  newDate.setMinutes(m);
-                  setAlarmDate(newDate);
-                }}
+                className="cancel-button"
+                onClick={() => setShowAlarmEditor(false)}
               >
-                {m}
+                취소
               </button>
-            ))}
-          </div>
-
-          <div className="button-group">
-            <button
-              className="cancel-button"
-              onClick={() => setShowAlarmEditor(false)}
-            >
-              취소
-            </button>
-            <button
-              className="confirm-button"
-              onClick={() => setShowAlarmEditor(false)}
-            >
-              확인
-            </button>
+              <button
+                className="confirm-button"
+                onClick={() => setShowAlarmEditor(false)}
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
       )}
