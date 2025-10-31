@@ -13,6 +13,7 @@ import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 
 import { createRoutine, updateTask } from "../api";
+import api from "../api";
 
 function TaskOptionsPopup({
     taskId,
@@ -41,6 +42,30 @@ function TaskOptionsPopup({
     const [showAlarmEditor, setShowAlarmEditor] = useState(false);
     const [alarmEnabled, setAlarmEnabled] = useState(false);
     const [alarmDate, setAlarmDate] = useState(new Date());
+
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    // 삭제 처리 함수
+    const handleDeleteCategory = async () => {
+        if (!taskId) return;
+
+        setLoading(true);
+        setError("");
+
+        try {
+            // 실제 삭제 API 호출 (예시)
+            await api.delete(`/tasks/${taskId}`);
+            setShowDeleteConfirm(false);
+            if (onDelete) onDelete(); // 부모 콜백 호출
+        } catch (err) {
+            console.error(err);
+            setError("삭제 실패");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // --- 초기값 세팅 ---
     useEffect(() => {
@@ -171,47 +196,88 @@ function TaskOptionsPopup({
         <>
             <div className="overlay" onClick={onClose}></div>
 
-            {/* --- Main Options --- */}
-            {!showEditor && !showRepeatEditor && !showAlarmEditor && (
+            {!showEditor &&
+                !showRepeatEditor &&
+                !showAlarmEditor &&
+                !showDeleteConfirm && (
+                    <div
+                        className="editor-box"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            className="option-btn"
+                            onClick={() => openEditor("edit")}
+                        >
+                            <img src={EditIcon} alt="할 일 수정" />
+                            <span>할 일 수정</span>
+                        </button>
+                        <button
+                            className="option-btn"
+                            onClick={() => openEditor("memo")}
+                        >
+                            <img src={MemoIcon} alt="메모" />
+                            <span>메모</span>
+                        </button>
+                        <button
+                            className="option-btn"
+                            onClick={() => setShowRepeatEditor(true)}
+                        >
+                            <img src={RepeatIcon} alt="반복 설정" />
+                            <span>반복 설정</span>
+                        </button>
+                        <button
+                            className="option-btn"
+                            onClick={() => setShowAlarmEditor(true)}
+                        >
+                            <img src={AlarmIcon} alt="알람 설정" />
+                            <span>알람 설정</span>
+                        </button>
+                        <button
+                            className="option-btn delete-btn"
+                            onClick={() => setShowDeleteConfirm(true)}
+                        >
+                            <img src={DeleteIcon} alt="삭제" />
+                            <span>삭제</span>
+                        </button>
+                    </div>
+                )}
+
+            {/* --- 삭제 확인 모달 --- */}
+            {showDeleteConfirm && (
                 <div
                     className="editor-box"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <button
-                        className="option-btn"
-                        onClick={() => openEditor("edit")}
-                    >
-                        <img src={EditIcon} alt="할 일 수정" />
-                        <span>할 일 수정</span>
-                    </button>
-                    <button
-                        className="option-btn"
-                        onClick={() => openEditor("memo")}
-                    >
-                        <img src={MemoIcon} alt="메모" />
-                        <span>메모</span>
-                    </button>
-                    <button
-                        className="option-btn"
-                        onClick={() => setShowRepeatEditor(true)}
-                    >
-                        <img src={RepeatIcon} alt="반복 설정" />
-                        <span>반복 설정</span>
-                    </button>
-                    <button
-                        className="option-btn"
-                        onClick={() => setShowAlarmEditor(true)}
-                    >
-                        <img src={AlarmIcon} alt="알람 설정" />
-                        <span>알람 설정</span>
-                    </button>
-                    <button
-                        className="option-btn delete-btn"
-                        onClick={onDelete}
-                    >
-                        <img src={DeleteIcon} alt="삭제" />
-                        <span>삭제</span>
-                    </button>
+                    <div className="rename-box">
+                        <div className="rename-title-with-icon">
+                            <img
+                                src={DeleteIcon}
+                                alt="삭제"
+                                className="memo-icon"
+                            />
+                            <span className="delete-title-text">삭제</span>
+                        </div>
+                        <p className="delete-text">
+                            할 일이 영구적으로 삭제됩니다.
+                        </p>
+                        {error && <p className="error-text">{error}</p>}
+                        <div className="button-group">
+                            <button
+                                className="cancel-button"
+                                onClick={() => setShowDeleteConfirm(false)}
+                                disabled={loading}
+                            >
+                                취소
+                            </button>
+                            <button
+                                className="confirm-button delete"
+                                onClick={handleDeleteCategory}
+                                disabled={loading}
+                            >
+                                {loading ? "처리 중..." : "삭제"}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 
