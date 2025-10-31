@@ -13,7 +13,7 @@ import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 
 import { createRoutine, updateTask } from "../api";
-import api from "../api";
+import { deleteTask } from "../api";
 
 function TaskOptionsPopup({
     taskId,
@@ -47,16 +47,16 @@ function TaskOptionsPopup({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // 삭제 처리 함수
-    const handleDeleteCategory = async () => {
+    // --- Task 삭제 처리 함수 ---
+    const handleDeleteTask = async () => {
         if (!taskId) return;
 
         setLoading(true);
         setError("");
 
         try {
-            // 실제 삭제 API 호출 (예시)
-            await api.delete(`/tasks/${taskId}`);
+            // userId 같이 전달
+            await deleteTask(taskId, userId);
             setShowDeleteConfirm(false);
             if (onDelete) onDelete(); // 부모 콜백 호출
         } catch (err) {
@@ -276,7 +276,7 @@ function TaskOptionsPopup({
                             </button>
                             <button
                                 className="confirm-button delete"
-                                onClick={handleDeleteCategory}
+                                onClick={handleDeleteTask}
                                 disabled={loading}
                             >
                                 {loading ? "처리 중..." : "삭제"}

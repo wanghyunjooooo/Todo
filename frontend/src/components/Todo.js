@@ -26,16 +26,15 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
         return `${ampm} ${hour}:${minute}`;
     };
 
-    /** tasksByDate → tasksByCategory 변환 */
+    /** tasksByDate → tasksByCategory 변환 + 빈 카테고리 유지 */
     useEffect(() => {
-        if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
-            setTasksByCategory((prev) => {
-                const newTasks = prev.flatMap((cat) => cat.tasks.filter((t) => t.isNew));
-                return newTasks.length ? [{ categoryName: "미분류", tasks: newTasks }] : [];
-            });
-            return;
-        }
+        // 모든 카테고리 이름 수집 (기존 + tasksByDate)
+        const allCategoryNames = new Set([
+            ...tasksByCategory.map((c) => c.categoryName),
+            ...tasksByDate.map((t) => t.category?.category_name || "미분류"),
+        ]);
 
+        // 카테고리별 Task 그룹화
         const grouped = tasksByDate.reduce((acc, task) => {
             const categoryName = task.category?.category_name || "미분류";
             if (!acc[categoryName]) acc[categoryName] = [];
@@ -54,11 +53,25 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
             return acc;
         }, {});
 
-        const newTasksByCategory = Object.entries(grouped).map(([categoryName, tasks]) => {
-            const prevCategory = tasksByCategory.find((c) => c.categoryName === categoryName);
-            const isNewTasks = prevCategory ? prevCategory.tasks.filter((t) => t.isNew && !tasks.some((s) => s._tempId === t._tempId)) : [];
-            return { categoryName, tasks: [...isNewTasks, ...tasks] };
-        });
+        // 모든 카테고리를 순회하며 tasksByCategory 구성
+        const newTasksByCategory = Array.from(allCategoryNames).map(
+            (categoryName) => {
+                const prevCategory = tasksByCategory.find(
+                    (c) => c.categoryName === categoryName
+                );
+                const existingTasks = grouped[categoryName] || [];
+                const newTasks = prevCategory
+                    ? prevCategory.tasks.filter(
+                          (t) =>
+                              t.isNew &&
+                              !existingTasks.some(
+                                  (s) => s._tempId === t._tempId
+                              )
+                      )
+                    : [];
+                return { categoryName, tasks: [...newTasks, ...existingTasks] };
+            }
+        );
 
         setTasksByCategory(newTasksByCategory);
     }, [tasksByDate]);
@@ -77,7 +90,8 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
     /** 체크 토글 */
     const toggleChecked = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
-        if (!task.task_id) return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
+        if (!task.task_id)
+            return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
         const newChecked = !task.checked;
         try {
             await updateTaskStatus(task.task_id, {
@@ -132,21 +146,33 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                     ? cat
                     : {
                           ...cat,
-                          tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx),
+                          tasks: cat.tasks.filter(
+                              (_, tIdx) => tIdx !== taskIdx
+                          ),
                       }
             )
         );
-        setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : prev));
+        setPopupIndex((prev) =>
+            prev.category === catIdx && prev.index === taskIdx
+                ? { category: null, index: null }
+                : prev
+        );
     };
 
     /** 팝업 토글 */
     const togglePopup = (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
-        if (!task.task_id) return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
-        setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : { category: catIdx, index: taskIdx }));
+        if (!task.task_id)
+            return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
+        setPopupIndex((prev) =>
+            prev.category === catIdx && prev.index === taskIdx
+                ? { category: null, index: null }
+                : { category: catIdx, index: taskIdx }
+        );
     };
 
-    if (!tasksByCategory.length) return <div className="no-task-text">오늘은 할 일이 없습니다.</div>;
+    if (!tasksByCategory.length)
+        return <div className="no-task-text">오늘은 할 일이 없습니다.</div>;
 
     return (
         <div className="todo-container">
@@ -154,28 +180,65 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                 <div key={group.categoryName} className="category-group">
                     <div className="category-header">
                         <h3 className="category-title">{group.categoryName}</h3>
-                        <button className="task-add-btn" onClick={() => handleAddTask(catIdx)}>
+                        <button
+                            className="task-add-btn"
+                            onClick={() => handleAddTask(catIdx)}
+                        >
                             +
                         </button>
                     </div>
 
                     {group.tasks.map((task, taskIdx) => (
-                        <div key={task.task_id || task._tempId} className={`task-item ${task.checked ? "checked" : ""}`}>
+                        <div
+                            key={task.task_id || task._tempId}
+                            className={`task-item ${
+                                task.checked ? "checked" : ""
+                            }`}
+                        >
                             <div className="task-content">
                                 <div className="task-left">
-                                    <button className={`task-check-btn ${task.checked ? "checked" : ""}`} onClick={() => toggleChecked(catIdx, taskIdx)}>
+                                    <button
+                                        className={`task-check-btn ${
+                                            task.checked ? "checked" : ""
+                                        }`}
+                                        onClick={() =>
+                                            toggleChecked(catIdx, taskIdx)
+                                        }
+                                    >
                                         {task.checked && (
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
-                                                <rect width="20" height="20" rx="10" fill="#36A862" />
-                                                <path fillRule="evenodd" clipRule="evenodd" d="M15.8 7.18c.13.12.2.28.2.44 0 .17-.07.33-.2.45l-6.15 5.76a.66.66 0 0 1-.47.17.66.66 0 0 1-.47-.17L5.2 10.52a.66.66 0 0 1-.14-.36c0-.13.03-.25.09-.36a.6.6 0 0 1 .26-.24.7.7 0 0 1 .46-.05.7.7 0 0 1 .39.2l3.05 2.86 5.7-5.39a.66.66 0 0 1 .94.04z" fill="#fff" />
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <rect
+                                                    width="20"
+                                                    height="20"
+                                                    rx="10"
+                                                    fill="#36A862"
+                                                />
+                                                <path
+                                                    fillRule="evenodd"
+                                                    clipRule="evenodd"
+                                                    d="M15.8 7.18c.13.12.2.28.2.44 0 .17-.07.33-.2.45l-6.15 5.76a.66.66 0 0 1-.47.17.66.66 0 0 1-.47-.17L5.2 10.52a.66.66 0 0 1-.14-.36c0-.13.03-.25.09-.36a.6.6 0 0 1 .26-.24.7.7 0 0 1 .46-.05.7.7 0 0 1 .39.2l3.05 2.86 5.7-5.39a.66.66 0 0 1 .94.04z"
+                                                    fill="#fff"
+                                                />
                                             </svg>
                                         )}
                                     </button>
 
                                     <input
                                         type="text"
-                                        ref={(el) => setInputRef(task.task_id || task._tempId, el)}
-                                        className={`task-text-input ${task.checked ? "checked" : ""}`}
+                                        ref={(el) =>
+                                            setInputRef(
+                                                task.task_id || task._tempId,
+                                                el
+                                            )
+                                        }
+                                        className={`task-text-input ${
+                                            task.checked ? "checked" : ""
+                                        }`}
                                         value={task.text}
                                         disabled={!!task.task_id}
                                         onChange={(e) => {
@@ -183,67 +246,125 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                             const newText = e.target.value;
                                             setTasksByCategory((prev) => {
                                                 const updated = [...prev];
-                                                updated[catIdx].tasks[taskIdx].text = newText;
+                                                updated[catIdx].tasks[
+                                                    taskIdx
+                                                ].text = newText;
                                                 return updated;
                                             });
                                         }}
                                         onKeyDown={async (e) => {
                                             if (task.task_id) return;
-
                                             if (e.key === "Enter") {
-                                                if (!task.text.trim()) {
-                                                    return alert("할 일을 입력해주세요.");
-                                                }
-
-                                                const user_id = localStorage.getItem("user_id");
-                                                if (!user_id) return alert("로그인이 필요합니다.");
-
-                                                const category_id = task.category_id || group.tasks[0]?.category_id;
-                                                if (!category_id) return alert("카테고리를 선택해주세요.");
-                                                if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
-
-                                                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-                                                const dateStr = localDate.toISOString().split("T")[0];
-
+                                                if (!task.text.trim())
+                                                    return alert(
+                                                        "할 일을 입력해주세요."
+                                                    );
+                                                const user_id =
+                                                    localStorage.getItem(
+                                                        "user_id"
+                                                    );
+                                                if (!user_id)
+                                                    return alert(
+                                                        "로그인이 필요합니다."
+                                                    );
+                                                const category_id =
+                                                    task.category_id ||
+                                                    group.tasks[0]?.category_id;
+                                                if (!category_id)
+                                                    return alert(
+                                                        "카테고리를 선택해주세요."
+                                                    );
+                                                if (!selectedDate)
+                                                    return alert(
+                                                        "날짜가 유효하지 않습니다."
+                                                    );
+                                                const localDate = new Date(
+                                                    selectedDate.getTime() -
+                                                        selectedDate.getTimezoneOffset() *
+                                                            60000
+                                                );
+                                                const dateStr = localDate
+                                                    .toISOString()
+                                                    .split("T")[0];
                                                 try {
-                                                    const result = await addTask({
-                                                        task_name: task.text,
-                                                        memo: "",
-                                                        task_date: dateStr,
-                                                        category_id: Number(category_id),
-                                                        user_id: Number(user_id),
-                                                        notification_type: "미알림",
-                                                        notification_time: null,
-                                                    });
-                                                    if (onDataUpdated) onDataUpdated();
-
-                                                    const savedTask = result.task;
-                                                    setTasksByCategory((prev) => {
-                                                        const updated = [...prev];
-                                                        updated[catIdx].tasks[taskIdx] = {
-                                                            text: savedTask.task_name,
-                                                            checked: savedTask.status === "완료",
-                                                            task_id: savedTask.task_id,
-                                                            memo: savedTask.memo || "",
-                                                            category_id: savedTask.category_id,
-                                                            notification_type: savedTask.notification_type || "미알림",
-                                                            notification_time: savedTask.notification_time || null,
-                                                            routine_type: savedTask.routine_type || "",
-                                                            period_start: savedTask.period_start || null,
-                                                            period_end: savedTask.period_end || null,
-                                                        };
-                                                        return updated;
-                                                    });
+                                                    const result =
+                                                        await addTask({
+                                                            task_name:
+                                                                task.text,
+                                                            memo: "",
+                                                            task_date: dateStr,
+                                                            category_id:
+                                                                Number(
+                                                                    category_id
+                                                                ),
+                                                            user_id:
+                                                                Number(user_id),
+                                                            notification_type:
+                                                                "미알림",
+                                                            notification_time:
+                                                                null,
+                                                        });
+                                                    if (onDataUpdated)
+                                                        onDataUpdated();
+                                                    const savedTask =
+                                                        result.task;
+                                                    setTasksByCategory(
+                                                        (prev) => {
+                                                            const updated = [
+                                                                ...prev,
+                                                            ];
+                                                            updated[
+                                                                catIdx
+                                                            ].tasks[taskIdx] = {
+                                                                text: savedTask.task_name,
+                                                                checked:
+                                                                    savedTask.status ===
+                                                                    "완료",
+                                                                task_id:
+                                                                    savedTask.task_id,
+                                                                memo:
+                                                                    savedTask.memo ||
+                                                                    "",
+                                                                category_id:
+                                                                    savedTask.category_id,
+                                                                notification_type:
+                                                                    savedTask.notification_type ||
+                                                                    "미알림",
+                                                                notification_time:
+                                                                    savedTask.notification_time ||
+                                                                    null,
+                                                                routine_type:
+                                                                    savedTask.routine_type ||
+                                                                    "",
+                                                                period_start:
+                                                                    savedTask.period_start ||
+                                                                    null,
+                                                                period_end:
+                                                                    savedTask.period_end ||
+                                                                    null,
+                                                            };
+                                                            return updated;
+                                                        }
+                                                    );
                                                 } catch (err) {
-                                                    console.error("Task 추가 실패:", err);
-                                                    alert("할 일 추가 중 오류가 발생했습니다.");
+                                                    console.error(
+                                                        "Task 추가 실패:",
+                                                        err
+                                                    );
+                                                    alert(
+                                                        "할 일 추가 중 오류가 발생했습니다."
+                                                    );
                                                 }
                                             }
-
-                                            if (e.key === "Escape" && task.isNew) {
+                                            if (
+                                                e.key === "Escape" &&
+                                                task.isNew
+                                            ) {
                                                 setTasksByCategory((prev) => {
                                                     const updated = [...prev];
-                                                    updated[catIdx].tasks.splice(taskIdx, 1);
+                                                    updated[
+                                                        catIdx
+                                                    ].tasks.splice(taskIdx, 1);
                                                     return updated;
                                                 });
                                             }
@@ -258,40 +379,56 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                         togglePopup(catIdx, taskIdx);
                                     }}
                                 >
-                                    <img src={ThreeIcon} alt="menu" style={{ width: "20px" }} />
+                                    <img
+                                        src={ThreeIcon}
+                                        alt="menu"
+                                        style={{ width: "20px" }}
+                                    />
                                 </button>
                             </div>
 
-                            {task.notification_type === "알림" && task.notification_time && <p className="task-time">{formatTime(task.notification_time)}</p>}
+                            {task.notification_type === "알림" &&
+                                task.notification_time && (
+                                    <p className="task-time">
+                                        {formatTime(task.notification_time)}
+                                    </p>
+                                )}
 
-                            {task.memo && <p className="task-memo">{task.memo}</p>}
-
-                            {popupIndex.category === catIdx && popupIndex.index === taskIdx && (
-                                <TaskOptionsPopup
-                                    style={{ top: "40px", right: "0" }}
-                                    taskId={task.task_id}
-                                    taskData={task}
-                                    userId={localStorage.getItem("user_id")}
-                                    onClose={() =>
-                                        setPopupIndex({
-                                            category: null,
-                                            index: null,
-                                        })
-                                    }
-                                    onDelete={() => handleDeleteTask(catIdx, taskIdx)}
-                                    onEditConfirm={async (updatedTask) => {
-                                        setTasksByCategory((prev) => {
-                                            const updated = [...prev];
-                                            updated[catIdx].tasks[taskIdx] = {
-                                                ...updated[catIdx].tasks[taskIdx],
-                                                ...updatedTask,
-                                            };
-                                            return updated;
-                                        });
-                                        if (onDataUpdated) onDataUpdated();
-                                    }}
-                                />
+                            {task.memo && (
+                                <p className="task-memo">{task.memo}</p>
                             )}
+
+                            {popupIndex.category === catIdx &&
+                                popupIndex.index === taskIdx && (
+                                    <TaskOptionsPopup
+                                        style={{ top: "40px", right: "0" }}
+                                        taskId={task.task_id}
+                                        taskData={task}
+                                        userId={localStorage.getItem("user_id")}
+                                        onClose={() =>
+                                            setPopupIndex({
+                                                category: null,
+                                                index: null,
+                                            })
+                                        }
+                                        onDelete={() =>
+                                            handleDeleteTask(catIdx, taskIdx)
+                                        }
+                                        onEditConfirm={async (updatedTask) => {
+                                            setTasksByCategory((prev) => {
+                                                const updated = [...prev];
+                                                updated[catIdx].tasks[taskIdx] =
+                                                    {
+                                                        ...updated[catIdx]
+                                                            .tasks[taskIdx],
+                                                        ...updatedTask,
+                                                    };
+                                                return updated;
+                                            });
+                                            if (onDataUpdated) onDataUpdated();
+                                        }}
+                                    />
+                                )}
                         </div>
                     ))}
                 </div>
