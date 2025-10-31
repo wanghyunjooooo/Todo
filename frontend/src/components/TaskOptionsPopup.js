@@ -119,6 +119,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             setNewText("");
             if (onEditConfirm) onEditConfirm(result.task);
             alert("수정 완료!");
+            onClose && onClose();
         } catch (err) {
             console.error("수정 실패:", err);
             alert("수정 실패");
@@ -139,6 +140,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             setShowAlarmEditor(false);
             if (onEditConfirm) onEditConfirm(result.task);
             alert("알람 설정 완료!");
+            onClose && onClose();
         } catch (err) {
             console.error("알람 설정 실패:", err);
             alert("알람 설정 실패");
@@ -164,6 +166,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             if (onEditConfirm) onEditConfirm(payload);
             setShowRepeatEditor(false);
             alert("루틴 생성 완료!");
+            onClose && onClose();
         } catch (err) {
             console.error("루틴 생성 실패:", err);
             alert("루틴 생성 실패");
