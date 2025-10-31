@@ -4,6 +4,7 @@ import "./CategoryEditor.css";
 import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg";
 import { ReactComponent as MemoIcon } from "../assets/memo.svg";
 import { ReactComponent as PenIcon } from "../assets/pen.svg";
+import { ReactComponent as DeleteIcon } from "../assets/delete.svg";
 import { updateCategory } from "../api"; // api.js에서 함수 가져오기
 import api from "../api"; // GET, POST, DELETE 등
 
@@ -258,7 +259,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                 {selectedCategory && showDeleteConfirm && (
                     <div className="rename-box">
                         <div className="rename-title-with-icon">
-                            <MemoIcon className="memo-icon" />
+                            <DeleteIcon className="memo-icon" />
                             <span className="delete-title-text">
                                 카테고리 삭제
                             </span>
