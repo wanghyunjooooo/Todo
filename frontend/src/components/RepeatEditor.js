@@ -19,12 +19,13 @@ function TaskOptionsPopup({ taskData, onClose, onDelete, onEditConfirm }) {
 
     const repeatOptions = ["매일", "매주", "매달"];
 
-    // --- 안정적으로 기존 메모 불러오기 ---
+    // --- 안정적으로 기존 값 불러오기 ---
     useEffect(() => {
+        if (!taskData) return;
         if (editorType === "edit") {
-            setEditText(taskData?.title || "");
+            setEditText(taskData.task_name || ""); // task_name으로 수정
         } else if (editorType === "memo") {
-            setMemoText(taskData?.memo || "");
+            setMemoText(taskData.memo || "");
         }
     }, [editorType, taskData]);
 
@@ -35,11 +36,18 @@ function TaskOptionsPopup({ taskData, onClose, onDelete, onEditConfirm }) {
     };
 
     const handleConfirm = () => {
+        if (!taskData) return;
+
+        const updatedTask = { ...taskData };
+
         if (editorType === "edit") {
-            onEditConfirm(editText, "edit");
+            updatedTask.task_name = editText;
         } else if (editorType === "memo") {
-            onEditConfirm(memoText, "memo");
+            updatedTask.memo = memoText;
         }
+
+        if (onEditConfirm) onEditConfirm(updatedTask);
+
         setShowEditor(false);
         setEditorType(null);
     };
@@ -53,6 +61,7 @@ function TaskOptionsPopup({ taskData, onClose, onDelete, onEditConfirm }) {
         <>
             <div className="overlay" onClick={onClose}></div>
 
+            {/* 메인 옵션 */}
             {!showEditor && !showRepeatEditor && (
                 <div
                     className="task-options-popup"
@@ -89,6 +98,7 @@ function TaskOptionsPopup({ taskData, onClose, onDelete, onEditConfirm }) {
                 </div>
             )}
 
+            {/* 할 일 / 메모 에디터 */}
             {showEditor && editorType && (
                 <div
                     className="editor-overlay"
