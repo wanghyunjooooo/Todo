@@ -144,7 +144,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                             <p>카테고리가 없습니다.</p>
                         ) : (
                             categories.map((cat) => (
-                                <div key={cat.category_id} className="category-item name" style={{ background: "var(--grey-white-hover, #FBFBFB)" }} onClick={() => handleSelectCategory(cat)}>
+                                <div key={cat.category_id} className="category-item name" onClick={() => handleSelectCategory(cat)}>
                                     <span>{cat.category_name}</span>
                                     <ArrowIcon className="arrow-icon" />
                                 </div>
@@ -198,9 +198,9 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                     <div className="rename-box">
                         <div className="rename-title-with-icon">
                             <MemoIcon className="memo-icon" />
-                            <span className="rename-title-text">카테고리 삭제 확인</span>
+                            <span className="delete-title-text">카테고리 삭제</span>
                         </div>
-                        <p>선택한 카테고리를 영구적으로 삭제하시겠습니까?</p>
+                        <p className="delete-text">카테고리가 영구적으로 삭제됩니다.</p>
                         {error && <p className="error-text">{error}</p>}
                         <div className="button-group">
                             <button className="cancel-button" onClick={() => setShowDeleteConfirm(false)} disabled={loading}>

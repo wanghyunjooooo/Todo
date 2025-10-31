@@ -221,23 +221,24 @@
 =========================== */
 .category-list {
     display: flex;
+    width: 310px;
     flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 8px;
 }
 
 .category-item {
     display: flex;
-    height: 56px;
-    padding: 8px 20px;
+    width: 310px;
+    height: 40px;
+    padding: 0 0 0 8px;
     align-items: center;
     gap: 8px;
     align-self: stretch;
     border-radius: 16px;
-    background: var(--Grey-Light, #f3f3f3);
+    background: transparent;
     cursor: pointer;
-    color: var(--Grey-Dark, #595959);
+    color: var(--Grey-Darker, #2A2A2A);
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
@@ -538,4 +539,41 @@
     /* 클릭 불가 */
     opacity: 0.5;
     /* 회색 처리 */
+}
+
+
+
+
+
+/* ===========================
+   🔹 삭제
+=========================== */
+
+.delete-title-text {
+    flex: 1 0 0;
+    color: var(--Red, #FD5344);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.delete-text {
+    display: flex;
+    width: 310px;
+    padding: 13px 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--Grey-Darker, #2A2A2A);
+    text-align: center;
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.confirm-button.delete {
+    color: var(--Red, #FD5344);
 }
