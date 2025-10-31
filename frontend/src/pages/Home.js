@@ -3,13 +3,22 @@ import Header from "../components/Header";
 import MyCalendar from "../components/Calendar";
 import Todo from "../components/Todo";
 import BottomNav from "../components/Nav";
-import { getCategories, getTasksByDay, addCategory, getMonthlyTasks, addTask } from "../api";
+import {
+    getCategories,
+    getTasksByDay,
+    addCategory,
+    getMonthlyTasks,
+    addTask,
+} from "../api";
 
 function Home() {
     const [categories, setCategories] = useState([]);
     const [tasksByDate, setTasksByDate] = useState([]);
     const [tasksByMonth, setTasksByMonth] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const saved = localStorage.getItem("selectedDate");
+        return saved ? new Date(saved) : new Date();
+    });
     const [focusedTaskId, setFocusedTaskId] = useState(null);
     const userId = localStorage.getItem("user_id");
 
@@ -36,7 +45,12 @@ function Home() {
         if (!userId || !selectedDate) return;
 
         const fetchTasksByDate = async () => {
-            const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+            const dateStr = `${selectedDate.getFullYear()}-${String(
+                selectedDate.getMonth() + 1
+            ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(
+                2,
+                "0"
+            )}`;
             try {
                 const tasks = await getTasksByDay(userId, dateStr);
                 setTasksByDate(tasks || []);
@@ -54,7 +68,10 @@ function Home() {
         if (!userId) return;
 
         const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-        const endDate = `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`;
+        const endDate = `${year}-${String(month + 1).padStart(
+            2,
+            "0"
+        )}-${new Date(year, month + 1, 0).getDate()}`;
 
         const fetchTasksByMonth = async () => {
             try {
@@ -69,6 +86,7 @@ function Home() {
         fetchTasksByMonth();
     }, [userId, year, month]);
 
+    /** ✅ 카테고리 추가 + 할 일 01 생성 */
     const handleCategoryAdded = async (categoryName) => {
         const user_id = localStorage.getItem("user_id");
         if (!user_id) return alert("로그인이 필요합니다.");
@@ -77,7 +95,12 @@ function Home() {
             const categoryRes = await addCategory(user_id, categoryName);
             const newCategory = categoryRes.category;
 
-            const dateStr = selectedDate.toISOString().split("T")[0];
+            // ✅ 로컬 날짜 기준 문자열 생성
+            const year = selectedDate.getFullYear();
+            const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+            const day = String(selectedDate.getDate()).padStart(2, "0");
+            const dateStr = `${year}-${month}-${day}`;
+
             const taskRes = await addTask({
                 task_name: "할 일 01",
                 memo: "",
@@ -96,7 +119,7 @@ function Home() {
             const updatedTasks = await getTasksByDay(user_id, dateStr);
             setTasksByDate(updatedTasks || []);
 
-            // 💡 포커스 1회용: 다음 렌더에서는 다시 발동하지 않게 초기화
+            // 💡 포커스 초기화
             setTimeout(() => setFocusedTaskId(null), 500);
         } catch (err) {
             console.error("카테고리 생성 실패:", err);
@@ -104,17 +127,32 @@ function Home() {
         }
     };
 
-    /** ✅ 날짜 변경 시 실행 */
+    /** ✅ 날짜 변경 */
     const handleDateChange = (newDate) => {
         console.log("선택 날짜 변경:", newDate);
         setSelectedDate(newDate);
     };
 
+    /** ✅ 데이터 새로고침 */
     const refreshData = async () => {
-        const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+        const dateStr = `${selectedDate.getFullYear()}-${String(
+            selectedDate.getMonth() + 1
+        ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
 
         try {
-            const [tasks, monthlyTasks, categoryList] = await Promise.all([getTasksByDay(userId, dateStr), getMonthlyTasks(userId, `${year}-${String(month + 1).padStart(2, "0")}-01`, `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`), getCategories(userId)]);
+            const [tasks, monthlyTasks, categoryList] = await Promise.all([
+                getTasksByDay(userId, dateStr),
+                getMonthlyTasks(
+                    userId,
+                    `${year}-${String(month + 1).padStart(2, "0")}-01`,
+                    `${year}-${String(month + 1).padStart(2, "0")}-${new Date(
+                        year,
+                        month + 1,
+                        0
+                    ).getDate()}`
+                ),
+                getCategories(userId),
+            ]);
 
             setTasksByDate(tasks || []);
             setTasksByMonth(monthlyTasks || []);
@@ -125,18 +163,41 @@ function Home() {
     };
 
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
             {/* 상단 헤더 */}
-            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} />
+            <Header
+                showMenu={true}
+                categories={categories}
+                onCategoryAdded={handleCategoryAdded}
+            />
 
             {/* 메인 콘텐츠 */}
-            <div style={{ flex: 1, overflowY: "auto", paddingBottom: "100px", marginTop: "24px" }}>
+            <div
+                style={{
+                    flex: 1,
+                    overflowY: "auto",
+                    paddingBottom: "100px",
+                    marginTop: "24px",
+                }}
+            >
                 {/* 달력 */}
-                <MyCalendar selectedDate={selectedDate} onDateChange={handleDateChange} tasksByDate={tasksByMonth} />
+                <MyCalendar
+                    selectedDate={selectedDate}
+                    onDateChange={handleDateChange}
+                    tasksByDate={tasksByMonth}
+                />
 
                 {/* 할 일 목록 */}
                 <div style={{ marginTop: "8px" }}>
-                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} focusedTaskId={focusedTaskId} onDataUpdated={refreshData} />
+                    <Todo
+                        tasksByDate={tasksByDate}
+                        selectedDate={selectedDate}
+                        categories={categories}
+                        focusedTaskId={focusedTaskId}
+                        onDataUpdated={refreshData}
+                    />
                 </div>
             </div>
 
