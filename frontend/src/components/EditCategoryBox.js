@@ -138,7 +138,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded }) {
                     <div className="category-list">
                         <div className="rename-title-with-icon">
                             <MemoIcon className="memo-icon" />
-                            <span className="rename-title-text">카테고리 추가하기</span>
+                            <span className="rename-title-text">카테고리 수정하기</span>
                         </div>
                         {categories.length === 0 ? (
                             <p>카테고리가 없습니다.</p>
