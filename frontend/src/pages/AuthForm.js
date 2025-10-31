@@ -64,7 +64,7 @@ function AuthForm({ onLogin }) {
         } catch (err) {
             // 400 / 401 처리하여 친절한 메시지 표시
             if (err.response?.status === 400 || err.response?.status === 401) {
-                setError("비밀번호 혹은 이메일을 다시 확인해주세요");
+                setError("이메일 또는 비밀번호가 잘못되었습니다.");
             } else if (err.response?.data?.message) {
                 setError(err.response.data.message);
             } else {
@@ -82,70 +82,22 @@ function AuthForm({ onLogin }) {
             </div>
 
             <form onSubmit={handleSubmit} className="auth-form" id="auth-form">
-                {!isLogin && (
-                    <input
-                        type="text"
-                        placeholder="닉네임"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="auth-input"
-                        required
-                    />
-                )}
+                {!isLogin && <input type="text" placeholder="닉네임" value={username} onChange={(e) => setUsername(e.target.value)} className="auth-input" required />}
 
-                <input
-                    type="email"
-                    placeholder="이메일"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="auth-input"
-                    required
-                />
+                <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} className="auth-input" required />
 
                 <div className="password-container">
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="비밀번호"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="auth-input password-input"
-                        required
-                    />
-                    <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ? (
-                            <EyeOff size={18} />
-                        ) : (
-                            <Eye size={18} />
-                        )}
+                    <input type={showPassword ? "text" : "password"} placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} className="auth-input password-input" required />
+                    <button type="button" className="eye-btn" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
 
                 {!isLogin && (
                     <div className="password-container">
-                        <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            placeholder="비밀번호 확인"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="auth-input password-input"
-                            required
-                        />
-                        <button
-                            type="button"
-                            className="eye-btn"
-                            onClick={() =>
-                                setShowConfirmPassword(!showConfirmPassword)
-                            }
-                        >
-                            {showConfirmPassword ? (
-                                <EyeOff size={18} />
-                            ) : (
-                                <Eye size={18} />
-                            )}
+                        <input type={showConfirmPassword ? "text" : "password"} placeholder="비밀번호 확인" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="auth-input password-input" required />
+                        <button type="button" className="eye-btn" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     </div>
                 )}
@@ -154,29 +106,16 @@ function AuthForm({ onLogin }) {
             </form>
 
             <div className="auth-buttons">
-                <button
-                    type="submit"
-                    form="auth-form"
-                    className="auth-button"
-                    disabled={loading}
-                >
+                <button type="submit" form="auth-form" className="auth-button" disabled={loading}>
                     {loading ? "처리 중..." : isLogin ? "로그인" : "회원가입"}
                 </button>
 
                 {isLogin ? (
-                    <button
-                        type="button"
-                        className="auth-signup-button"
-                        onClick={() => setIsLogin(false)}
-                    >
+                    <button type="button" className="auth-signup-button" onClick={() => setIsLogin(false)}>
                         회원가입하기
                     </button>
                 ) : (
-                    <button
-                        type="button"
-                        className="auth-signup-button"
-                        onClick={() => setIsLogin(true)}
-                    >
+                    <button type="button" className="auth-signup-button" onClick={() => setIsLogin(true)}>
                         로그인하기
                     </button>
                 )}
