@@ -115,6 +115,11 @@ function TaskOptionsPopup({
     const handleConfirmEdit = async () => {
         if (!taskId) return;
 
+        if (editorType === "edit" && (!newText || !newText.trim())) {
+            alert("할 일 이름을 입력해주세요.");
+            return;
+        }
+
         try {
             const payload = {
                 ...taskData,

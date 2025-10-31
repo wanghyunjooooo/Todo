@@ -18,14 +18,11 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
 
     const formatTime = (timeStr) => {
         if (!timeStr) return "";
-
         const [hourStr, minuteStr] = timeStr.split(":");
         let hour = parseInt(hourStr, 10);
         const minute = minuteStr.padStart(2, "0");
-
         const ampm = hour >= 12 ? "PM" : "AM";
         hour = hour % 12 || 12;
-
         return `${ampm} ${hour}:${minute}`;
     };
 
@@ -80,17 +77,15 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
         setTasksByCategory(newTasksByCategory);
     }, [tasksByDate]);
 
-    /** tasksByCategory가 렌더 완료된 뒤 focusedTaskId 포커스 */
+    /** focusedTaskId 포커스 */
     useLayoutEffect(() => {
         if (!focusedTaskId) return;
-
         const inputEl = inputRefs.current[focusedTaskId];
-        if (inputEl) {
+        if (inputEl)
             setTimeout(() => {
                 inputEl.focus();
                 inputEl.select();
             }, 120);
-        }
     }, [focusedTaskId, tasksByCategory]);
 
     /** 체크 토글 */
@@ -98,7 +93,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
         if (!task.task_id)
             return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
-
         const newChecked = !task.checked;
         try {
             await updateTaskStatus(task.task_id, {
@@ -118,22 +112,18 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
     /** 새 Task 추가 */
     const handleAddTask = (catIdx) => {
         const tempId = Date.now() + Math.random();
-
         setTasksByCategory((prev) => {
             const updated = [...prev];
             if (updated[catIdx].tasks.some((t) => t.isNew)) return updated;
-
-            const newTask = {
+            updated[catIdx].tasks.unshift({
                 text: "",
                 checked: false,
                 isNew: true,
                 category_id: updated[catIdx].tasks[0]?.category_id || null,
                 _tempId: tempId,
-            };
-            updated[catIdx].tasks.unshift(newTask);
+            });
             return updated;
         });
-
         setTimeout(() => {
             const el = inputRefs.current[tempId];
             if (el) el.focus();
@@ -143,7 +133,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
     /** Task 삭제 */
     const handleDeleteTask = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
-
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
@@ -152,17 +141,18 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                 console.error("Task 삭제 실패:", err);
             }
         }
-
         setTasksByCategory((prev) =>
-            prev.map((cat, idx) => {
-                if (idx !== catIdx) return cat;
-                return {
-                    ...cat,
-                    tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx),
-                };
-            })
+            prev.map((cat, idx) =>
+                idx !== catIdx
+                    ? cat
+                    : {
+                          ...cat,
+                          tasks: cat.tasks.filter(
+                              (_, tIdx) => tIdx !== taskIdx
+                          ),
+                      }
+            )
         );
-
         setPopupIndex((prev) =>
             prev.category === catIdx && prev.index === taskIdx
                 ? { category: null, index: null }
@@ -266,10 +256,13 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                         onKeyDown={async (e) => {
                                             if (task.task_id) return;
 
-                                            if (
-                                                e.key === "Enter" &&
-                                                task.text.trim()
-                                            ) {
+                                            if (e.key === "Enter") {
+                                                if (!task.text.trim()) {
+                                                    return alert(
+                                                        "할 일을 입력해주세요."
+                                                    );
+                                                }
+
                                                 const user_id =
                                                     localStorage.getItem(
                                                         "user_id"
@@ -282,6 +275,15 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                 const category_id =
                                                     task.category_id ||
                                                     group.tasks[0]?.category_id;
+                                                if (!category_id)
+                                                    return alert(
+                                                        "카테고리를 선택해주세요."
+                                                    );
+                                                if (!selectedDate)
+                                                    return alert(
+                                                        "날짜가 유효하지 않습니다."
+                                                    );
+
                                                 const localDate = new Date(
                                                     selectedDate.getTime() -
                                                         selectedDate.getTimezoneOffset() *
@@ -298,7 +300,10 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                                 task.text,
                                                             memo: "",
                                                             task_date: dateStr,
-                                                            category_id,
+                                                            category_id:
+                                                                Number(
+                                                                    category_id
+                                                                ),
                                                             user_id:
                                                                 Number(user_id),
                                                             notification_type:
@@ -419,7 +424,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                             handleDeleteTask(catIdx, taskIdx)
                                         }
                                         onEditConfirm={async (updatedTask) => {
-                                            // 🔹 전체 task 데이터 업데이트
                                             setTasksByCategory((prev) => {
                                                 const updated = [...prev];
                                                 updated[catIdx].tasks[taskIdx] =
