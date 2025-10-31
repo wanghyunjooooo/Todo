@@ -63,7 +63,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
         if (!taskData) return;
 
         // Editor
-        if (editorType === "edit") setNewText(taskData.task_name || "");
+        if (editorType === "edit") setNewText(taskData.text || "");
         else if (editorType === "memo") setNewText(taskData.memo || "");
 
         // 반복
