@@ -62,20 +62,21 @@ function AuthForm({ onLogin }) {
             setConfirmPassword("");
             setUsername("");
         } catch (err) {
-            setError(err.response?.data?.message || "오류가 발생했습니다.");
+            // 400 / 401 처리하여 친절한 메시지 표시
+            if (err.response?.status === 400 || err.response?.status === 401) {
+                setError("비밀번호 혹은 이메일을 다시 확인해주세요");
+            } else if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError("오류가 발생했습니다.");
+            }
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div
-            className="auth-page"
-            style={{
-                backgroundColor: "#FBFBFB",
-            }}
-        >
-            {/* 로고: 인풋 위 */}
+        <div className="auth-page" style={{ backgroundColor: "#FBFBFB" }}>
             <div className="auth-logo-container">
                 <img src={BigLogo} alt="로고" />
             </div>
