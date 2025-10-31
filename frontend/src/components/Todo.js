@@ -26,20 +26,15 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
         return `${ampm} ${hour}:${minute}`;
     };
 
-    /** tasksByDate → tasksByCategory 변환 */
+    /** tasksByDate → tasksByCategory 변환 + 빈 카테고리 유지 */
     useEffect(() => {
-        if (!Array.isArray(tasksByDate) || tasksByDate.length === 0) {
-            setTasksByCategory((prev) => {
-                const newTasks = prev.flatMap((cat) =>
-                    cat.tasks.filter((t) => t.isNew)
-                );
-                return newTasks.length
-                    ? [{ categoryName: "미분류", tasks: newTasks }]
-                    : [];
-            });
-            return;
-        }
+        // 모든 카테고리 이름 수집 (기존 + tasksByDate)
+        const allCategoryNames = new Set([
+            ...tasksByCategory.map((c) => c.categoryName),
+            ...tasksByDate.map((t) => t.category?.category_name || "미분류"),
+        ]);
 
+        // 카테고리별 Task 그룹화
         const grouped = tasksByDate.reduce((acc, task) => {
             const categoryName = task.category?.category_name || "미분류";
             if (!acc[categoryName]) acc[categoryName] = [];
@@ -58,19 +53,23 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
             return acc;
         }, {});
 
-        const newTasksByCategory = Object.entries(grouped).map(
-            ([categoryName, tasks]) => {
+        // 모든 카테고리를 순회하며 tasksByCategory 구성
+        const newTasksByCategory = Array.from(allCategoryNames).map(
+            (categoryName) => {
                 const prevCategory = tasksByCategory.find(
                     (c) => c.categoryName === categoryName
                 );
-                const isNewTasks = prevCategory
+                const existingTasks = grouped[categoryName] || [];
+                const newTasks = prevCategory
                     ? prevCategory.tasks.filter(
                           (t) =>
                               t.isNew &&
-                              !tasks.some((s) => s._tempId === t._tempId)
+                              !existingTasks.some(
+                                  (s) => s._tempId === t._tempId
+                              )
                       )
                     : [];
-                return { categoryName, tasks: [...isNewTasks, ...tasks] };
+                return { categoryName, tasks: [...newTasks, ...existingTasks] };
             }
         );
 
@@ -255,14 +254,11 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                         }}
                                         onKeyDown={async (e) => {
                                             if (task.task_id) return;
-
                                             if (e.key === "Enter") {
-                                                if (!task.text.trim()) {
+                                                if (!task.text.trim())
                                                     return alert(
                                                         "할 일을 입력해주세요."
                                                     );
-                                                }
-
                                                 const user_id =
                                                     localStorage.getItem(
                                                         "user_id"
@@ -271,7 +267,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                     return alert(
                                                         "로그인이 필요합니다."
                                                     );
-
                                                 const category_id =
                                                     task.category_id ||
                                                     group.tasks[0]?.category_id;
@@ -283,7 +278,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                     return alert(
                                                         "날짜가 유효하지 않습니다."
                                                     );
-
                                                 const localDate = new Date(
                                                     selectedDate.getTime() -
                                                         selectedDate.getTimezoneOffset() *
@@ -292,7 +286,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                 const dateStr = localDate
                                                     .toISOString()
                                                     .split("T")[0];
-
                                                 try {
                                                     const result =
                                                         await addTask({
@@ -313,7 +306,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                         });
                                                     if (onDataUpdated)
                                                         onDataUpdated();
-
                                                     const savedTask =
                                                         result.task;
                                                     setTasksByCategory(
@@ -364,7 +356,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                                                     );
                                                 }
                                             }
-
                                             if (
                                                 e.key === "Escape" &&
                                                 task.isNew
