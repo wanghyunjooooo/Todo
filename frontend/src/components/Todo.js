@@ -4,7 +4,7 @@ import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
 import { addTask, deleteTask, updateTaskStatus, updateTask } from "../api";
 
-function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
+function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categories = [] }) {
     const [tasksByCategory, setTasksByCategory] = useState([]);
     const [popupIndex, setPopupIndex] = useState({
         category: null,
@@ -28,10 +28,9 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
 
     /** tasksByDate → tasksByCategory 변환 + 빈 카테고리 유지 */
     useEffect(() => {
-        // 모든 카테고리 이름 수집 (기존 + tasksByDate)
-        const allCategoryNames = new Set([...tasksByCategory.map((c) => c.categoryName), ...tasksByDate.map((t) => t.category?.category_name || "미분류")]);
+        // ✅ 전체 카테고리 이름을 categories 배열에서 가져오기
+        const allCategoryNames = new Set([...categories.map((c) => c.category_name), ...tasksByDate.map((t) => t.category?.category_name || "미분류")]);
 
-        // 카테고리별 Task 그룹화
         const grouped = tasksByDate.reduce((acc, task) => {
             const categoryName = task.category?.category_name || "미분류";
             if (!acc[categoryName]) acc[categoryName] = [];
@@ -50,7 +49,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
             return acc;
         }, {});
 
-        // 모든 카테고리를 순회하며 tasksByCategory 구성
+        // ✅ 빈 카테고리도 항상 표시되게
         const newTasksByCategory = Array.from(allCategoryNames).map((categoryName) => {
             const prevCategory = tasksByCategory.find((c) => c.categoryName === categoryName);
             const existingTasks = grouped[categoryName] || [];
@@ -59,7 +58,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
         });
 
         setTasksByCategory(newTasksByCategory);
-    }, [tasksByDate]);
+    }, [tasksByDate, categories]);
 
     /** focusedTaskId 포커스 */
     useLayoutEffect(() => {
@@ -95,6 +94,11 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
     /** 새 Task 추가 */
     const handleAddTask = (catIdx) => {
         const tempId = Date.now() + Math.random();
+        const categoryName = tasksByCategory[catIdx].categoryName;
+
+        const matchedCategory = categories.find((c) => c.category_name === categoryName);
+        const category_id = matchedCategory ? matchedCategory.category_id : null;
+
         setTasksByCategory((prev) => {
             const updated = [...prev];
             if (updated[catIdx].tasks.some((t) => t.isNew)) return updated;
@@ -102,11 +106,12 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated }) {
                 text: "",
                 checked: false,
                 isNew: true,
-                category_id: updated[catIdx].tasks[0]?.category_id || null,
+                category_id,
                 _tempId: tempId,
             });
             return updated;
         });
+
         setTimeout(() => {
             const el = inputRefs.current[tempId];
             if (el) el.focus();
