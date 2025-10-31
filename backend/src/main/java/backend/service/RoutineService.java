@@ -52,7 +52,6 @@ public class RoutineService {
         return savedRoutine;
     }
 
-
     @Transactional
     public Routine updateRoutine(Long routineId, RoutineDTO dto) {
         Routine routine = routineRepository.findById(routineId)
@@ -113,7 +112,7 @@ public class RoutineService {
             Task t = new Task();
             t.setTaskName(baseTask.getTaskName());
             t.setStatus("미완료");
-            t.setMemo(baseTask.getMemo());
+            t.setMemo(null);
             t.setTaskDate(next);
             t.setNotificationType(baseTask.getNotificationType());
             t.setNotificationTime(baseTask.getNotificationTime());
