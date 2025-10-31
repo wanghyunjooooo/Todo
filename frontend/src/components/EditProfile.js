@@ -153,22 +153,9 @@ function EditProfile() {
                 <input style={inputStyle} type="email" placeholder="이메일" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} />
 
                 {/* 비밀번호 입력 */}
-                <div style={{ position: "relative", width: "350px", marginBottom: "12px" }}>
-                    <input style={{ ...inputStyle, paddingRight: "40px" }} type={showPassword ? "text" : "password"} placeholder="비밀번호 (변경 시 입력)" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{
-                            position: "absolute",
-                            right: "12px",
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            background: "transparent",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: 0,
-                        }}
-                    >
+                <div className="password-container">
+                    <input style={inputStyle} type={showPassword ? "text" : "password"} placeholder="비밀번호 (변경 시 입력)" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} className="auth-input password-input" required />
+                    <button type="button" className="eye-btn" style={{ paddingTop: "21px" }} onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
