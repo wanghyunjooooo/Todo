@@ -46,7 +46,7 @@ function LogoutBox() {
                         color: "#FD5344",
                         fontFamily: "Pretendard",
                         fontSize: "12px",
-                        fontWeight: 600,
+                        fontWeight: 500,
                     }}
                 >
                     로그아웃
@@ -104,7 +104,7 @@ function LogoutBox() {
                                 style={{
                                     fontFamily: "Pretendard",
                                     fontSize: "12px",
-                                    fontWeight: 500,
+                                    fontWeight: 400,
                                     color: "#FD5344",
                                 }}
                             >
@@ -127,7 +127,7 @@ function LogoutBox() {
                                 style={{
                                     fontFamily: "Pretendard",
                                     fontSize: "12px",
-                                    fontWeight: 500,
+                                    fontWeight: 400,
                                     color: "#2A2A2A",
                                 }}
                             >
@@ -154,7 +154,7 @@ function LogoutBox() {
                                     border: "none",
                                     background: "#fff",
                                     fontFamily: "Pretendard",
-                                    fontWeight: 600,
+                                    fontWeight: 500,
                                     cursor: "pointer",
                                     color: "#595959",
                                 }}
@@ -171,7 +171,7 @@ function LogoutBox() {
                                     background: "#fff",
                                     color: "#595959",
                                     fontFamily: "Pretendard",
-                                    fontWeight: 600,
+                                    fontWeight: 500,
                                     cursor: "pointer",
                                 }}
                             >

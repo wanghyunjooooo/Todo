@@ -78,7 +78,7 @@ function EditProfile() {
         flexShrink: 0,
         fontFamily: "Pretendard",
         fontSize: "12px",
-        fontWeight: 500,
+        fontWeight: 400,
         borderRadius: "16px",
         border: "none",
         outline: "none",
@@ -101,7 +101,7 @@ function EditProfile() {
         border: "none",
         outline: "none",
         fontSize: "14px",
-        fontWeight: 600,
+        fontWeight: 500,
         fontStyle: "normal",
         lineHeight: "normal",
         textAlign: "center",
@@ -142,7 +142,7 @@ function EditProfile() {
                         color: "var(--Grey-Darker, #2A2A2A)",
                         fontFamily: "Pretendard",
                         fontSize: "16px",
-                        fontWeight: 600,
+                        fontWeight: 500,
                         margin: "0 0 12px 0",
                     }}
                 >

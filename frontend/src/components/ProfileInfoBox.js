@@ -31,7 +31,7 @@ function ProfileHeaderBox() {
                     color: "var(--Grey-Darker, #2A2A2A)",
                     fontFamily: "Pretendard",
                     fontSize: "12px",
-                    fontWeight: 600,
+                    fontWeight: 500,
                 }}
             >
                 회원정보 수정

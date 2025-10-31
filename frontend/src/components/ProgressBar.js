@@ -111,7 +111,7 @@ function ProgressBar({ userId }) {
                 style={{
                     fontFamily: "Pretendard",
                     fontSize: "12px",
-                    fontWeight: 600,
+                    fontWeight: 500,
                     color: "#2A2A2A",
                 }}
             >
@@ -143,7 +143,7 @@ function ProgressBar({ userId }) {
                         style={{
                             fontFamily: "Pretendard",
                             fontSize: "12px",
-                            fontWeight: 600,
+                            fontWeight: 500,
                             color: "#2A2A2A",
                         }}
                     >
@@ -188,8 +188,8 @@ function ProgressBar({ userId }) {
                 </style>
                 <ResponsiveContainer width="100%" height={150}>
                     <BarChart data={graphData} margin={{ top: 10, right: 0, left: -30, bottom: 0 }}>
-                        <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#2A2A2A", fontWeight: 400 }} axisLine={false} tickLine={false} />
-                        <YAxis domain={[0, 100]} allowDecimals={false} interval={0} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: "#2A2A2A", fontWeight: 400 }} tickFormatter={(v) => `${v}`} />
+                        <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#2A2A2A", fontWeight: 300 }} axisLine={false} tickLine={false} />
+                        <YAxis domain={[0, 100]} allowDecimals={false} interval={0} ticks={[0, 25, 50, 75, 100]} tick={{ fontSize: 12, fill: "#2A2A2A", fontWeight: 300 }} tickFormatter={(v) => `${v}`} />
                         <Tooltip cursor={{ fill: "rgba(54,168,98,0.1)" }} contentStyle={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #ddd", fontSize: "10px", fontFamily: "Pretendard" }} formatter={(value) => [`${value.toFixed(1)}%`, "달성률"]} />
                         <Bar dataKey="rate" fill="#36A862" barSize={28} animationDuration={500} />{" "}
                     </BarChart>

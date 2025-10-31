@@ -53,7 +53,7 @@
     background: #fff;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--Grey-Dark, #595959);
     cursor: pointer;
 }
@@ -68,7 +68,7 @@
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     line-height: normal;
 }
 
@@ -89,7 +89,7 @@
     cursor: pointer;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 400;
     background: #fff;
     color: var(--Grey-Darker, #2a2a2a);
 }
@@ -194,7 +194,7 @@
     font-family: Pretendard;
     font-size: 14px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     line-height: normal;
 }
 
@@ -213,7 +213,7 @@
     color: var(--Grey-Darker, #2a2a2a);
     font-family: Pretendard;
     font-size: 10px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 /* ===========================
@@ -241,7 +241,7 @@
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     line-height: normal;
 }
 
@@ -264,7 +264,7 @@
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     line-height: normal;
 }
 
@@ -304,7 +304,6 @@
 .calendar-box {
     display: flex;
     width: 310px;
-    height: 300px;
     padding: 20px;
     flex-direction: column;
     justify-content: center;
@@ -344,7 +343,7 @@
     font-family: Pretendard;
     font-size: 10px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     line-height: normal;
 }
 
@@ -384,7 +383,7 @@
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 300;
     line-height: normal;
 }
 
@@ -415,14 +414,8 @@
     font-family: Pretendard;
     font-size: 14px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     line-height: normal;
-}
-
-.arrow-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
 }
 
 .header-buttons button {
@@ -491,13 +484,9 @@
 }
 
 .arrow-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 4px;
 }
 
 .arrow-btn img {
@@ -545,6 +534,8 @@
 }
 
 .disabled-item {
-    pointer-events: none; /* 클릭 불가 */
-    opacity: 0.5; /* 회색 처리 */
+    pointer-events: none;
+    /* 클릭 불가 */
+    opacity: 0.5;
+    /* 회색 처리 */
 }

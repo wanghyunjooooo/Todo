@@ -107,7 +107,7 @@ const PopupButton = ({ text, onClick }) => (
             alignItems: "center",
             fontFamily: "Pretendard, sans-serif",
             fontSize: "12px",
-            fontWeight: 600,
+            fontWeight: 500,
             color: "#36A862",
             cursor: "pointer",
             background: "transparent",
