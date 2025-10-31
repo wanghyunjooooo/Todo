@@ -63,7 +63,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
         if (!taskData) return;
 
         // Editor
-        if (editorType === "edit") setNewText(taskData.task_name || "");
+        if (editorType === "edit") setNewText(taskData.text || "");
         else if (editorType === "memo") setNewText(taskData.memo || "");
 
         // 반복
@@ -91,9 +91,12 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
     const getPlaceholder = () => (editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기");
 
     const openEditor = (type) => {
+        console.log("openEditor type:", type);
+        console.log("taskData:", taskData);
+
         setEditorType(type);
         setShowEditor(true);
-        setNewText(type === "edit" ? taskData.task_name || "" : taskData.memo || "");
+        setNewText(type === "edit" ? taskData.text || "" : taskData.memo || "");
     };
 
     const handleConfirmEdit = async () => {
