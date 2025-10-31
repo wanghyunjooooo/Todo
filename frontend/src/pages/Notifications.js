@@ -154,18 +154,23 @@ function Notifications() {
                                     <div className="notifications-actions">
                                         <div
                                             className="action-button"
-                                            onClick={() =>
+                                            onClick={() => {
+                                                // 현재 해당 날짜 알림이 모두 선택되어 있는지 확인
+                                                const allSelected = grouped[
+                                                    date
+                                                ].every((n) => n.selected);
                                                 setNotifications((prev) =>
                                                     prev.map((n) =>
                                                         n.date === date
                                                             ? {
                                                                   ...n,
-                                                                  selected: true,
-                                                              }
+                                                                  selected:
+                                                                      !allSelected,
+                                                              } // 모두 선택되어 있으면 해제, 아니면 선택
                                                             : n
                                                     )
-                                                )
-                                            }
+                                                );
+                                            }}
                                         >
                                             전체선택
                                         </div>
