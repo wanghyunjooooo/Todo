@@ -791,9 +791,11 @@ function TaskOptionsPopup({
                                                 ? "알림"
                                                 : "미알림",
                                             notification_time: alarmEnabled
-                                                ? alarmDate
-                                                      .toTimeString()
-                                                      .split(" ")[0]
+                                                ? `${String(
+                                                      alarmDate.getHours()
+                                                  ).padStart(2, "0")}:${String(
+                                                      alarmDate.getMinutes()
+                                                  ).padStart(2, "0")}:00`
                                                 : null,
                                         };
 
