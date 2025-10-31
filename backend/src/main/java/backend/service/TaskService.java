@@ -9,8 +9,9 @@ import backend.repository.NotificationRepository;
 import backend.repository.TaskRepository;
 import backend.repository.UserRepository;
 import backend.scheduler.NotificationSchedulerService;
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,14 +23,12 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
 
-    private final NotificationRepository notificationRepository;
-
-    private final CategoryService categoryService;
-
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
     private final NotificationSchedulerService notificationSchedulerService;
+    private final NotificationRepository notificationRepository;
 
     public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository, NotificationSchedulerService notificationSchedulerService, CategoryService categoryService, NotificationRepository notificationRepository) {
         this.taskRepository = taskRepository;
@@ -129,24 +128,12 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("삭제할 할 일을 찾을 수 없습니다."));
 
-        notificationSchedulerService.cancelNotification(taskId);
-
         notificationRepository.deleteByTask_TaskId(taskId);
-
-        Category category = task.getCategory();
-        Long userId = task.getUser().getUserId();
 
         taskRepository.delete(task);
         taskRepository.flush();
-
-        if (category != null) {
-            Category refreshed = categoryRepository.findById(category.getCategoryId()).orElse(null);
-            if (refreshed != null && (refreshed.getTasks() == null || refreshed.getTasks().isEmpty())) {
-                categoryService.deleteCategory(userId, category.getCategoryId());
-            }
-        }
     }
-
+    
     public Task toggleStatus(Long taskId, String newStatus) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 할 일을 찾을 수 없습니다."));
@@ -165,7 +152,6 @@ public class TaskService {
             weeklyRates.put(day, 0.0);
         }
 
-        // ✅ 요일별 완료율 계산
         for (int i = 0; i < days.length; i++) {
             int dayIndex = i == 0 ? 7 : i; // 일요일=7 (LocalDate 기준)
             List<Task> dailyTasks = tasks.stream()
@@ -178,7 +164,7 @@ public class TaskService {
                     .count();
 
             double rate = total == 0 ? 0.0 : ((double) completed / total) * 100.0;
-            weeklyRates.put(days[i], Math.round(rate * 10.0) / 10.0); // 소수점 1자리 반올림
+            weeklyRates.put(days[i], Math.round(rate * 10.0) / 10.0);
         }
 
         List<Map<String, Object>> weeklyData = weeklyRates.entrySet().stream()
@@ -202,7 +188,6 @@ public class TaskService {
         LocalDate tempDate = start;
 
         while (!tempDate.isAfter(end)) {
-            // ✅ 하루치만 직접 계산 (람다 안에서 tempDate를 수정하지 않음)
             final LocalDate currentDate = tempDate;
 
             List<Task> dailyTasks = tasks.stream()
@@ -217,7 +202,7 @@ public class TaskService {
             double rate = total == 0 ? 0.0 : ((double) completed / total) * 100.0;
             dailyRates.put(currentDate, Math.round(rate * 10.0) / 10.0);
 
-            tempDate = tempDate.plusDays(1); // ✅ 스트림 외부에서 안전하게 증가
+            tempDate = tempDate.plusDays(1);
         }
 
         List<Map<String, Object>> dailyData = dailyRates.entrySet().stream()
