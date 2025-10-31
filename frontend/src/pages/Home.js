@@ -137,7 +137,7 @@ function Home() {
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             {/* 상단 헤더 */}
-            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} />
+            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} onCategoryChanged={refreshData} />
 
             {/* 메인 콘텐츠 */}
             <div

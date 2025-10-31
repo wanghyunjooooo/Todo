@@ -3,7 +3,7 @@ import ThreeIcon from "../assets/three.svg";
 import LogoIcon from "../assets/logo.svg"; // ← 추가
 import CategoryEditor from "./EditCategoryBox";
 
-function Header({ showMenu = true, onCategoryAdded }) {
+function Header({ showMenu = true, onCategoryAdded, onCategoryChanged }) {
     const [isMenuActive, setIsMenuActive] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [showCategoryEditor, setShowCategoryEditor] = useState(false);
@@ -90,6 +90,7 @@ function Header({ showMenu = true, onCategoryAdded }) {
                         if (onCategoryAdded) onCategoryAdded(newCategory);
                         setShowCategoryEditor(false);
                     }}
+                    onCategoryChanged={onCategoryChanged}
                 />
             )}
         </header>
