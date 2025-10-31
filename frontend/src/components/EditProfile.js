@@ -9,6 +9,10 @@ function EditProfile() {
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const userId = localStorage.getItem("user_id"); // login 시 저장된 userId 사용
 
@@ -50,6 +54,12 @@ function EditProfile() {
                 user_email: userEmail,
                 ...(userPassword && { user_password: userPassword }), // 입력 시에만 포함
             };
+
+            if (userPassword !== confirmPassword) {
+                setError("비밀번호가 일치하지 않습니다.");
+                setLoading(false);
+                return;
+            }
 
             console.log("회원정보수정:", payload);
 
@@ -159,6 +169,15 @@ function EditProfile() {
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
+
+                <div className="password-container">
+                    <input style={inputStyle} type={showConfirmPassword ? "text" : "password"} placeholder="비밀번호 확인" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="auth-input password-input" required />
+                    <button type="button" className="eye-btn" style={{ paddingTop: "21px" }} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                </div>
+
+                {error && <p className="auth-error">{error}</p>}
             </div>
 
             {/* 버튼 */}
