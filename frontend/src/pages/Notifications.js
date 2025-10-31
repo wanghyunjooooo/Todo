@@ -18,7 +18,6 @@ function Notifications() {
             try {
                 const res = await api.get(`/notifications/${userId}`);
                 const mapped = res.data.map((n) => {
-                    // 🔹 초(:ss) 제거 — "2025-10-31T18:02:45" → "2025-10-31T18:02:00"
                     let dateStr = n.task_date;
                     if (dateStr?.includes("T")) {
                         const [datePart, timePart] = dateStr.split("T");
@@ -90,7 +89,7 @@ function Notifications() {
         }
     };
 
-    // 🔹 선택 읽음 처리 (서버 반영)
+    // 🔹 선택 읽음 처리 (서버 반영) + 체크 해제
     const markSelectedAsRead = async (date) => {
         const selectedIds = notifications
             .filter((n) => n.date === date && n.selected && !n.read)
@@ -103,7 +102,9 @@ function Notifications() {
             );
             setNotifications((prev) =>
                 prev.map((n) =>
-                    selectedIds.includes(n.id) ? { ...n, read: true } : n
+                    selectedIds.includes(n.id)
+                        ? { ...n, read: true, selected: false } // ✅ 체크 해제 추가
+                        : n
                 )
             );
         } catch (err) {
@@ -119,7 +120,7 @@ function Notifications() {
     }, {});
 
     const today = new Date().toISOString().split("T")[0];
-    if (!grouped[today]) grouped[today] = []; // 오늘 날짜 그룹 항상 생성
+    if (!grouped[today]) grouped[today] = [];
 
     const sortedDates = Object.keys(grouped).sort(
         (a, b) => new Date(b) - new Date(a)
@@ -149,13 +150,11 @@ function Notifications() {
                                     )}
                                 </div>
 
-                                {/* ✅ 오늘 날짜일 때 버튼 항상 표시 */}
                                 {isToday && (
                                     <div className="notifications-actions">
                                         <div
                                             className="action-button"
                                             onClick={() => {
-                                                // 현재 해당 날짜 알림이 모두 선택되어 있는지 확인
                                                 const allSelected = grouped[
                                                     date
                                                 ].every((n) => n.selected);
@@ -166,7 +165,7 @@ function Notifications() {
                                                                   ...n,
                                                                   selected:
                                                                       !allSelected,
-                                                              } // 모두 선택되어 있으면 해제, 아니면 선택
+                                                              }
                                                             : n
                                                     )
                                                 );
@@ -192,7 +191,6 @@ function Notifications() {
                                 )}
                             </div>
 
-                            {/* 알림 리스트 */}
                             {grouped[date].length === 0 ? (
                                 <div className="no-notifications">
                                     현재 알림이 없습니다.
