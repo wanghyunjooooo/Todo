@@ -125,7 +125,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded, onCategoryCha
                             <span className="rename-title-text">카테고리 추가하기</span>
                         </div>
                         <div className="rename-input-container">
-                            <input type="text" className="rename-input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="카테고리 이름 입력" disabled={loading} />
+                            <input type="text" className="rename-input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="카테고리 이름 입력" disabled={loading} autoFocus />
                         </div>
                         {error && <p className="error-text">{error}</p>}
                         <div className="button-group">
@@ -205,7 +205,7 @@ function CategoryEditor({ onClose, mode = "edit", onCategoryAdded, onCategoryCha
                             <span className="rename-title-text">이름 변경</span>
                         </div>
                         <div className="rename-input-container">
-                            <input type="text" className="rename-input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="새 이름을 입력하세요" disabled={loading} />
+                            <input type="text" className="rename-input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="새 이름을 입력하세요" disabled={loading} autoFocus />
                         </div>
                         {error && <p className="error-text">{error}</p>}
                         <div className="button-group">

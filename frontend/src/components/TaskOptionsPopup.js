@@ -242,7 +242,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                                 <span>{getTitle()}</span>
                             </div>
                             <div className="rename-input-container">
-                                <input type="text" className="rename-input" value={newText} onChange={(e) => setNewText(e.target.value)} placeholder={getPlaceholder()} />
+                                <input type="text" className="rename-input" value={newText} onChange={(e) => setNewText(e.target.value)} placeholder={getPlaceholder()} autoFocus />
                             </div>
                             <div className="button-group">
                                 <button className="cancel-button" onClick={() => setShowEditor(false)}>
