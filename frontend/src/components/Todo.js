@@ -181,49 +181,63 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                                 return updated;
                                             });
                                         }}
+                                        onBlur={async () => {
+                                            if (task.task_id || !task.isNew) return;
+                                            if (!task.text.trim()) {
+                                                setTasksByCategory((prev) => {
+                                                    const updated = [...prev];
+                                                    updated[catIdx].tasks.splice(taskIdx, 1);
+                                                    return updated;
+                                                });
+                                                return;
+                                            }
+
+                                            const user_id = localStorage.getItem("user_id");
+                                            if (!user_id) return alert("로그인이 필요합니다.");
+
+                                            const category_id = task.category_id || group.tasks[0]?.category_id;
+                                            if (!category_id) return alert("카테고리를 선택해주세요.");
+                                            if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
+
+                                            const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                                            const dateStr = localDate.toISOString().split("T")[0];
+
+                                            try {
+                                                const result = await addTask({
+                                                    task_name: task.text,
+                                                    memo: "",
+                                                    task_date: dateStr,
+                                                    category_id: Number(category_id),
+                                                    user_id: Number(user_id),
+                                                    notification_type: "미알림",
+                                                    notification_time: null,
+                                                });
+                                                if (onDataUpdated) onDataUpdated();
+                                                const savedTask = result.task;
+                                                setTasksByCategory((prev) => {
+                                                    const updated = [...prev];
+                                                    updated[catIdx].tasks[taskIdx] = {
+                                                        text: savedTask.task_name,
+                                                        checked: savedTask.status === "완료",
+                                                        task_id: savedTask.task_id,
+                                                        memo: savedTask.memo || "",
+                                                        category_id: savedTask.category_id,
+                                                        notification_type: savedTask.notification_type || "미알림",
+                                                        notification_time: savedTask.notification_time || null,
+                                                        routine_type: savedTask.routine_type || "",
+                                                        period_start: savedTask.period_start || null,
+                                                        period_end: savedTask.period_end || null,
+                                                    };
+                                                    return updated;
+                                                });
+                                            } catch (err) {
+                                                console.error("Task 자동 저장 실패:", err);
+                                            }
+                                        }}
                                         onKeyDown={async (e) => {
                                             if (task.task_id) return;
                                             if (e.key === "Enter") {
-                                                if (!task.text.trim()) return alert("할 일을 입력해주세요.");
-                                                const user_id = localStorage.getItem("user_id");
-                                                if (!user_id) return alert("로그인이 필요합니다.");
-                                                const category_id = task.category_id || group.tasks[0]?.category_id;
-                                                if (!category_id) return alert("카테고리를 선택해주세요.");
-                                                if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
-                                                const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-                                                const dateStr = localDate.toISOString().split("T")[0];
-                                                try {
-                                                    const result = await addTask({
-                                                        task_name: task.text,
-                                                        memo: "",
-                                                        task_date: dateStr,
-                                                        category_id: Number(category_id),
-                                                        user_id: Number(user_id),
-                                                        notification_type: "미알림",
-                                                        notification_time: null,
-                                                    });
-                                                    if (onDataUpdated) onDataUpdated();
-                                                    const savedTask = result.task;
-                                                    setTasksByCategory((prev) => {
-                                                        const updated = [...prev];
-                                                        updated[catIdx].tasks[taskIdx] = {
-                                                            text: savedTask.task_name,
-                                                            checked: savedTask.status === "완료",
-                                                            task_id: savedTask.task_id,
-                                                            memo: savedTask.memo || "",
-                                                            category_id: savedTask.category_id,
-                                                            notification_type: savedTask.notification_type || "미알림",
-                                                            notification_time: savedTask.notification_time || null,
-                                                            routine_type: savedTask.routine_type || "",
-                                                            period_start: savedTask.period_start || null,
-                                                            period_end: savedTask.period_end || null,
-                                                        };
-                                                        return updated;
-                                                    });
-                                                } catch (err) {
-                                                    console.error("Task 추가 실패:", err);
-                                                    alert("할 일 추가 중 오류가 발생했습니다.");
-                                                }
+                                                e.target.blur();
                                             }
                                             if (e.key === "Escape" && task.isNew) {
                                                 setTasksByCategory((prev) => {
