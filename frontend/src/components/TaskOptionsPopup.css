@@ -54,7 +54,7 @@
     font-family: Pretendard, sans-serif;
     font-size: 12px;
     font-weight: 400;
-    color: var(--Grey-Dark, #595959);
+    color: var(--Grey-Dark, #2a2a2a);
     cursor: pointer;
 }
 
@@ -91,7 +91,7 @@
     font-size: 12px;
     font-weight: 400;
     background: #fff;
-    color: var(--Grey-Darker, #2a2a2a);
+    color: var(--Grey-Darker, #595959);
 }
 
 .title-box {
@@ -104,15 +104,6 @@
 /* ===========================
    🔹 에디터 박스
 =========================== */
-.editor-box {
-    width: 350px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
 
 .rename-box {
     display: flex;
@@ -246,10 +237,11 @@
     line-height: normal;
 }
 
-.category-item.white-bg {
-    background: #fff !important;
-    justify-content: flex-start;
-    gap: 8px;
+.category-item.gray {
+    height: 56px;
+    padding: 8px 20px;
+    background: var(--Grey-Light, #F3F3F3);
+    color: var(--Grey-Dark, #595959);
 }
 
 .category-item.repeat-btn {
@@ -374,18 +366,17 @@
     justify-content: center;
     align-items: center;
     gap: 6px;
-}
-
-.react-datepicker__day-name span {
-    margin: 0;
-    align-self: stretch;
-    color: var(--Grey-Darker, #2a2a2a);
+    color: var(--Grey-Darker, #2A2A2A);
     text-align: center;
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
-    font-weight: 300;
+    font-weight: 400;
     line-height: normal;
+}
+
+.react-datepicker__day-name:nth-child(1) {
+    color: var(--Red, #FD5344);
 }
 
 .react-datepicker__month {
