@@ -1,147 +1,73 @@
-import React, { useState, useRef, useEffect } from "react";
-import ThreeIcon from "../assets/three.svg";
-import LogoIcon from "../assets/logo.svg"; // ← 추가
-import CategoryEditor from "./EditCategoryBox";
+import React, { useState } from "react";
+import LogoIcon from "../assets/logo.svg"; // 로고
+import SearchIcon from "../assets/search.svg"; // 검색 아이콘
+import BellIcon from "../assets/bell.svg"; // 종 아이콘
+import SidebarIcon from "../assets/sidebar.svg"; // 사이드바 아이콘
 
-function Header({ showMenu = true, onCategoryAdded, onCategoryChanged }) {
-    const [isMenuActive, setIsMenuActive] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
-    const [showCategoryEditor, setShowCategoryEditor] = useState(false);
-    const [editorMode, setEditorMode] = useState("add"); // "edit" | "add"
-    const menuRef = useRef(null);
-    const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
-
-    const handleEditCategoryClick = () => {
-        setEditorMode("edit");
-        setShowCategoryEditor(true);
-        setShowPopup(false);
-    };
-
-    const handleAddCategoryClick = () => {
-        setEditorMode("add");
-        setShowCategoryEditor(true);
-        setShowPopup(false);
-    };
-
-    const handleMenuClick = () => {
-        setIsMenuActive(!isMenuActive);
-        setShowPopup(!showPopup);
-    };
-
-    useEffect(() => {
-        if (menuRef.current) {
-            const rect = menuRef.current.getBoundingClientRect();
-            const boxWidth = 135;
-            let left = rect.left + 40;
-            const screenWidth = window.innerWidth;
-            if (left + boxWidth > screenWidth) left = screenWidth - boxWidth - 8;
-            setBoxPosition({ top: rect.bottom + 4, left });
-        }
-    }, [showPopup]);
-
+function Header() {
     return (
         <header style={styles.header}>
+            {/* 로고 */}
             <div style={styles.logo}>
-                <img src={LogoIcon} alt="Logo" style={{ width: "40px", height: "40px" }} />
+                <img
+                    src={LogoIcon}
+                    alt="Logo"
+                    style={{ width: "40px", height: "40px" }}
+                />
             </div>
 
-            {showMenu && (
-                <button
-                    ref={menuRef}
-                    style={{
-                        ...styles.menuButton,
-                        filter: isMenuActive ? "invert(46%) sepia(67%) saturate(447%) hue-rotate(92deg) brightness(90%) contrast(87%)" : "invert(0%)",
-                    }}
-                    onClick={handleMenuClick}
-                >
-                    <img src={ThreeIcon} alt="three dots" style={{ width: "40px", height: "40px" }} />
-                </button>
-            )}
-
-            {showPopup && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: boxPosition.top,
-                        left: boxPosition.left,
-                        width: "107px",
-                        padding: "8px 0",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        gap: "8px",
-                        borderRadius: "16px",
-                        border: "1px solid var(--green-light-active, #C1E4CE)",
-                        background: "#FFF",
-                        zIndex: 1000,
-                    }}
-                >
-                    <PopupButton text="카테고리 추가하기" onClick={handleAddCategoryClick} />
-                    <PopupButton text="카테고리 수정하기" onClick={handleEditCategoryClick} />
-                </div>
-            )}
-
-            {showCategoryEditor && (
-                <CategoryEditor
-                    mode={editorMode} // "add" 또는 "edit"
-                    onClose={() => setShowCategoryEditor(false)}
-                    onCategoryAdded={(newCategory) => {
-                        if (onCategoryAdded) onCategoryAdded(newCategory);
-                        setShowCategoryEditor(false);
-                    }}
-                    onCategoryChanged={onCategoryChanged}
-                />
-            )}
+            {/* 오른쪽 아이콘 3개 */}
+            <div style={styles.iconGroup}>
+                <IconButton src={SearchIcon} alt="검색" />
+                <IconButton src={BellIcon} alt="알림" />
+                <IconButton src={SidebarIcon} alt="사이드바" />
+            </div>
         </header>
     );
 }
 
-const PopupButton = ({ text, onClick }) => (
-    <div
+const IconButton = ({ src, alt, onClick }) => (
+    <button
         onClick={onClick}
         style={{
-            width: "100%",
-            height: "35px",
+            width: "23px",
+            height: "23px",
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            fontFamily: "Pretendard, sans-serif",
-            fontSize: "12px",
-            fontWeight: 500,
-            color: "#36A862",
-            cursor: "pointer",
-            background: "transparent",
-            border: "none",
         }}
     >
-        {text}
-    </div>
+        <img
+            src={src}
+            alt={alt}
+            style={{
+                width: "23px",
+                height: "23px",
+                objectFit: "contain", // 비율 유지하며 꽉 채움
+            }}
+        />
+    </button>
 );
 
 const styles = {
     header: {
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "flex-end",
+        alignItems: "center",
         padding: "10px 20px",
-        width: "390px",
+        width: "100%",
         height: "80px",
         background: "#FBFBFB",
         boxSizing: "border-box",
-        position: "relative",
     },
     logo: { display: "flex", alignItems: "center" },
-    menuButton: {
-        width: "38.658px",
-        height: "24px",
-        aspectRatio: "1 / 1",
-        padding: 0,
-        border: "none",
-        background: "none",
-        cursor: "pointer",
+    iconGroup: {
         display: "flex",
-        justifyContent: "center",
+        gap: "16px", // 아이콘 사이 간격
         alignItems: "center",
     },
 };
