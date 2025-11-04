@@ -32,8 +32,16 @@ public class RoutineController {
                 .orElseThrow(() -> new IllegalArgumentException("Task를 찾을 수 없습니다."));
 
         Routine routine = routineService.createRoutine(dto, baseTask);
-        return ResponseEntity.ok(Map.of("message", "루틴 생성 완료", "routine", routine));
+
+        return ResponseEntity.ok(Map.of(
+                "message", "루틴 생성 완료",
+                "routine_id", routine.getRoutineId(),
+                "routine_type", routine.getRoutineType(),
+                "start_date", routine.getStartDate(),
+                "end_date", routine.getEndDate()
+        ));
     }
+
 
     @PatchMapping("/{routineId}")
     public ResponseEntity<?> updateRoutine(
