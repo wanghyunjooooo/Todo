@@ -24,24 +24,22 @@ public class RoutineController {
     }
 
     @PostMapping("/{taskId}")
-    public ResponseEntity<?> createRoutine(
-            @PathVariable Long taskId,
-            @RequestBody RoutineDTO dto
-    ) {
+    public ResponseEntity<?> createRoutine(@PathVariable Long taskId, @RequestBody RoutineDTO dto) {
         Task baseTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task를 찾을 수 없습니다."));
-
         Routine routine = routineService.createRoutine(dto, baseTask);
 
-        return ResponseEntity.ok(Map.of(
-                "message", "루틴 생성 완료",
-                "routine_id", routine.getRoutineId(),
-                "routine_type", routine.getRoutineType(),
-                "start_date", routine.getStartDate(),
-                "end_date", routine.getEndDate()
-        ));
-    }
+        RoutineDTO response = new RoutineDTO(
+                routine.getRoutineId(),
+                routine.getRoutineType(),
+                routine.getStartDate(),
+                routine.getEndDate(),
+                routine.getUser().getUserId(),
+                routine.getCreatedAt()
+        );
 
+        return ResponseEntity.ok(Map.of("message", "루틴 생성 완료", "routine", response));
+    }
 
     @PatchMapping("/{routineId}")
     public ResponseEntity<?> updateRoutine(

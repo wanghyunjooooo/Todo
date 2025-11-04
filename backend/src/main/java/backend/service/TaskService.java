@@ -258,4 +258,24 @@ public class TaskService {
 
         return result;
     }
+
+    public TaskDTO convertToDTO(Task task) {
+        TaskDTO dto = new TaskDTO();
+        dto.setTaskId(task.getTaskId());
+        dto.setTaskName(task.getTaskName());
+        dto.setStatus(task.getStatus());
+        dto.setMemo(task.getMemo());
+        dto.setTaskDate(task.getTaskDate());
+        dto.setNotificationType(task.getNotificationType());
+        dto.setNotificationTime(task.getNotificationTime());
+        dto.setUserId(task.getUser() != null ? task.getUser().getUserId() : null);
+        dto.setCategoryId(task.getCategory() != null ? task.getCategory().getCategoryId() : null);
+        dto.setCategoryName(task.getCategory() != null ? task.getCategory().getCategoryName() : null);
+        dto.setCreatedAt(task.getCreatedAt());
+
+        dto.setRoutineId(task.getRoutine() != null ? task.getRoutine().getRoutineId() : null);
+        dto.setRoutineType(task.getRoutineType());
+
+        return dto;
+    }
 }

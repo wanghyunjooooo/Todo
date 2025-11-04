@@ -28,11 +28,10 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
 
     /** tasksByDate → tasksByCategory 변환 + 빈 카테고리 유지 */
     useEffect(() => {
-        // ✅ 전체 카테고리 이름을 categories 배열에서 가져오기
-        const allCategoryNames = new Set([...categories.map((c) => c.category_name), ...tasksByDate.map((t) => t.category?.category_name || "미분류")]);
+        const allCategoryNames = new Set([...categories.map((c) => c.category_name), ...tasksByDate.map((t) => t.category_name || "미분류")]);
 
         const grouped = tasksByDate.reduce((acc, task) => {
-            const categoryName = task.category?.category_name || "미분류";
+            const categoryName = task.category_name || "미분류";
             if (!acc[categoryName]) acc[categoryName] = [];
             acc[categoryName].push({
                 text: task.task_name,
@@ -43,9 +42,11 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                 notification_type: task.notification_type || "미알림",
                 notification_time: task.notification_time || null,
                 routine_type: task.routine_type || "",
+                routine_id: task.routine_id || null,
                 period_start: task.period_start || null,
                 period_end: task.period_end || null,
             });
+
             return acc;
         }, {});
 
@@ -225,6 +226,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                                         notification_type: savedTask.notification_type || "미알림",
                                                         notification_time: savedTask.notification_time || null,
                                                         routine_type: savedTask.routine_type || "",
+                                                        routine_id: task.routine_id || null,
                                                         period_start: savedTask.period_start || null,
                                                         period_end: savedTask.period_end || null,
                                                     };
