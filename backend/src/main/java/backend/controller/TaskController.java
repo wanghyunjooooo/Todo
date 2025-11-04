@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tasks")
@@ -40,27 +41,37 @@ public class TaskController {
     }
 
     @PostMapping("/{userId}/day")
-    public ResponseEntity<List<Task>> getTasksByDate(@PathVariable Long userId, @RequestBody Map<String, Object> body) {
+    public ResponseEntity<List<TaskDTO>> getTasksByDate(@PathVariable Long userId, @RequestBody Map<String, Object> body) {
         String dateStr = body.get("date").toString();
         LocalDate date = LocalDate.parse(dateStr);
-        return ResponseEntity.ok(taskService.getTasksByDate(userId, date));
+        List<Task> tasks = taskService.getTasksByDate(userId, date);
+        return ResponseEntity.ok(tasks.stream().map(taskService::convertToDTO).collect(Collectors.toList()));
     }
 
     @GetMapping("/{userId}/complete")
-    public ResponseEntity<List<Task>> getCompletedTasks(@PathVariable Long userId) {
-        return ResponseEntity.ok(taskService.getCompletedTasks(userId));
+    public ResponseEntity<List<TaskDTO>> getCompletedTasks(@PathVariable Long userId) {
+        List<Task> tasks = taskService.getCompletedTasks(userId);
+        List<TaskDTO> dtoList = tasks.stream()
+                .map(taskService::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{userId}/incomplete")
-    public ResponseEntity<List<Task>> getIncompleteTasks(@PathVariable Long userId) {
-        return ResponseEntity.ok(taskService.getIncompleteTasks(userId));
+    public ResponseEntity<List<TaskDTO>> getIncompleteTasks(@PathVariable Long userId) {
+        List<Task> tasks = taskService.getIncompleteTasks(userId);
+        List<TaskDTO> dtoList = tasks.stream()
+                .map(taskService::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @PutMapping("/{taskId}")
     public ResponseEntity<?> updateTask(@PathVariable Long taskId, @RequestBody TaskDTO dto) {
         try {
             Task updated = taskService.updateTask(taskId, dto);
-            return ResponseEntity.ok(Map.of("message", "수정 완료", "task", updated));
+            TaskDTO response = taskService.convertToDTO(updated);
+            return ResponseEntity.ok(Map.of("message", "수정 완료", "task", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -102,9 +113,13 @@ public class TaskController {
     }
 
     @PostMapping("/{userId}/month")
-    public ResponseEntity<List<Task>> getTasksInMonth(@PathVariable Long userId, @RequestBody Map<String, String> body) {
+    public ResponseEntity<List<TaskDTO>> getTasksInMonth(@PathVariable Long userId, @RequestBody Map<String, String> body) {
         LocalDate startDate = LocalDate.parse(body.get("start_date"));
         LocalDate endDate = LocalDate.parse(body.get("end_date"));
-        return ResponseEntity.ok(taskService.getTasksInRange(userId, startDate, endDate));
+        List<Task> tasks = taskService.getTasksInRange(userId, startDate, endDate);
+        List<TaskDTO> dtoList = tasks.stream()
+                .map(taskService::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 }

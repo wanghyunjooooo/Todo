@@ -23,6 +23,9 @@ public class TaskDTO {
 
     @JsonProperty("task_date")
     private LocalDate taskDate;
+    
+    @JsonProperty("routine_type")
+    private String routineType;
 
     @JsonProperty("notification_type")
     private String notificationType;

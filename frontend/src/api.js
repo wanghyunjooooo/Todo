@@ -205,9 +205,14 @@ export const updateTask = async (taskId, data) => {
 };
 
 export const deleteRoutine = async (routineId) => {
-    const response = await fetch(`/tasks/routine/${routineId}`, {
+    const token = localStorage.getItem("token"); // ✅ 추가
+
+    const response = await fetch(`http://localhost:8080/tasks/routine/${routineId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }), // ✅ 추가
+        },
     });
 
     if (!response.ok) {
