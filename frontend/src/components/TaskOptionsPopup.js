@@ -12,8 +12,12 @@ import AlarmIcon from "../assets/alarm.svg";
 import DeleteIcon from "../assets/delete.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 
-import { createRoutine, updateTask } from "../api";
-import { deleteTask } from "../api";
+import {
+    createRoutine,
+    updateRoutine,
+    updateTask,
+    deleteRoutine,
+} from "../api";
 
 function TaskOptionsPopup({
     taskId,
@@ -27,53 +31,63 @@ function TaskOptionsPopup({
     const [showEditor, setShowEditor] = useState(false);
     const [editorType, setEditorType] = useState(""); // 'edit' | 'memo'
     const [newText, setNewText] = useState("");
+    const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
+    const [periodVisible, setPeriodVisible] = useState(false);
 
     // --- Repeat States ---
     const [showRepeatEditor, setShowRepeatEditor] = useState(false);
-    const [repeatEnabled, setRepeatEnabled] = useState(() => {
-        const saved = localStorage.getItem(`task-${taskId}-repeat`);
-        if (saved !== null) return JSON.parse(saved);
-
-        // taskData가 있으면 초기값 설정
-        const routineTypes = ["매일", "매주", "매달"];
-        return taskData
-            ? routineTypes.includes(taskData.routine_type?.trim())
-            : false;
-    });
-    const [selectedRepeatOption, setSelectedRepeatOption] = useState(() => {
-        const saved = localStorage.getItem(`task-${taskId}-repeatOption`);
-        if (saved !== null) return saved;
-        return taskData?.routine_type || "";
-    });
-    const [repeatOptionsVisible, setRepeatOptionsVisible] = useState(false);
-    const [periodVisible, setPeriodVisible] = useState(false);
+    const [repeatEnabled, setRepeatEnabled] = useState(false);
+    const [selectedRepeatOption, setSelectedRepeatOption] = useState("");
     const [periodStart, setPeriodStart] = useState(new Date());
     const [periodEnd, setPeriodEnd] = useState(new Date());
     const repeatOptions = ["매일", "매주", "매달"];
 
     // --- Alarm States ---
     const [showAlarmEditor, setShowAlarmEditor] = useState(false);
-    const [alarmEnabled, setAlarmEnabled] = useState(() => {
-        const saved = localStorage.getItem(`task-${taskId}-alarm`);
-        if (saved !== null) return JSON.parse(saved);
-        return taskData?.notification_type === "알림";
-    });
+    const [alarmEnabled, setAlarmEnabled] = useState(false);
     const [alarmDate, setAlarmDate] = useState(new Date());
 
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // --- Task 삭제 처리 함수 ---
+    // --- Editor Helper Functions ---
+    const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
+    const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
+    const getPlaceholder = () =>
+        editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기";
+
+    // --- 초기값 세팅 ---
+    useEffect(() => {
+        if (!taskData) return;
+
+        // 반복
+        const routineTypes = ["매일", "매주", "매달"];
+        setRepeatEnabled(routineTypes.includes(taskData.routine_type?.trim()));
+        setSelectedRepeatOption(taskData.routine_type || "");
+        if (taskData.period_start)
+            setPeriodStart(new Date(taskData.period_start));
+        if (taskData.period_end) setPeriodEnd(new Date(taskData.period_end));
+
+        // 알람
+        setAlarmEnabled(taskData.notification_type === "알림");
+        if (taskData.notification_time) {
+            const [h, m] = taskData.notification_time.split(":");
+            const d = new Date();
+            d.setHours(parseInt(h));
+            d.setMinutes(parseInt(m));
+            setAlarmDate(d);
+        }
+    }, [taskData]);
+
+    // --- Task 삭제 ---
     const handleDeleteTask = async () => {
         if (!taskId) return;
-
         setLoading(true);
         setError("");
-
         try {
             setShowDeleteConfirm(false);
-            if (onDelete) onDelete(); // 부모 콜백 호출
+            if (onDelete) onDelete();
         } catch (err) {
             console.error(err);
             setError("삭제 실패");
@@ -82,71 +96,130 @@ function TaskOptionsPopup({
         }
     };
 
-    // Repeat 상태 저장
-    useEffect(() => {
-        localStorage.setItem(
-            `task-${taskId}-repeat`,
-            JSON.stringify(repeatEnabled)
-        );
-    }, [repeatEnabled, taskId]);
-
-    useEffect(() => {
-        localStorage.setItem(
-            `task-${taskId}-repeatOption`,
-            selectedRepeatOption
-        );
-    }, [selectedRepeatOption, taskId]);
-
-    // Alarm 상태 저장
-    useEffect(() => {
-        localStorage.setItem(
-            `task-${taskId}-alarm`,
-            JSON.stringify(alarmEnabled)
-        );
-    }, [alarmEnabled, taskId]);
-
-    // --- 초기값 세팅 (단, 토글 상태는 덮어쓰지 않음) ---
-    useEffect(() => {
-        if (!taskData) return;
-
-        // Editor
-        if (editorType === "edit") setNewText(taskData.text || "");
-        else if (editorType === "memo") setNewText(taskData.memo || "");
-
-        // 반복
-        setSelectedRepeatOption(taskData.routine_type || "");
-        setPeriodStart(
-            taskData.period_start ? new Date(taskData.period_start) : new Date()
-        );
-        setPeriodEnd(
-            taskData.period_end ? new Date(taskData.period_end) : new Date()
-        );
-
-        // 알람
-        if (taskData.notification_time) {
-            const [h, m] = taskData.notification_time.split(":");
-            const d = new Date();
-            d.setHours(parseInt(h));
-            d.setMinutes(parseInt(m));
-            setAlarmDate(d);
+    // --- 루틴 생성 / 수정 ---
+    const handleCreateOrUpdateRoutine = async () => {
+        if (!taskId || !userId || !selectedRepeatOption) {
+            alert("모든 정보를 선택해주세요.");
+            return;
         }
-    }, [taskData, editorType]);
 
-    // --- Helper Functions ---
-    const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
-    const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
-    const getPlaceholder = () =>
-        editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기";
+        try {
+            let routineResponse;
+            if (taskData?.routine_id) {
+                // 기존 루틴 수정
+                routineResponse = await updateRoutine(
+                    taskData.routine_id,
+                    selectedRepeatOption,
+                    periodStart.toISOString().split("T")[0],
+                    periodEnd.toISOString().split("T")[0]
+                );
+            } else {
+                // 루틴 생성
+                routineResponse = await createRoutine(
+                    taskId,
+                    selectedRepeatOption,
+                    periodStart.toISOString().split("T")[0],
+                    periodEnd.toISOString().split("T")[0],
+                    userId
+                );
+            }
 
+            const payload = {
+                ...taskData,
+                routine_id: routineResponse?.routine_id,
+                routine_type: selectedRepeatOption,
+                period_start: periodStart.toISOString().split("T")[0],
+                period_end: periodEnd.toISOString().split("T")[0],
+            };
+
+            const result = await updateTask(taskId, payload, userId);
+            setShowRepeatEditor(false);
+            if (onEditConfirm) onEditConfirm(result.task);
+            alert(taskData?.routine_id ? "루틴 수정 완료!" : "루틴 생성 완료!");
+            onClose && onClose();
+        } catch (err) {
+            console.error("루틴 생성/수정 실패:", err);
+            alert("루틴 생성/수정 실패");
+        }
+    };
+
+    // --- 루틴 삭제 ---
+    const handleDeleteRoutine = async () => {
+        if (!taskData?.routine_id) {
+            console.warn("루틴 ID 없음, 삭제 불가");
+            return;
+        }
+
+        try {
+            await deleteRoutine(taskData.routine_id);
+
+            const payload = {
+                ...taskData,
+                routine_type: "반복없음",
+                period_start: null,
+                period_end: null,
+                routine_id: null,
+            };
+
+            const result = await updateTask(taskId, payload, userId);
+            setRepeatEnabled(false);
+            setSelectedRepeatOption("");
+            if (onEditConfirm) onEditConfirm(result.task);
+            alert("반복 루틴이 삭제되었습니다.");
+        } catch (err) {
+            console.error("루틴 삭제 실패:", err);
+            alert("루틴 삭제 실패");
+        }
+    };
+
+    // --- 알람 토글 ---
+    const handleToggleAlarm = async () => {
+        const newEnabled = !alarmEnabled;
+        setAlarmEnabled(newEnabled);
+
+        try {
+            const payload = {
+                ...taskData,
+                notification_type: newEnabled ? "알림" : "미알림",
+                notification_time: newEnabled
+                    ? `${String(alarmDate.getHours()).padStart(
+                          2,
+                          "0"
+                      )}:${String(alarmDate.getMinutes()).padStart(2, "0")}:00`
+                    : null,
+            };
+
+            const result = await updateTask(taskId, payload, userId);
+            if (onEditConfirm) onEditConfirm(result.task);
+        } catch (err) {
+            console.error("알람 토글 실패:", err);
+            alert("알람 상태 변경 실패");
+        }
+    };
+
+    // --- 반복 토글 ---
+    const handleToggleRepeat = async () => {
+        const newEnabled = !repeatEnabled;
+        setRepeatEnabled(newEnabled);
+
+        if (!newEnabled) {
+            await handleDeleteRoutine();
+        } else {
+            setShowRepeatEditor(true);
+        }
+    };
+
+    // --- 수정 관련 ---
     const openEditor = (type) => {
         setEditorType(type);
         setShowEditor(true);
-        setNewText(type === "edit" ? taskData.text || "" : taskData.memo || "");
+        setNewText(
+            type === "edit" ? taskData.task_name || "" : taskData.memo || ""
+        );
     };
 
     const handleConfirmEdit = async () => {
         if (!taskId) return;
-
         if (editorType === "edit" && (!newText || !newText.trim())) {
             alert("할 일 이름을 입력해주세요.");
             return;
@@ -157,14 +230,10 @@ function TaskOptionsPopup({
                 ...taskData,
                 task_name: editorType === "edit" ? newText : taskData.task_name,
                 memo: editorType === "memo" ? newText : taskData.memo,
-                task_date: taskData.task_date,
-                notification_type: taskData.notification_type,
-                notification_time: taskData.notification_time,
             };
 
             const result = await updateTask(taskId, payload, userId);
             setShowEditor(false);
-            setNewText("");
             if (onEditConfirm) onEditConfirm(result.task);
             alert("수정 완료!");
             onClose && onClose();
@@ -200,38 +269,6 @@ function TaskOptionsPopup({
         }
     };
 
-    const handleCreateRoutine = async () => {
-        if (!taskId || !userId || !selectedRepeatOption) {
-            alert("모든 정보를 선택해주세요.");
-            return;
-        }
-
-        try {
-            await createRoutine(
-                taskId,
-                selectedRepeatOption,
-                periodStart.toISOString().split("T")[0],
-                periodEnd.toISOString().split("T")[0],
-                userId
-            );
-
-            const payload = {
-                ...taskData,
-                routine_type: selectedRepeatOption,
-                period_start: periodStart.toISOString().split("T")[0],
-                period_end: periodEnd.toISOString().split("T")[0],
-            };
-
-            if (onEditConfirm) onEditConfirm(payload);
-            setShowRepeatEditor(false);
-            alert("루틴 생성 완료!");
-            onClose && onClose();
-        } catch (err) {
-            console.error("루틴 생성 실패:", err);
-            alert("루틴 생성 실패");
-        }
-    };
-
     const formatDate = (date) => {
         if (!date) return "";
         const year = date.getFullYear();
@@ -239,7 +276,6 @@ function TaskOptionsPopup({
         const day = String(date.getDate()).padStart(2, "0");
         return `${year}.${month}.${day}`;
     };
-
     return (
         <>
             <div className="overlay" onClick={onClose}></div>
@@ -398,9 +434,18 @@ function TaskOptionsPopup({
                                 <span className="option-title">반복 일정</span>
                                 <div
                                     className="toggle"
-                                    onClick={() =>
-                                        setRepeatEnabled((prev) => !prev)
-                                    }
+                                    onClick={() => {
+                                        setRepeatEnabled((prev) => {
+                                            const newState = !prev;
+
+                                            // ✅ 토글을 끌 때 루틴 삭제
+                                            if (!newState) {
+                                                handleDeleteRoutine();
+                                            }
+
+                                            return newState;
+                                        });
+                                    }}
                                 >
                                     <div
                                         className="toggle-container"
@@ -658,7 +703,7 @@ function TaskOptionsPopup({
                                 </button>
                                 <button
                                     className="confirm-button"
-                                    onClick={handleCreateRoutine}
+                                    onClick={handleCreateOrUpdateRoutine}
                                 >
                                     확인
                                 </button>

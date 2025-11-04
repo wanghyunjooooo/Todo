@@ -227,3 +227,44 @@ export const updateTask = async (taskId, data) => {
     if (!response.ok) throw new Error("Task 업데이트 실패");
     return await response.json();
 };
+
+export const deleteRoutine = async (routineId) => {
+    const response = await fetch(`/tasks/routine/${routineId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ routine_type: "반복없음" }),
+    });
+
+    if (!response.ok) {
+        throw new Error("루틴 삭제 실패");
+    }
+
+    return await response.json();
+};
+
+// ✅ 루틴 수정
+export const updateRoutine = async (
+    routine_id,
+    routine_type,
+    start_date,
+    end_date
+) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+        `http://localhost:8080/tasks/routine/${routine_id}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: JSON.stringify({ routine_type, start_date, end_date }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("루틴 수정 실패");
+    }
+
+    return await response.json();
+};
