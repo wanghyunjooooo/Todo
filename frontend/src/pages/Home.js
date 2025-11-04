@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import MyCalendar from "../components/Calendar";
 import Todo from "../components/Todo";
-import BottomNav from "../components/Nav";
-import { getCategories, getTasksByDay, addCategory, getMonthlyTasks, addTask } from "../api";
+import {
+    getCategories,
+    getTasksByDay,
+    addCategory,
+    getMonthlyTasks,
+    addTask,
+} from "../api";
 
 function Home() {
     const [categories, setCategories] = useState([]);
@@ -26,7 +31,6 @@ function Home() {
             try {
                 const data = await getCategories(userId);
                 setCategories(data || []);
-                console.log("카테고리 목록:", data);
             } catch (err) {
                 console.error("카테고리 로드 실패:", err);
             }
@@ -34,16 +38,20 @@ function Home() {
         fetchCategories();
     }, [userId]);
 
-    /** ✅ 날짜별 할 일 로드 */
+    /** ✅ 날짜별 Task 로드 */
     useEffect(() => {
         if (!userId || !selectedDate) return;
 
         const fetchTasksByDate = async () => {
-            const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+            const dateStr = `${selectedDate.getFullYear()}-${String(
+                selectedDate.getMonth() + 1
+            ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(
+                2,
+                "0"
+            )}`;
             try {
                 const tasks = await getTasksByDay(userId, dateStr);
                 setTasksByDate(tasks || []);
-                console.log(`${dateStr}의 Task:`, tasks);
             } catch (err) {
                 console.error("날짜별 Task 로드 실패:", err);
             }
@@ -52,18 +60,19 @@ function Home() {
         fetchTasksByDate();
     }, [selectedDate, userId]);
 
-    /** ✅ 월간 Task 로드 (달력용) */
+    /** ✅ 월간 Task 로드 */
     useEffect(() => {
         if (!userId) return;
-
         const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-        const endDate = `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`;
+        const endDate = `${year}-${String(month + 1).padStart(
+            2,
+            "0"
+        )}-${new Date(year, month + 1, 0).getDate()}`;
 
         const fetchTasksByMonth = async () => {
             try {
                 const tasks = await getMonthlyTasks(userId, startDate, endDate);
                 setTasksByMonth(tasks || []);
-                console.log(`${month + 1}월 Task 목록:`, tasks);
             } catch (err) {
                 console.error("월간 Task 로드 실패:", err);
             }
@@ -74,38 +83,38 @@ function Home() {
 
     /** ✅ 카테고리 추가 + 할 일 01 생성 */
     const handleCategoryAdded = async (categoryName) => {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return alert("로그인이 필요합니다.");
-
+        if (!userId) return alert("로그인이 필요합니다.");
         try {
-            const categoryRes = await addCategory(user_id, categoryName);
+            const categoryRes = await addCategory(userId, categoryName);
             const newCategory = categoryRes.category;
 
-            // ✅ 로컬 날짜 기준 문자열 생성
-            const year = selectedDate.getFullYear();
-            const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
-            const day = String(selectedDate.getDate()).padStart(2, "0");
-            const dateStr = `${year}-${month}-${day}`;
+            // 날짜 문자열
+            const dateStr = `${selectedDate.getFullYear()}-${String(
+                selectedDate.getMonth() + 1
+            ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(
+                2,
+                "0"
+            )}`;
 
             const taskRes = await addTask({
                 task_name: "할 일 01",
                 memo: "",
                 task_date: dateStr,
-                category_id: newCategory.category_id,
-                user_id: Number(user_id),
+                category_id: newCategory.categoryId,
+                user_id: Number(userId),
                 notification_type: "미알림",
                 notification_time: null,
             });
 
-            const newTaskId = taskRes.task.task_id;
+            const newTaskId = taskRes.task.taskId;
             setFocusedTaskId(newTaskId);
 
-            // 상태 업데이트
             setCategories((prev) => [...prev, newCategory]);
-            const updatedTasks = await getTasksByDay(user_id, dateStr);
+
+            // ✅ Task 갱신
+            const updatedTasks = await getTasksByDay(userId, dateStr);
             setTasksByDate(updatedTasks || []);
 
-            // 💡 포커스 초기화
             setTimeout(() => setFocusedTaskId(null), 500);
         } catch (err) {
             console.error("카테고리 생성 실패:", err);
@@ -113,19 +122,39 @@ function Home() {
         }
     };
 
-    /** ✅ 날짜 변경 */
-    const handleDateChange = (newDate) => {
-        console.log("선택 날짜 변경:", newDate);
-        setSelectedDate(newDate);
+    /** ✅ Task 상태 갱신용 함수 (Todo → TaskOptionsPopup에서 사용) */
+    const updateTaskInState = (updatedTask) => {
+        setTasksByDate((prev) =>
+            prev.map((task) =>
+                task.taskId === updatedTask.taskId
+                    ? { ...task, ...updatedTask }
+                    : task
+            )
+        );
     };
 
-    /** ✅ 데이터 새로고침 */
+    /** ✅ 날짜 변경 */
+    const handleDateChange = (newDate) => setSelectedDate(newDate);
+
+    /** ✅ 전체 새로고침 */
     const refreshData = async () => {
-        const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
-
+        const dateStr = `${selectedDate.getFullYear()}-${String(
+            selectedDate.getMonth() + 1
+        ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
         try {
-            const [tasks, monthlyTasks, categoryList] = await Promise.all([getTasksByDay(userId, dateStr), getMonthlyTasks(userId, `${year}-${String(month + 1).padStart(2, "0")}-01`, `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`), getCategories(userId)]);
-
+            const [tasks, monthlyTasks, categoryList] = await Promise.all([
+                getTasksByDay(userId, dateStr),
+                getMonthlyTasks(
+                    userId,
+                    `${year}-${String(month + 1).padStart(2, "0")}-01`,
+                    `${year}-${String(month + 1).padStart(2, "0")}-${new Date(
+                        year,
+                        month + 1,
+                        0
+                    ).getDate()}`
+                ),
+                getCategories(userId),
+            ]);
             setTasksByDate(tasks || []);
             setTasksByMonth(monthlyTasks || []);
             setCategories(categoryList || []);
@@ -135,11 +164,15 @@ function Home() {
     };
 
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            {/* 상단 헤더 */}
-            <Header showMenu={true} categories={categories} onCategoryAdded={handleCategoryAdded} onCategoryChanged={refreshData} />
-
-            {/* 메인 콘텐츠 */}
+        <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
+            <Header
+                showMenu={true}
+                categories={categories}
+                onCategoryAdded={handleCategoryAdded}
+                onCategoryChanged={refreshData}
+            />
             <div
                 style={{
                     flex: 1,
@@ -148,17 +181,22 @@ function Home() {
                     marginTop: "24px",
                 }}
             >
-                {/* 달력 */}
-                <MyCalendar selectedDate={selectedDate} onDateChange={handleDateChange} tasksByDate={tasksByMonth} />
-
-                {/* 할 일 목록 */}
+                <MyCalendar
+                    selectedDate={selectedDate}
+                    onDateChange={handleDateChange}
+                    tasksByDate={tasksByMonth}
+                />
                 <div style={{ marginTop: "8px" }}>
-                    <Todo tasksByDate={tasksByDate} selectedDate={selectedDate} categories={categories} focusedTaskId={focusedTaskId} onDataUpdated={refreshData} />
+                    <Todo
+                        tasksByDate={tasksByDate}
+                        selectedDate={selectedDate}
+                        categories={categories}
+                        focusedTaskId={focusedTaskId}
+                        onDataUpdated={refreshData}
+                        updateTaskInState={updateTaskInState} // ✅ 루틴 삭제/생성 후 Task 상태 갱신용
+                    />
                 </div>
             </div>
-
-            {/* 하단 네비게이션 */}
-            <BottomNav />
         </div>
     );
 }

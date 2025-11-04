@@ -130,7 +130,16 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                 console.error("Task 삭제 실패:", err);
             }
         }
-        setTasksByCategory((prev) => prev.map((cat, idx) => (idx !== catIdx ? cat : { ...cat, tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx) })));
+        setTasksByCategory((prev) =>
+            prev.map((cat, idx) =>
+                idx !== catIdx
+                    ? cat
+                    : {
+                          ...cat,
+                          tasks: cat.tasks.filter((_, tIdx) => tIdx !== taskIdx),
+                      }
+            )
+        );
         setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : prev));
     };
 
@@ -281,6 +290,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                     }
                                     onDelete={() => handleDeleteTask(catIdx, taskIdx)}
                                     onEditConfirm={async (updatedTask) => {
+                                        // ✅ routineId 등 포함해서 전체 Task 상태 갱신
                                         setTasksByCategory((prev) => {
                                             const updated = [...prev];
                                             updated[catIdx].tasks[taskIdx] = {

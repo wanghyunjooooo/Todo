@@ -1,10 +1,8 @@
-// src/components/TaskOptionsPopup.js
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
 import "./TaskOptionsPopup.css";
-
 import EditIcon from "../assets/edit.svg";
 import MemoIcon from "../assets/memo.svg";
 import RepeatIcon from "../assets/calendar.svg";
@@ -40,7 +38,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // --- Editor Helper Functions ---
+    // --- Helper Functions ---
     const getTitle = () => (editorType === "edit" ? "할 일 수정" : "메모");
     const getIcon = () => (editorType === "edit" ? EditIcon : MemoIcon);
     const getPlaceholder = () => (editorType === "edit" ? "할 일 이름을 입력하세요" : "작성하기");
@@ -123,8 +121,9 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                 ...taskData,
                 routine_id: newRoutineId,
             };
+            const result = await updateTask(taskId, updatedTask, userId);
+            if (onEditConfirm) onEditConfirm(result.task);
 
-            const result = await updateTask(taskId, payload, userId);
             setShowRepeatEditor(false);
 
             if (onEditConfirm) onEditConfirm(result.task);
@@ -137,7 +136,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
         }
     };
 
-    // --- 루틴 삭제 ---
+    // --- 반복 루틴 삭제 ---
     const handleDeleteRoutine = async () => {
         const targetId = routineId || taskData?.routine_id;
 
@@ -147,10 +146,14 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             return;
         }
 
+        setLoading(true);
+        setError("");
+
         try {
             await deleteRoutine(targetId);
 
-            const payload = {
+            // 프론트 상태 업데이트
+            const updatedTask = {
                 ...taskData,
                 routine_id: null,
             };
@@ -165,7 +168,9 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             alert("반복 루틴이 삭제되었습니다.");
         } catch (err) {
             console.error("루틴 삭제 실패:", err);
-            alert("루틴 삭제 실패");
+            setError("루틴 삭제 실패");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -213,6 +218,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             const result = await updateTask(taskId, payload, userId);
             setShowEditor(false);
             if (onEditConfirm) onEditConfirm(result.task);
+
             alert("수정 완료!");
             onClose && onClose();
         } catch (err) {
@@ -234,6 +240,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
             const result = await updateTask(taskId, payload, userId);
             setShowAlarmEditor(false);
             if (onEditConfirm) onEditConfirm(result.task);
+
             alert("알람 설정 완료!");
             onClose && onClose();
         } catch (err) {
