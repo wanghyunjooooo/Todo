@@ -155,26 +155,6 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
         }
     };
 
-    // --- 알람 토글 ---
-    const handleToggleAlarm = async () => {
-        const newEnabled = !alarmEnabled;
-        setAlarmEnabled(newEnabled);
-
-        try {
-            const payload = {
-                ...taskData,
-                notification_type: newEnabled ? "알림" : "미알림",
-                notification_time: newEnabled ? `${String(alarmDate.getHours()).padStart(2, "0")}:${String(alarmDate.getMinutes()).padStart(2, "0")}:00` : null,
-            };
-
-            const result = await updateTask(taskId, payload, userId);
-            if (onEditConfirm) onEditConfirm(result.task);
-        } catch (err) {
-            console.error("알람 토글 실패:", err);
-            alert("알람 상태 변경 실패");
-        }
-    };
-
     // --- 메모 / 이름 수정 ---
     const openEditor = (type) => {
         setEditorType(type);

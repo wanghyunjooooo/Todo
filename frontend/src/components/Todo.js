@@ -182,35 +182,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
         setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : { category: catIdx, index: taskIdx }));
     };
 
-    /** ✅ 하단 입력창 (bottomInput) */
-    const handleBottomInputEnter = async (e) => {
-        if (e.key !== "Enter") return;
-        const text = bottomInput.trim();
-        if (!text) return;
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return alert("로그인이 필요합니다.");
-        if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
-
-        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-        const dateStr = localDate.toISOString().split("T")[0];
-
-        try {
-            await addTask({
-                task_name: text,
-                memo: "",
-                task_date: dateStr,
-                category_id: categories[0]?.category_id ?? null,
-                user_id: Number(user_id),
-                notification_type: "미알림",
-                notification_time: null,
-            });
-            setBottomInput("");
-            if (onDataUpdated) onDataUpdated();
-        } catch (err) {
-            console.error("하단 입력창 추가 실패:", err);
-        }
-    };
-
     if (!tasksByCategory.length) return <div className="no-task-text">오늘은 할 일이 없습니다.</div>;
 
     return (
@@ -332,6 +303,41 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                     ))}
                 </div>
             ))}
+            {popupIndex.category !== null &&
+                popupIndex.index !== null &&
+                (() => {
+                    const catIdx = popupIndex.category;
+                    const taskIdx = popupIndex.index;
+                    const task = tasksByCategory?.[catIdx]?.tasks?.[taskIdx];
+                    if (!task) return null;
+
+                    return (
+                        <TaskOptionsPopup
+                            style={{ top: "40px", right: "0" }}
+                            taskId={task.task_id}
+                            taskData={task}
+                            userId={localStorage.getItem("user_id")}
+                            onClose={() =>
+                                setPopupIndex({
+                                    category: null,
+                                    index: null,
+                                })
+                            }
+                            onDelete={() => handleDeleteTask(catIdx, taskIdx)}
+                            onEditConfirm={async (updatedTask) => {
+                                setTasksByCategory((prev) => {
+                                    const updated = [...prev];
+                                    updated[catIdx].tasks[taskIdx] = {
+                                        ...updated[catIdx].tasks[taskIdx],
+                                        ...updatedTask,
+                                    };
+                                    return updated;
+                                });
+                                if (onDataUpdated) onDataUpdated();
+                            }}
+                        />
+                    );
+                })()}
         </div>
     );
 }
