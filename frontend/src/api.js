@@ -167,9 +167,6 @@ export const getNotificationById = (user_id, notification_id) =>
 export const markNotificationRead = (notification_id) =>
     api.patch(`/notifications/${notification_id}/read`).then((res) => res.data);
 
-// ✅ 필요 시 기본 api 인스턴스 export
-export default api;
-
 // ✅ 루틴 생성
 export const createRoutine = (
     task_id,
@@ -280,18 +277,11 @@ export const updateRoutine = async (
 export const searchTasksByDate = (user_id, date) =>
     api
         .get("/search/date", { params: { userId: user_id, date } })
-        .then((res) => res.data)
-        .catch((err) => {
-            console.error("날짜 검색 실패:", err);
-            throw err;
-        });
+        .then((res) => res.data);
 
-// ✅ 키워드별 Task 검색
 export const searchTasksByKeyword = (user_id, keyword) =>
     api
         .get("/search/word", { params: { userId: user_id, keyword } })
-        .then((res) => res.data)
-        .catch((err) => {
-            console.error("단어 검색 실패:", err);
-            throw err;
-        });
+        .then((res) => res.data);
+
+export default api;

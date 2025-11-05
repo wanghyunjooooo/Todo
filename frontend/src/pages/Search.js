@@ -1,40 +1,37 @@
 // src/pages/SearchPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { searchTasksByDate, searchTasksByKeyword } from "../api"; // api.js에서 불러오기
+import { searchTasksByDate, searchTasksByKeyword } from "../api";
 import SearchIcon from "../assets/search.svg";
 import ArrowIcon from "../assets/icon-arrow-right.svg";
 import "./SearchPage.css";
 
 function SearchPage() {
     const navigate = useNavigate();
-    const [query, setQuery] = useState(""); // 검색어
-    const [tasks, setTasks] = useState([]); // API에서 받은 할 일 리스트
+    const [query, setQuery] = useState("");
+    const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
-    const userId = 1; // 실제 유저 ID를 여기서 가져오거나 Context/State에서 받아오기
-    const date = "2025-11-05"; // 기본 날짜 (필요하면 동적 선택 가능)
+    const userId = localStorage.getItem("user_id");
 
     const handleGoBack = () => navigate(-1);
-
     const handleInputChange = (e) => setQuery(e.target.value);
 
     const handleSearch = async () => {
+        if (!userId) return alert("로그인이 필요합니다.");
         setLoading(true);
         try {
-            let response = [];
+            const response =
+                query.trim() === ""
+                    ? await searchTasksByDate(userId, date)
+                    : await searchTasksByKeyword(userId, query);
 
-            if (query.trim() === "") {
-                // 검색어가 없으면 날짜 기준 검색
-                response = await searchTasksByDate(userId, date);
-            } else {
-                // 검색어가 있으면 키워드 검색
-                response = await searchTasksByKeyword(userId, query);
-            }
-
+            console.log("검색 결과:", response);
             setTasks(response);
         } catch (error) {
             console.error("검색 실패:", error);
+            alert("검색 중 오류가 발생했습니다.");
         } finally {
             setLoading(false);
         }
@@ -44,9 +41,19 @@ function SearchPage() {
         if (e.key === "Enter") handleSearch();
     };
 
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        const dateObj = new Date(dateStr);
+        return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}-${dateObj
+            .getDate()
+            .toString()
+            .padStart(2, "0")}`;
+    };
+
     return (
         <div className="search-page">
-            {/* 상단 헤더 */}
             <div className="search-header">
                 <button className="back-button" onClick={handleGoBack}>
                     <img src={ArrowIcon} alt="뒤로가기" className="back-icon" />
@@ -65,33 +72,95 @@ function SearchPage() {
                         src={SearchIcon}
                         alt="검색"
                         className="search-icon"
-                        onClick={handleSearch} // 클릭으로도 검색 가능
+                        onClick={handleSearch}
                         style={{ cursor: "pointer" }}
                     />
                 </div>
             </div>
-
-            {/* 검색 결과 영역 */}
-            <div className="search-results">
+            <div className="search-results todo-container">
                 {loading ? (
                     <p>로딩 중...</p>
-                ) : tasks.length > 0 ? (
-                    <ul>
-                        {tasks.map((task) => (
-                            <li key={task.task_id}>
-                                <strong>{task.task_name}</strong> -{" "}
-                                {task.status}
-                                {task.category && (
-                                    <span>
-                                        {" "}
-                                        ({task.category.category_name})
-                                    </span>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
+                ) : tasks.length === 0 ? (
+                    <p className="no-task-text">검색 결과가 없습니다.</p>
                 ) : (
-                    <p>검색 결과가 없습니다.</p>
+                    tasks.map((task) => {
+                        const taskDate = new Date(task.task_date);
+                        const formattedDate = `${taskDate.getFullYear()}년 ${
+                            taskDate.getMonth() + 1
+                        }월 ${taskDate.getDate()}일 ${taskDate.toLocaleDateString(
+                            "ko-KR",
+                            { weekday: "long" }
+                        )}`;
+
+                        return (
+                            <div key={task.task_id}>
+                                {/* 날짜 표시 */}
+                                <div
+                                    style={{
+                                        fontFamily: "Pretendard",
+                                        fontSize: "14px",
+                                        fontWeight: 600,
+                                        fontStyle: "normal",
+                                        lineHeight: "normal",
+                                        color: "#2A2A2A",
+                                        marginBottom: "6px",
+                                    }}
+                                >
+                                    {formattedDate}
+                                </div>
+
+                                {/* 기존 Todo task 디자인 유지 */}
+                                <div className="task-item">
+                                    <div className="task-content">
+                                        <div className="task-left">
+                                            <button
+                                                className={`task-check-btn ${
+                                                    task.status === "완료"
+                                                        ? "checked"
+                                                        : ""
+                                                }`}
+                                            >
+                                                {task.status === "완료" && (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="20"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <rect
+                                                            width="20"
+                                                            height="20"
+                                                            rx="10"
+                                                            fill="#36A862"
+                                                        />
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            clipRule="evenodd"
+                                                            d="M15.8 7.18c.13.12.2.28.2.44 0 .17-.07.33-.2.45l-6.15 5.76a.66.66 0 0 1-.47.17.66.66 0 0 1-.47-.17L5.2 10.52a.66.66 0 0 1-.14-.36c0-.13.03-.25.09-.36a.6.6 0 0 1 .26-.24.7.7 0 0 1 .46-.05.7.7 0 0 1 .39.2l3.05 2.86 5.7-5.39a.66.66 0 0 1 .94.04z"
+                                                            fill="#fff"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                            <span
+                                                className="task-text-input"
+                                                style={{
+                                                    fontFamily: "Pretendard",
+                                                    fontSize: "14px",
+                                                    fontWeight: 600,
+                                                    fontStyle: "normal",
+                                                    lineHeight: "normal",
+                                                    color: "#2A2A2A",
+                                                }}
+                                            >
+                                                {task.task_name}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
                 )}
             </div>
         </div>
