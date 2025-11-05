@@ -3,7 +3,6 @@ import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskIcon from "../assets/task.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
-import BottomTaskInput from "./BottomTaskInput";
 
 import { addTask, deleteTask, updateTaskStatus, updateTask } from "../api";
 
@@ -333,8 +332,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                     ))}
                 </div>
             ))}
-
-            <BottomTaskInput value={bottomInput} onChange={setBottomInput} onEnter={handleBottomInputEnter} categories={categories} onAddTask={handleAddTask} />
         </div>
     );
 }
