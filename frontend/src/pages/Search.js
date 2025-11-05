@@ -21,11 +21,20 @@ function SearchPage() {
     const handleSearch = async () => {
         if (!userId) return alert("로그인이 필요합니다.");
         setLoading(true);
+
         try {
-            const response =
-                query.trim() === ""
-                    ? await searchTasksByDate(userId, date)
-                    : await searchTasksByKeyword(userId, query);
+            let response;
+
+            if (query.trim() === "") {
+                // 검색어 없으면 날짜 검색
+                response = await searchTasksByDate(userId, date);
+            } else if (/^\d{4}-\d{2}-\d{2}$/.test(query.trim())) {
+                // 입력값이 YYYY-MM-DD 형식이면 날짜 검색
+                response = await searchTasksByDate(userId, query.trim());
+            } else {
+                // 단어 검색
+                response = await searchTasksByKeyword(userId, query.trim());
+            }
 
             console.log("검색 결과:", response);
             setTasks(response);
