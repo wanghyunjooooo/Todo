@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 10px 20px;
+    padding: 20px;
     gap: 20px;
     box-sizing: border-box;
     font-family: "Pretendard", sans-serif;
@@ -111,11 +111,6 @@
     color: var(--Grey-Darker, #2A2A2A);
 }
 
-.task-text-input.checked {
-    text-decoration: line-through;
-    color: gray;
-}
-
 .task-menu-btn {
     border: none;
     background: none;
@@ -149,12 +144,6 @@
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-}
-
-.task-time.checked,
-.task-memo.checked {
-    text-decoration: line-through;
-    color: gray;
 }
 
 .no-notifications {
