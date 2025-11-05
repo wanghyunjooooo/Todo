@@ -1,10 +1,12 @@
-import React from "react";
-import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg"; // 회원 정보 화살표
-import { ReactComponent as PlusIcon } from "../assets/plus.svg"; // 새 카테고리 플러스 아이콘
+import React, { useState } from "react";
+import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg";
+import { ReactComponent as PlusIcon } from "../assets/plus.svg";
+import LogoutBox from "./LogoutBox"; // 임포트
 import "./Sidebar.css";
 
 function Sidebar({ isOpen, onClose }) {
-    // 임시 카테고리 목록
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
     const categories = [
         { id: 1, name: "업무" },
         { id: 2, name: "공부" },
@@ -14,9 +16,7 @@ function Sidebar({ isOpen, onClose }) {
 
     return (
         <>
-            {/* 사이드바 */}
             <div className={`sidebar ${isOpen ? "open" : ""}`}>
-                {/* 메뉴 */}
                 <div className="sidebar-content">
                     <button className="sidebar-menu-item">
                         <span>회원 정보</span>
@@ -25,7 +25,6 @@ function Sidebar({ isOpen, onClose }) {
                     <button className="sidebar-menu-item">TODAY</button>
                     <button className="sidebar-menu-item">카테고리</button>
 
-                    {/* 카테고리 목록 */}
                     <div className="category-list">
                         {categories.map((cat) => (
                             <div key={cat.id} className="category-item">
@@ -40,13 +39,21 @@ function Sidebar({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                {/* 하단 로그아웃 */}
-                <button className="sidebar-logout">로그아웃</button>
+                <button
+                    className="sidebar-logout"
+                    onClick={() => setShowLogoutModal(true)}
+                >
+                    로그아웃
+                </button>
             </div>
 
-            {/* 오버레이 */}
             {isOpen && (
                 <div className="sidebar-overlay" onClick={onClose}></div>
+            )}
+
+            {/* 로그아웃 모달 import로 불러오기 */}
+            {showLogoutModal && (
+                <LogoutBox onClose={() => setShowLogoutModal(false)} />
             )}
         </>
     );
