@@ -1,0 +1,135 @@
+/* 사이드바 전체 */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 235px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #ebf6ef;
+    padding: 40px 16px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 20;
+    box-sizing: border-box;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+/* 메뉴 영역 */
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 50px;
+    overflow: visible; /* 꼭 visible로 */
+}
+/* 메뉴 버튼 */
+.sidebar-menu-item {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: var(--Grey-Darker, #2a2a2a);
+    justify-content: space-between;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* 메뉴 밑 선 (회원정보, TODAY) */
+.sidebar-menu-item:not(:last-child) {
+    border-bottom: 1px solid #d9d9d9;
+}
+
+/* 화살표 */
+.sidebar-menu-arrow {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+}
+
+/* 카테고리 목록 */
+.category-list {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 일반 카테고리 */
+.category-item {
+    color: var(--Grey-Darker, #2a2a2a);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: normal;
+}
+
+/* 새 카테고리 추가하기 버튼 */
+.category-add {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px; /* 좌우 여백 */
+    font-family: Pretendard;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--Green-Normal, #36a862);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-bottom: 1px solid #d9d9d9; /* 회원정보 밑줄처럼 */
+    box-sizing: border-box;
+}
+.category-add span {
+    /* 글자 영역 그대로 두고 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.category-plus-icon {
+    fill: var(--Green-Normal, #36a862);
+    width: 19px;
+    height: 19px;
+    padding-left: 70px; /* ← 글자 끝에서 오른쪽 끝으로 밀기 */
+    flex-shrink: 0;
+}
+/* 로그아웃 버튼 */
+.sidebar-logout {
+    margin-top: auto; /* 항상 맨 아래 */
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: transparent;
+    color: var(--Grey-Darker, #fd5344);
+    font-family: Pretendard;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-top: 1px solid #d9d9d9;
+    box-sizing: border-box;
+}
+
+/* 오버레이 */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 15;
+}
