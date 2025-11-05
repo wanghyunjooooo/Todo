@@ -24,7 +24,7 @@ function Sidebar({ isOpen, onClose }) {
                     {/* 회원 정보 클릭 시 /profile 이동 */}
                     <button
                         className="sidebar-menu-item"
-                        onClick={() => navigate("/profile")}
+                        onClick={() => navigate("/edit-profile")}
                     >
                         <span>회원 정보</span>
                         <ArrowIcon className="sidebar-menu-arrow" />
