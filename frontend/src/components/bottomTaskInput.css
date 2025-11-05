@@ -1,7 +1,7 @@
 .bottom-input-wrapper {
     bottom: 40px;
     display: flex;
-    width: 326px;
+    width: 356px;
     padding: 12px;
     align-items: center;
     gap: 8px;
@@ -10,7 +10,6 @@
 }
 
 .bottom-content {
-    width: 326px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -61,8 +60,8 @@
 }
 
 .bottom-category-btn {
-    width: 10px;
-    height: 13px;
+    width: 20px;
+    height: 20px;
     aspect-ratio: 1/1;
     padding: 3px 5px 4px 5px;
 }
