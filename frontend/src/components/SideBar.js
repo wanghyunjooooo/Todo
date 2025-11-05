@@ -1,7 +1,8 @@
+// ... 기존 import
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoutBox from "./LogoutBox";
-import api from "../api"; // JWT 포함 Axios
+import api from "../api";
 import "./Sidebar.css";
 
 function Sidebar({ isOpen, onClose }) {
@@ -12,13 +13,11 @@ function Sidebar({ isOpen, onClose }) {
     const navigate = useNavigate();
     const userId = localStorage.getItem("user_id");
 
-    // ✅ 서버에서 실제 카테고리 불러오기
     useEffect(() => {
         const fetchCategories = async () => {
             if (!userId) return;
             try {
                 const res = await api.get(`/categories/${userId}`);
-                // 예: res.data = [{category_id, category_name, ...}, ...]
                 const serverCategories = res.data.map((cat) => ({
                     id: cat.category_id,
                     name: cat.category_name,
@@ -28,21 +27,17 @@ function Sidebar({ isOpen, onClose }) {
                 console.error("카테고리 불러오기 실패:", err);
             }
         };
-
         fetchCategories();
     }, [userId]);
 
     const handleAddCategory = async () => {
         if (!newCategoryName.trim()) return;
-
         try {
             const payload = {
                 user_id: Number(userId),
                 category_name: newCategoryName.trim(),
             };
             const res = await api.post("/categories", payload);
-            console.log("카테고리 추가 결과:", res.data);
-
             const newCat = {
                 id: res.data.category.category_id,
                 name: res.data.category.category_name,
@@ -58,6 +53,12 @@ function Sidebar({ isOpen, onClose }) {
 
     const handleKeyPress = (e) => {
         if (e.key === "Enter") handleAddCategory();
+    };
+
+    // ✅ 카테고리 클릭 시 이동
+    const handleCategoryClick = (catId) => {
+        navigate(`/tasks/${catId}`);
+        onClose(); // 사이드바 닫기
     };
 
     return (
@@ -91,7 +92,12 @@ function Sidebar({ isOpen, onClose }) {
 
                     <div className="category-list">
                         {categories.map((cat) => (
-                            <div key={cat.id} className="category-item">
+                            <div
+                                key={cat.id}
+                                className="category-item"
+                                onClick={() => handleCategoryClick(cat.id)}
+                                style={{ cursor: "pointer" }}
+                            >
                                 {cat.name}
                             </div>
                         ))}

@@ -9,9 +9,10 @@ import {
 import Home from "./pages/Home";
 import AuthForm from "./pages/AuthForm";
 import MyProfile from "./pages/Profile";
-import Notifications from "./pages/Notifications"; // 새로 import
+import Notifications from "./pages/Notifications";
 import EditProfile from "./components/EditProfile";
 import SearchPage from "./pages/Search";
+import CategoryTasks from "./pages/CategoryTasks"; // ✅ 새로 import
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
@@ -53,16 +54,21 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
             }}
         >
             <Routes>
+                {/* 홈 */}
                 <Route
                     path="/"
                     element={
                         isLoggedIn ? <Home /> : <Navigate to="/auth" replace />
                     }
                 />
+
+                {/* 로그인/회원가입 */}
                 <Route
                     path="/auth"
                     element={<AuthForm onLogin={() => setIsLoggedIn(true)} />}
                 />
+
+                {/* 알림 페이지 */}
                 <Route
                     path="/notifications"
                     element={
@@ -73,6 +79,8 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
                         )
                     }
                 />
+
+                {/* 내 프로필 */}
                 <Route
                     path="/profile"
                     element={
@@ -83,14 +91,20 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
                         )
                     }
                 />
+
+                {/* 프로필 수정 */}
                 <Route
-                    path="*"
+                    path="/edit-profile"
                     element={
-                        <Navigate to={isLoggedIn ? "/" : "/auth"} replace />
+                        isLoggedIn ? (
+                            <EditProfile />
+                        ) : (
+                            <Navigate to="/auth" replace />
+                        )
                     }
                 />
 
-                {/* 검색 페이지 라우트 추가 */}
+                {/* 검색 페이지 */}
                 <Route
                     path="/search"
                     element={
@@ -102,14 +116,23 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
                     }
                 />
 
+                {/* ✅ 카테고리별 할 일 페이지 */}
                 <Route
-                    path="/edit-profile"
+                    path="/tasks/:categoryId"
                     element={
                         isLoggedIn ? (
-                            <EditProfile />
+                            <CategoryTasks />
                         ) : (
                             <Navigate to="/auth" replace />
                         )
+                    }
+                />
+
+                {/* 그 외 경로 */}
+                <Route
+                    path="*"
+                    element={
+                        <Navigate to={isLoggedIn ? "/" : "/auth"} replace />
                     }
                 />
             </Routes>
