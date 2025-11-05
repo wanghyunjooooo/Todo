@@ -37,7 +37,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
             const categoryName = task.category_name || "미분류";
             if (!acc[categoryName]) acc[categoryName] = [];
             acc[categoryName].push({
-                text: task.task_name,
+                task_name: task.task_name,
                 checked: task.status === "완료",
                 task_id: task.task_id,
                 memo: task.memo || "",
@@ -98,7 +98,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
     };
 
     /** ✅ 상단 “+ 버튼”으로 새 Task 추가 */
-    const handleAddTask = async (catIdx, text) => {
+    const handleAddTask = async (catIdx, task_name) => {
         const user_id = localStorage.getItem("user_id");
         if (!user_id) return alert("로그인이 필요합니다.");
         if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
@@ -111,7 +111,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
             try {
                 // ✅ 서버에 저장
                 await addTask({
-                    task_name: text,
+                    task_name: task_name,
                     memo: "",
                     task_date: dateStr,
                     category_id: null,
@@ -136,7 +136,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
             const updated = [...prev];
             if (updated[catIdx].tasks.some((t) => t.isNew)) return updated;
             updated[catIdx].tasks.unshift({
-                text: "",
+                task_name: "",
                 checked: false,
                 isNew: true,
                 category_id,
@@ -212,20 +212,20 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                         type="text"
                                         ref={(el) => setInputRef(task.task_id || task._tempId, el)}
                                         className={`task-text-input ${task.checked ? "checked" : ""}`}
-                                        value={task.text}
+                                        value={task.task_name}
                                         disabled={!!task.task_id}
                                         onChange={(e) => {
                                             if (task.task_id) return;
                                             const newText = e.target.value;
                                             setTasksByCategory((prev) => {
                                                 const updated = [...prev];
-                                                updated[catIdx].tasks[taskIdx].text = newText;
+                                                updated[catIdx].tasks[taskIdx].task_name = newText;
                                                 return updated;
                                             });
                                         }}
                                         onBlur={async () => {
                                             if (task.task_id || !task.isNew) return;
-                                            if (!task.text.trim()) {
+                                            if (!task.task_name.trim()) {
                                                 setTasksByCategory((prev) => {
                                                     const updated = [...prev];
                                                     updated[catIdx].tasks.splice(taskIdx, 1);
@@ -244,7 +244,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
 
                                             try {
                                                 const result = await addTask({
-                                                    task_name: task.text,
+                                                    task_name: task.task_name,
                                                     memo: "",
                                                     task_date: dateStr,
                                                     category_id, // ✅ null 그대로 전송
@@ -257,7 +257,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                                 setTasksByCategory((prev) => {
                                                     const updated = [...prev];
                                                     updated[catIdx].tasks[taskIdx] = {
-                                                        text: savedTask.task_name,
+                                                        task_name: savedTask.task_name,
                                                         checked: savedTask.status === "완료",
                                                         task_id: savedTask.task_id,
                                                         memo: savedTask.memo || "",
@@ -296,13 +296,36 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                 </button>
                             </div>
 
-                            {task.notification_type === "알림" && task.notification_time && <p className="task-time">{formatTime(task.notification_time)}</p>}
+                            {task.memo && (
+                                <div className="task-memo-content">
+                                    <svg className="task-time-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path
+                                            d="M5.13889 7.35294H14.8611M5 8.55529C5 7.31118 5 6.68882 5.24222 6.21353C5.46125 5.78959 5.80111 5.44971 6.21333 5.24235C6.68889 5 7.31111 5 8.55556 5H11.4444C12.6889 5 13.3111 5 13.7867 5.24235C14.205 5.45529 14.5444 5.79529 14.7578 6.21294C15 6.68941 15 7.31176 15 8.55588V11.4453C15 12.6894 15 13.3118 14.7578 13.7871C14.5388 14.211 14.1989 14.5509 13.7867 14.7582C13.3111 15 12.6889 15 11.4444 15H8.55556C7.31111 15 6.68889 15 6.21333 14.7576C5.80119 14.5504 5.46134 14.2108 5.24222 13.7871C5 13.3106 5 12.6882 5 11.4441V8.55529Z"
+                                            stroke="#595959"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                        <path d="M8 10H12" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M8 12H12" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                    <p className="task-memo">{task.memo}</p>
+                                </div>
+                            )}
 
-                            {task.memo && <p className="task-memo">{task.memo}</p>}
+                            {task.notification_type === "알림" && task.notification_time && (
+                                <div className="task-time-content">
+                                    <svg className="task-time-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M9.99999 15.5555C12.7614 15.5555 15 13.317 15 10.5555C15 7.79412 12.7614 5.55554 9.99999 5.55554C7.23857 5.55554 5 7.79412 5 10.5555C5 13.317 7.23857 15.5555 9.99999 15.5555Z" stroke="#595959" />
+                                        <path d="M10 8.33334V10.5556L11.3889 11.9444M5.27783 5.83335L7.50005 4.44446M14.7223 5.83335L12.5 4.44446" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                    <p className="task-time">{formatTime(task.notification_time)}</p>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
             ))}
+
             {popupIndex.category !== null &&
                 popupIndex.index !== null &&
                 (() => {

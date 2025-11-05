@@ -52,7 +52,7 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 10px;
-    gap: 10px;
+    gap: 8px;
     border-radius: 16px;
     background: var(--Grey-Light, #f3f3f3);
     align-self: stretch;
@@ -104,10 +104,11 @@
     outline: none;
     padding: 0;
     font-family: Pretendard;
-    font-size: 12px;
+    font-size: 14px;
+    font-style: normal;
     font-weight: 400;
-    line-height: normal;
-    color: var(--Grey-Darker, #2a2a2a);
+    line-height: 18px;
+    color: var(--Grey-Darker, #2A2A2A);
 }
 
 .task-text-input.checked {
@@ -125,16 +126,29 @@
     padding: 0;
 }
 
+.task-time-content,
+.task-memo-content {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch;
+}
+
+.task-time-icon,
+.task-memo-icon {
+    width: 20px;
+    height: 20px;
+    aspect-ratio: 1/1;
+}
+
 .task-time,
 .task-memo {
-    width: 330px;
+    color: var(--Grey-Dark, #595959);
     font-family: Pretendard;
-    font-size: 10px;
-    font-weight: 400;
+    font-size: 12px;
     font-style: normal;
-    line-height: 14px;
-    color: var(--Grey-Normal, #777);
-    margin: 0;
+    font-weight: 400;
+    line-height: normal;
 }
 
 .task-time.checked,

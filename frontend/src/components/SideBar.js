@@ -25,7 +25,7 @@ function Sidebar({ isOpen, onClose }) {
                     <button className="sidebar-menu-item" onClick={() => navigate("/edit-profile")}>
                         <span>회원 정보</span>
                         <svg className="sidebar-menu-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M8 14L12 10L8 6" stroke="#2A2A2A" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M8 14L12 10L8 6" stroke="#2A2A2A" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
 
@@ -43,8 +43,8 @@ function Sidebar({ isOpen, onClose }) {
                         <button className="category-add">
                             <span>새 카테고리 추가하기</span>
                             <svg className="category-plus-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M5 10H15" stroke="#297E4A" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M10 5V15" stroke="#297E4A" stroke-linecap="round" />
+                                <path d="M5 10H15" stroke="#297E4A" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M10 5V15" stroke="#297E4A" strokeLinecap="round" />
                             </svg>
                         </button>
                     </div>
