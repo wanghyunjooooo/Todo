@@ -34,30 +34,13 @@ export default function CategoryPopup({ categories = [], onSelect, onClose }) {
                             fontSize: "12px",
                             fontWeight: isSelected ? 700 : 400,
                             lineHeight: "14px",
-                            color: isSelected
-                                ? "var(--Grey-Dark, #595959)"
-                                : "#2a2a2a",
+                            color: isSelected ? "var(--Grey-Dark, #595959)" : "#2a2a2a",
                         }}
                     >
-                        <img
-                            src={TaskIcon}
-                            alt="task"
-                            className="category-popup-icon"
-                            style={{
-                                width: "17px",
-                                height: "17px",
-                                flexShrink: 0,
-                                aspectRatio: "1/1",
-                                marginRight: "6px",
-                                filter: isSelected
-                                    ? "invert(38%) sepia(35%) saturate(1990%) hue-rotate(103deg) brightness(91%) contrast(92%)"
-                                    : "none",
-                                // 선택시 초록색 느낌, 필요하면 svg 직접 색 채우는 방법도 있음
-                            }}
-                        />
-                        <span className="category-popup-text">
-                            {cat.category_name}
-                        </span>
+                        <svg className="category-popup-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M13.3333 3H6.66667C6.22464 3 5.80072 3.15218 5.48816 3.42307C5.17559 3.69395 5 4.06135 5 4.44444V16L10 13.8333L15 16V4.44444C15 4.06135 14.8244 3.69395 14.5118 3.42307C14.1993 3.15218 13.7754 3 13.3333 3Z" stroke="#777777" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span className="category-popup-text">{cat.category_name}</span>
                     </div>
                 );
             })}

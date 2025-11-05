@@ -101,8 +101,6 @@ function Home() {
                 style={{
                     flex: 1,
                     overflowY: "auto",
-                    paddingBottom: "100px",
-                    marginTop: "24px",
                 }}
             >
                 <Todo
