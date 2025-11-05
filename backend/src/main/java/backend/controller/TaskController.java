@@ -30,6 +30,15 @@ public class TaskController {
         }
     }
 
+    @GetMapping("/{userId}/none")
+    public ResponseEntity<List<TaskDTO>> getTasksWithoutCategory(@PathVariable Long userId) {
+        List<Task> tasks = taskService.getTasksWithoutCategory(userId);
+        List<TaskDTO> dtoList = tasks.stream()
+                .map(taskService::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
+    }
+
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAllTasks());

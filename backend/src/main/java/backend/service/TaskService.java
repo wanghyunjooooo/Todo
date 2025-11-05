@@ -63,7 +63,9 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-
+    public List<Task> getTasksWithoutCategory(Long userId) {
+        return taskRepository.findTasksWithoutCategory(userId);
+    }
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
