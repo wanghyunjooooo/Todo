@@ -13,7 +13,7 @@ export default function BottomTaskInput({ categories = [], onAddTask }) {
         if (!bottomInput.trim()) return;
 
         if (onAddTask) {
-            await onAddTask(bottomInput.trim());
+            await onAddTask(null, bottomInput.trim());
             setBottomInput("");
         }
     };
@@ -24,32 +24,12 @@ export default function BottomTaskInput({ categories = [], onAddTask }) {
                 <div className="task-content">
                     <div className="task-left">
                         <button className="task-check-btn" disabled>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                            >
-                                <circle
-                                    cx="10"
-                                    cy="10"
-                                    r="10"
-                                    fill="none"
-                                    stroke="#777"
-                                    strokeWidth="1"
-                                />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+                                <circle cx="10" cy="10" r="10" fill="none" stroke="#777" strokeWidth="1" />
                             </svg>
                         </button>
 
-                        <input
-                            ref={bottomInputRef}
-                            type="text"
-                            value={bottomInput}
-                            onChange={(e) => setBottomInput(e.target.value)}
-                            onKeyDown={handleEnter}
-                            placeholder="할 일 적는 칸"
-                            className="task-text-input"
-                        />
+                        <input ref={bottomInputRef} type="text" value={bottomInput} onChange={(e) => setBottomInput(e.target.value)} onKeyDown={handleEnter} placeholder="할 일 적는 칸" className="task-text-input" />
                     </div>
 
                     <div
@@ -61,11 +41,7 @@ export default function BottomTaskInput({ categories = [], onAddTask }) {
                         }}
                         onClick={() => setPopupOpen((prev) => !prev)}
                     >
-                        <img
-                            src={TaskIcon}
-                            alt="task"
-                            style={{ width: "13px", marginRight: "6px" }}
-                        />
+                        <img src={TaskIcon} alt="task" style={{ width: "13px", marginRight: "6px" }} />
                         <span
                             style={{
                                 fontSize: "12px",

@@ -49,7 +49,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
     // --- 초기값 세팅 ---
     useEffect(() => {
         if (!taskData) return;
-        console.log("📦 taskData 전달됨:", taskData);
+        console.log("taskData 전달됨:", taskData);
 
         const routineTypes = ["매일", "매주", "매달"];
         setRepeatEnabled(routineTypes.includes(taskData.routine_type?.trim()));
