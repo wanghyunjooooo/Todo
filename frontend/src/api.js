@@ -26,14 +26,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        const message = error.response?.data?.message || "서버 요청 중 오류가 발생했습니다.";
+        const message =
+            error.response?.data?.message ||
+            "서버 요청 중 오류가 발생했습니다.";
         console.error("API 오류:", message);
         return Promise.reject(error);
     }
 );
 
 // ✅ 로그인
-export const loginUser = (email, password) => api.post("/users/login", { user_email: email, user_password: password });
+export const loginUser = (email, password) =>
+    api.post("/users/login", { user_email: email, user_password: password });
 
 // ✅ 회원가입
 export const signupUser = (username, email, password) =>
@@ -58,7 +61,10 @@ export const addCategory = (user_id, category_name) =>
     api
         .post("/categories", {
             user_id: Number(user_id),
-            category_name: typeof category_name === "string" ? category_name : category_name?.category_name, // ✅ 객체일 경우에도 문자열만 보냄
+            category_name:
+                typeof category_name === "string"
+                    ? category_name
+                    : category_name?.category_name, // ✅ 객체일 경우에도 문자열만 보냄
         })
         .then((res) => res.data)
         .catch((err) => {
@@ -148,19 +154,30 @@ export const getMonthlyTasks = (user_id, start_date, end_date) =>
         });
 
 // ✅ 알림 전체 조회
-export const getNotifications = (user_id) => api.get(`/notifications/${user_id}`).then((res) => res.data);
+export const getNotifications = (user_id) =>
+    api.get(`/notifications/${user_id}`).then((res) => res.data);
 
 // ✅ 알림 개별 조회
-export const getNotificationById = (user_id, notification_id) => api.get(`/notifications/${user_id}/${notification_id}`).then((res) => res.data);
+export const getNotificationById = (user_id, notification_id) =>
+    api
+        .get(`/notifications/${user_id}/${notification_id}`)
+        .then((res) => res.data);
 
 // ✅ 알림 읽음 처리
-export const markNotificationRead = (notification_id) => api.patch(`/notifications/${notification_id}/read`).then((res) => res.data);
+export const markNotificationRead = (notification_id) =>
+    api.patch(`/notifications/${notification_id}/read`).then((res) => res.data);
 
 // ✅ 필요 시 기본 api 인스턴스 export
 export default api;
 
 // ✅ 루틴 생성
-export const createRoutine = (task_id, routine_type, start_date, end_date, user_id) =>
+export const createRoutine = (
+    task_id,
+    routine_type,
+    start_date,
+    end_date,
+    user_id
+) =>
     api
         .post(`/tasks/routine/${task_id}`, {
             routine_type,
@@ -185,7 +202,14 @@ export const getWeeklyStats = (user_id) =>
         });
 export const updateTask = async (taskId, data) => {
     const token = localStorage.getItem("token");
-    console.log("updateTask 호출 - taskId:", taskId, "data:", data, "token:", token); // ✅ 여기
+    console.log(
+        "updateTask 호출 - taskId:",
+        taskId,
+        "data:",
+        data,
+        "token:",
+        token
+    ); // ✅ 여기
 
     const response = await fetch(`http://localhost:8080/tasks/${taskId}`, {
         method: "PUT",
@@ -207,13 +231,16 @@ export const updateTask = async (taskId, data) => {
 export const deleteRoutine = async (routineId) => {
     const token = localStorage.getItem("token"); // ✅ 추가
 
-    const response = await fetch(`http://localhost:8080/tasks/routine/${routineId}`, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }), // ✅ 추가
-        },
-    });
+    const response = await fetch(
+        `http://localhost:8080/tasks/routine/${routineId}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }), // ✅ 추가
+            },
+        }
+    );
 
     if (!response.ok) {
         throw new Error("루틴 삭제 실패");
@@ -223,16 +250,24 @@ export const deleteRoutine = async (routineId) => {
 };
 
 // ✅ 루틴 수정
-export const updateRoutine = async (routine_id, routine_type, start_date, end_date) => {
+export const updateRoutine = async (
+    routine_id,
+    routine_type,
+    start_date,
+    end_date
+) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/tasks/routine/${routine_id}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({ routine_type, start_date, end_date }),
-    });
+    const response = await fetch(
+        `http://localhost:8080/tasks/routine/${routine_id}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: JSON.stringify({ routine_type, start_date, end_date }),
+        }
+    );
 
     if (!response.ok) {
         throw new Error("루틴 수정 실패");
@@ -240,3 +275,23 @@ export const updateRoutine = async (routine_id, routine_type, start_date, end_da
 
     return await response.json();
 };
+
+// ✅ 날짜별 Task 검색
+export const searchTasksByDate = (user_id, date) =>
+    api
+        .get("/search/date", { params: { userId: user_id, date } })
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error("날짜 검색 실패:", err);
+            throw err;
+        });
+
+// ✅ 키워드별 Task 검색
+export const searchTasksByKeyword = (user_id, keyword) =>
+    api
+        .get("/search/word", { params: { userId: user_id, keyword } })
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error("단어 검색 실패:", err);
+            throw err;
+        });

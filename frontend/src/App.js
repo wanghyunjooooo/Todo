@@ -11,6 +11,7 @@ import AuthForm from "./pages/AuthForm";
 import MyProfile from "./pages/Profile";
 import Notifications from "./pages/Notifications"; // 새로 import
 import EditProfile from "./components/EditProfile";
+import SearchPage from "./pages/Search";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
@@ -86,6 +87,18 @@ function MainContent({ isLoggedIn, setIsLoggedIn }) {
                     path="*"
                     element={
                         <Navigate to={isLoggedIn ? "/" : "/auth"} replace />
+                    }
+                />
+
+                {/* 검색 페이지 라우트 추가 */}
+                <Route
+                    path="/search"
+                    element={
+                        isLoggedIn ? (
+                            <SearchPage />
+                        ) : (
+                            <Navigate to="/auth" replace />
+                        )
                     }
                 />
 

@@ -12,6 +12,10 @@ function Header({ onSidebarToggle }) {
         navigate("/notifications"); // Notification 페이지로 이동
     };
 
+    const handleSearchClick = () => {
+        navigate("/search"); // 검색 페이지로 이동
+    };
+
     return (
         <header style={styles.header}>
             {/* 로고 */}
@@ -25,8 +29,11 @@ function Header({ onSidebarToggle }) {
 
             {/* 오른쪽 아이콘 3개 */}
             <div style={styles.iconGroup}>
-                <IconButton src={SearchIcon} alt="검색" />
-
+                <IconButton
+                    src={SearchIcon}
+                    alt="검색"
+                    onClick={handleSearchClick}
+                />
                 {/* 알람 아이콘 클릭 시 Notification 페이지 이동 */}
                 <IconButton
                     src={BellIcon}
