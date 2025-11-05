@@ -22,12 +22,11 @@ function Sidebar({ isOpen, onClose }) {
             <div className={`sidebar ${isOpen ? "open" : ""}`}>
                 <div className="sidebar-content">
                     {/* 회원 정보 클릭 시 /profile 이동 */}
-                    <button
-                        className="sidebar-menu-item"
-                        onClick={() => navigate("/edit-profile")}
-                    >
+                    <button className="sidebar-menu-item" onClick={() => navigate("/edit-profile")}>
                         <span>회원 정보</span>
-                        <ArrowIcon className="sidebar-menu-arrow" />
+                        <svg className="sidebar-menu-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M8 14L12 10L8 6" stroke="#2A2A2A" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </button>
 
                     <button className="sidebar-menu-item">TODAY</button>
@@ -43,29 +42,25 @@ function Sidebar({ isOpen, onClose }) {
 
                         <button className="category-add">
                             <span>새 카테고리 추가하기</span>
-                            <PlusIcon className="category-plus-icon" />
+                            <svg className="category-plus-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10H15" stroke="#297E4A" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M10 5V15" stroke="#297E4A" stroke-linecap="round" />
+                            </svg>
                         </button>
                     </div>
                 </div>
 
                 {/* 로그아웃 버튼 */}
-                <button
-                    className="sidebar-logout"
-                    onClick={() => setShowLogoutModal(true)}
-                >
+                <button className="sidebar-logout" onClick={() => setShowLogoutModal(true)}>
                     로그아웃
                 </button>
             </div>
 
             {/* 오버레이 */}
-            {isOpen && (
-                <div className="sidebar-overlay" onClick={onClose}></div>
-            )}
+            {isOpen && <div className="sidebar-overlay" onClick={onClose}></div>}
 
             {/* 로그아웃 모달 */}
-            {showLogoutModal && (
-                <LogoutBox onClose={() => setShowLogoutModal(false)} />
-            )}
+            {showLogoutModal && <LogoutBox onClose={() => setShowLogoutModal(false)} />}
         </>
     );
 }
