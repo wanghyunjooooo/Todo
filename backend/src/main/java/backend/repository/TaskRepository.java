@@ -19,7 +19,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByUser_UserId(Long userId);
     List<Task> findByTaskId(Long taskId);
-    List<Task> findByUser_UserIdAndTaskDate(Long userId, LocalDate taskDate);
     List<Task> findByUser_UserIdAndStatus(Long userId, String status);
 
     @Query("SELECT t FROM Task t WHERE t.user.userId = :userId AND t.taskDate BETWEEN :start AND :end")
@@ -29,8 +28,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Optional<Task> findFirstByRoutine_RoutineIdOrderByTaskDateAsc(Long routineId);
 
-    @Query("SELECT t FROM Task t JOIN FETCH t.category WHERE t.user.userId = :userId AND t.taskDate = :taskDate")
-    List<Task> findTasksByUserAndDateWithCategory(@Param("userId") Long userId, @Param("taskDate") LocalDate taskDate);
+    @Query("SELECT t FROM Task t WHERE t.user.userId = :userId AND t.taskDate = :date ORDER BY " + "CASE WHEN t.status = '미완료' THEN 1 ELSE 2 END, " + "t.createdAt DESC")
+    List<Task> findTasksByUserAndDateWithCategory(@Param("userId") Long userId, @Param("date") LocalDate date);
+
+    @Query("SELECT t FROM Task t " + "WHERE t.user.userId = :userId " + "AND (LOWER(t.taskName) LIKE LOWER(CONCAT('%', :keyword, '%'))) " + "ORDER BY t.createdAt DESC")
+    List<Task> searchTasksByKeyword(@Param("userId") Long userId, @Param("keyword") String keyword);
+
+    @Query("SELECT t FROM Task t " + "WHERE t.user.userId = :userId AND t.taskDate = :date " + "ORDER BY t.createdAt DESC")
+    List<Task> searchTasksByDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     @Modifying
     @Transactional
@@ -39,7 +44,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t WHERE t.routine.routineId = :routineId AND t.taskDate = :taskDate")
     List<Task> findByRoutineIdAndExactDate(@Param("routineId") Long routineId, @Param("taskDate") LocalDate taskDate);
-
-    @Query("SELECT t FROM Task t " + "WHERE t.notificationType = '알림' " + "AND t.notificationTime IS NOT NULL " + "AND t.taskDate = :today " + "AND t.notificationTime <= :now")
-    List<Task> findTasksForTodayNotifications(@Param("today") LocalDate today, @Param("now") LocalDateTime now);
 }
+
