@@ -1,44 +1,69 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate import 필수
-import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg";
-import { ReactComponent as PlusIcon } from "../assets/plus.svg";
-import LogoutBox from "./LogoutBox"; // 로그아웃 모달 컴포넌트
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import LogoutBox from "./LogoutBox";
+import api from "../api"; // JWT 포함 Axios
 import "./Sidebar.css";
 
 function Sidebar({ isOpen, onClose }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const navigate = useNavigate(); // navigate 정의
     const [addingCategory, setAddingCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState("");
-    const [categories, setCategories] = useState([
-        { id: 1, name: "업무" },
-        { id: 2, name: "공부" },
-        { id: 3, name: "운동" },
-        { id: 4, name: "취미" },
-    ]);
+    const [categories, setCategories] = useState([]);
+    const navigate = useNavigate();
+    const userId = localStorage.getItem("user_id");
 
-    const handleAddCategory = () => {
-        if (!newCategoryName.trim()) return;
-        const newCat = {
-            id: Date.now(),
-            name: newCategoryName.trim(),
+    // ✅ 서버에서 실제 카테고리 불러오기
+    useEffect(() => {
+        const fetchCategories = async () => {
+            if (!userId) return;
+            try {
+                const res = await api.get(`/categories/${userId}`);
+                // 예: res.data = [{category_id, category_name, ...}, ...]
+                const serverCategories = res.data.map((cat) => ({
+                    id: cat.category_id,
+                    name: cat.category_name,
+                }));
+                setCategories(serverCategories);
+            } catch (err) {
+                console.error("카테고리 불러오기 실패:", err);
+            }
         };
-        setCategories([...categories, newCat]);
-        setNewCategoryName("");
-        setAddingCategory(false);
+
+        fetchCategories();
+    }, [userId]);
+
+    const handleAddCategory = async () => {
+        if (!newCategoryName.trim()) return;
+
+        try {
+            const payload = {
+                user_id: Number(userId),
+                category_name: newCategoryName.trim(),
+            };
+            const res = await api.post("/categories", payload);
+            console.log("카테고리 추가 결과:", res.data);
+
+            const newCat = {
+                id: res.data.category.category_id,
+                name: res.data.category.category_name,
+            };
+            setCategories([...categories, newCat]);
+            setNewCategoryName("");
+            setAddingCategory(false);
+        } catch (err) {
+            console.error("카테고리 추가 실패:", err);
+            alert("카테고리 추가에 실패했습니다.");
+        }
     };
 
     const handleKeyPress = (e) => {
-        if (e.key === "Enter") {
-            handleAddCategory();
-        }
+        if (e.key === "Enter") handleAddCategory();
     };
+
     return (
         <>
-            {/* 사이드바 */}
             <div className={`sidebar ${isOpen ? "open" : ""}`}>
                 <div className="sidebar-content">
-                    {/* 회원 정보 클릭 시 /profile 이동 */}
                     <button
                         className="sidebar-menu-item"
                         onClick={() => navigate("/edit-profile")}
@@ -55,8 +80,8 @@ function Sidebar({ isOpen, onClose }) {
                             <path
                                 d="M8 14L12 10L8 6"
                                 stroke="#2A2A2A"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             />
                         </svg>
                     </button>
@@ -64,7 +89,6 @@ function Sidebar({ isOpen, onClose }) {
                     <button className="sidebar-menu-item">TODAY</button>
                     <button className="sidebar-menu-item">카테고리</button>
 
-                    {/* 카테고리 목록 */}
                     <div className="category-list">
                         {categories.map((cat) => (
                             <div key={cat.id} className="category-item">
@@ -72,7 +96,6 @@ function Sidebar({ isOpen, onClose }) {
                             </div>
                         ))}
 
-                        {/* 새 카테고리 input (버튼 바로 위) */}
                         {addingCategory && (
                             <input
                                 type="text"
@@ -90,7 +113,7 @@ function Sidebar({ isOpen, onClose }) {
                                     borderRadius: "16px",
                                     border: "none",
                                     backgroundColor: "#EBF6EF",
-                                    outline: "none", // 포커스 시 테두리 제거
+                                    outline: "none",
                                     boxSizing: "border-box",
                                 }}
                             />
@@ -133,12 +156,10 @@ function Sidebar({ isOpen, onClose }) {
                 </button>
             </div>
 
-            {/* 오버레이 */}
             {isOpen && (
                 <div className="sidebar-overlay" onClick={onClose}></div>
             )}
 
-            {/* 로그아웃 모달 */}
             {showLogoutModal && (
                 <LogoutBox onClose={() => setShowLogoutModal(false)} />
             )}
