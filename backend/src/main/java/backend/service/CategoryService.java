@@ -22,20 +22,6 @@ public class CategoryService {
     private UserRepository userRepository;
 
     @Transactional
-    public void ensureDefaultCategory(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        boolean exists = categoryRepository.existsByUser_UserIdAndCategoryName(userId, "작업");
-        if (!exists) {
-            Category defaultCategory = new Category();
-            defaultCategory.setCategoryName("작업");
-            defaultCategory.setUser(user);
-            categoryRepository.save(defaultCategory);
-        }
-    }
-
-    @Transactional
     public Category createCategory(CategoryDTO dto) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));

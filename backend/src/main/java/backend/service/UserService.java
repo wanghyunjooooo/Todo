@@ -3,7 +3,6 @@ package backend.service;
 import backend.dto.UserDTO;
 import backend.entity.User;
 import backend.repository.UserRepository;
-import backend.service.CategoryService;
 import backend.security.JWToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,13 +15,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JWToken jwtoken;
-    private final CategoryService categoryService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository, JWToken jwtoken, CategoryService categoryService) {
+    public UserService(UserRepository userRepository, JWToken jwtoken) {
         this.userRepository = userRepository;
         this.jwtoken = jwtoken;
-        this.categoryService = categoryService;
     }
 
     public User signup(UserDTO dto) {
@@ -36,8 +33,6 @@ public class UserService {
         user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
 
         User savedUser = userRepository.save(user);
-
-        categoryService.ensureDefaultCategory(savedUser.getUserId());
 
         return savedUser;
     }
