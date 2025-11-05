@@ -23,4 +23,11 @@ public class SearchController {
         List<Task> results = searchService.searchByKeyword(userId, keyword);
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/date")
+    public ResponseEntity<List<Task>> searchByDate(@RequestParam Long userId, @RequestParam String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        List<Task> results = searchService.searchByDate(userId, localDate);
+        return ResponseEntity.ok(results);
+    }
 }

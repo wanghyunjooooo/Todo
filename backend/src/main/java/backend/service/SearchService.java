@@ -19,4 +19,8 @@ public class SearchService {
     public List<Task> searchByKeyword(Long userId, String keyword) {
         return taskRepository.searchTasksByKeyword(userId, keyword);
     }
+
+    public List<Task> searchByDate(Long userId, LocalDate date) {
+        return taskRepository.searchTasksByDate(userId, date);
+    }
 }

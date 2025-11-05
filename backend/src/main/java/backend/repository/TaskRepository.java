@@ -34,6 +34,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t " + "WHERE t.user.userId = :userId " + "AND (LOWER(t.taskName) LIKE LOWER(CONCAT('%', :keyword, '%'))) " + "ORDER BY t.createdAt DESC")
     List<Task> searchTasksByKeyword(@Param("userId") Long userId, @Param("keyword") String keyword);
 
+    @Query("SELECT t FROM Task t " + "WHERE t.user.userId = :userId AND t.taskDate = :date " + "ORDER BY t.createdAt DESC")
+    List<Task> searchTasksByDate(@Param("userId") Long userId, @Param("date") LocalDate date);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Task t WHERE t.routine.routineId = :routineId AND t.taskDate > :targetDate")
