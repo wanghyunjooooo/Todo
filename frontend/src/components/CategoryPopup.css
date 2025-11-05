@@ -1,0 +1,44 @@
+.category-popup {
+    position: absolute; /* 부모 기준 위치 */
+    bottom: 100%; /* 버튼 바로 위 */
+    left: 65%;
+    display: flex;
+    flex-direction: column; /* 세로로 쌓이게 */
+    gap: 10px; /* 아이템 사이 간격 */
+    padding: 4px 12px; /* 팝업 전체 패딩 */
+    background: var(--Green-Light, #ebf6ef);
+    border: none;
+    border-radius: 8px;
+    width: 100px; /* 전체 팝업 너비 */
+    z-index: 1000;
+}
+
+.category-popup-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    width: 100%; /* 팝업 너비 꽉 채움 */
+    padding: 4px 0; /* 리스트 하나 높이 조절 */
+    border-radius: 8px;
+    background: var(--Green-Light, #ebf6ef);
+    cursor: pointer;
+    text-align: center;
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px; /* 116.667% */
+}
+
+.category-popup-item:hover {
+    background: #e0f7e9;
+}
+
+.category-popup-icon {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    aspect-ratio: 1/1;
+}

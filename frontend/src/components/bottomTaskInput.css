@@ -1,0 +1,73 @@
+.bottom-input-wrapper {
+    position: fixed;
+    bottom: 40px; /* 화면 끝에서 40px 위 */
+    left: 0;
+    right: 0;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: center;
+    z-index: 100;
+}
+
+.bottom-task-item {
+    display: flex;
+    align-items: center;
+    background: var(--Grey-Light, #f3f3f3);
+    border-radius: 16px;
+    padding: 10px 12px;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+.bottom-task-item .task-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.bottom-task-item .task-left {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.bottom-task-item .task-check-btn {
+    border: none;
+    background: none;
+    cursor: default;
+    margin-right: 8px;
+}
+
+.bottom-task-item .task-text-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 15px;
+    outline: none;
+    color: #333;
+    padding: 4px 8px;
+}
+
+/* 팝업 */
+.bottom-popup {
+    position: absolute;
+    bottom: 60px; /* 하단 입력창 위쪽 */
+    right: 16px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    z-index: 200;
+}
+
+.bottom-popup-item {
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.bottom-popup-item:hover {
+    background-color: #f3f3f3;
+}
