@@ -29,8 +29,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Optional<Task> findFirstByRoutine_RoutineIdOrderByTaskDateAsc(Long routineId);
 
-    @Query("SELECT t FROM Task t JOIN FETCH t.category WHERE t.user.userId = :userId AND t.taskDate = :taskDate")
-    List<Task> findTasksByUserAndDateWithCategory(@Param("userId") Long userId, @Param("taskDate") LocalDate taskDate);
+    @Query("SELECT t FROM Task t WHERE t.user.userId = :userId ORDER BY " + "CASE WHEN t.status = '미완료' THEN 1 ELSE 2 END, " + "t.createdAt DESC")
+    List<Task> findTasksByUserOrderByStatusAndCreatedAtDesc(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM Task t WHERE t.user.userId = :userId AND t.taskDate = :date ORDER BY " + "CASE WHEN t.status = '미완료' THEN 1 ELSE 2 END, " + "t.createdAt DESC")
+    List<Task> findTasksByUserAndDateWithCategory(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     @Modifying
     @Transactional
@@ -43,3 +46,4 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t " + "WHERE t.notificationType = '알림' " + "AND t.notificationTime IS NOT NULL " + "AND t.taskDate = :today " + "AND t.notificationTime <= :now")
     List<Task> findTasksForTodayNotifications(@Param("today") LocalDate today, @Param("now") LocalDateTime now);
 }
+
