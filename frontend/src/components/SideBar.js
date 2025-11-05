@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate import 필수
 import { ReactComponent as ArrowIcon } from "../assets/icon-arrow-right.svg";
 import { ReactComponent as PlusIcon } from "../assets/plus.svg";
-import LogoutBox from "./LogoutBox"; // 임포트
+import LogoutBox from "./LogoutBox"; // 로그아웃 모달 컴포넌트
 import "./Sidebar.css";
 
 function Sidebar({ isOpen, onClose }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const navigate = useNavigate(); // navigate 정의
 
     const categories = [
         { id: 1, name: "업무" },
@@ -16,15 +18,22 @@ function Sidebar({ isOpen, onClose }) {
 
     return (
         <>
+            {/* 사이드바 */}
             <div className={`sidebar ${isOpen ? "open" : ""}`}>
                 <div className="sidebar-content">
-                    <button className="sidebar-menu-item">
+                    {/* 회원 정보 클릭 시 /profile 이동 */}
+                    <button
+                        className="sidebar-menu-item"
+                        onClick={() => navigate("/profile")}
+                    >
                         <span>회원 정보</span>
                         <ArrowIcon className="sidebar-menu-arrow" />
                     </button>
+
                     <button className="sidebar-menu-item">TODAY</button>
                     <button className="sidebar-menu-item">카테고리</button>
 
+                    {/* 카테고리 목록 */}
                     <div className="category-list">
                         {categories.map((cat) => (
                             <div key={cat.id} className="category-item">
@@ -39,6 +48,7 @@ function Sidebar({ isOpen, onClose }) {
                     </div>
                 </div>
 
+                {/* 로그아웃 버튼 */}
                 <button
                     className="sidebar-logout"
                     onClick={() => setShowLogoutModal(true)}
@@ -47,11 +57,12 @@ function Sidebar({ isOpen, onClose }) {
                 </button>
             </div>
 
+            {/* 오버레이 */}
             {isOpen && (
                 <div className="sidebar-overlay" onClick={onClose}></div>
             )}
 
-            {/* 로그아웃 모달 import로 불러오기 */}
+            {/* 로그아웃 모달 */}
             {showLogoutModal && (
                 <LogoutBox onClose={() => setShowLogoutModal(false)} />
             )}

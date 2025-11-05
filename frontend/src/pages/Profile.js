@@ -67,8 +67,6 @@ function MyProfile() {
                 ) : (
                     <div>주간 통계 로딩중...</div>
                 )}
-
-                <LogoutBox onLogout={handleLogout} />
             </div>
 
             <div
