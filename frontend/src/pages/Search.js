@@ -53,14 +53,20 @@ function SearchPage() {
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         const dateObj = new Date(dateStr);
-        return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}-${dateObj
-            .getDate()
-            .toString()
-            .padStart(2, "0")}`;
+        return `${dateObj.getFullYear()}년 ${
+            dateObj.getMonth() + 1
+        }월 ${dateObj.getDate()}일 ${dateObj.toLocaleDateString("ko-KR", {
+            weekday: "long",
+        })}`;
     };
 
+    // ✅ tasks를 날짜별로 그룹화
+    const groupedTasks = tasks.reduce((acc, task) => {
+        const dateKey = task.task_date; // YYYY-MM-DD 기준
+        if (!acc[dateKey]) acc[dateKey] = [];
+        acc[dateKey].push(task);
+        return acc;
+    }, {});
     return (
         <div className="search-page">
             <div className="search-header">
@@ -86,105 +92,113 @@ function SearchPage() {
                     />
                 </div>
             </div>
+
             <div className="search-results todo-container">
                 {loading ? (
                     <p>로딩 중...</p>
                 ) : tasks.length === 0 ? (
                     <p className="no-task-text">검색 결과가 없습니다.</p>
                 ) : (
-                    tasks.map((task) => {
-                        const taskDate = new Date(task.task_date);
-                        const formattedDate = `${taskDate.getFullYear()}년 ${
-                            taskDate.getMonth() + 1
-                        }월 ${taskDate.getDate()}일 ${taskDate.toLocaleDateString(
-                            "ko-KR",
-                            { weekday: "long" }
-                        )}`;
-
-                        return (
-                            <div key={task.task_id}>
+                    Object.entries(groupedTasks).map(
+                        ([dateStr, tasksOfDate]) => (
+                            <div
+                                key={dateStr}
+                                style={{
+                                    marginBottom: "16px", // 날짜 블록 간격
+                                }}
+                            >
                                 {/* 날짜 표시 */}
                                 <div
                                     style={{
                                         fontFamily: "Pretendard",
                                         fontSize: "14px",
                                         fontWeight: 600,
-                                        fontStyle: "normal",
-                                        lineHeight: "normal",
                                         color: "#2A2A2A",
-                                        marginBottom: "6px",
+                                        marginBottom: "8px", // 날짜와 첫 task 사이 간격
                                     }}
                                 >
-                                    {formattedDate}
+                                    {formatDate(dateStr)}
                                 </div>
 
-                                {/* 기존 Todo task 디자인 유지 */}
-                                <div
-                                    className={`task-item ${
-                                        task.status === "완료" ? "checked" : ""
-                                    }`}
-                                >
-                                    <div className="task-content">
-                                        <div className="task-left">
-                                            <button
-                                                className={`task-check-btn ${
-                                                    task.status === "완료"
-                                                        ? "checked"
-                                                        : ""
-                                                }`}
-                                            >
-                                                {task.status === "완료" && (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 20 20"
-                                                    >
-                                                        <rect
+                                {/* 해당 날짜의 할 일 */}
+                                {tasksOfDate.map((task, idx) => (
+                                    <div
+                                        key={task.task_id}
+                                        className={`task-item ${
+                                            task.status === "완료"
+                                                ? "checked"
+                                                : ""
+                                        }`}
+                                        style={{
+                                            marginBottom:
+                                                idx !== tasksOfDate.length - 1
+                                                    ? "8px"
+                                                    : "0px", // task 간 간격
+                                        }}
+                                    >
+                                        <div className="task-content">
+                                            <div className="task-left">
+                                                <button
+                                                    className={`task-check-btn ${
+                                                        task.status === "완료"
+                                                            ? "checked"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    {task.status === "완료" && (
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
                                                             width="20"
                                                             height="20"
-                                                            rx="10"
-                                                            fill="#36A862"
-                                                        />
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            clipRule="evenodd"
-                                                            d="M15.8 7.18c.13.12.2.28.2.44 0 .17-.07.33-.2.45l-6.15 5.76a.66.66 0 0 1-.47.17.66.66 0 0 1-.47-.17L5.2 10.52a.66.66 0 0 1-.14-.36c0-.13.03-.25.09-.36a.6.6 0 0 1 .26-.24.7.7 0 0 1 .46-.05.7.7 0 0 1 .39.2l3.05 2.86 5.7-5.39a.66.66 0 0 1 .94.04z"
-                                                            fill="#fff"
-                                                        />
-                                                    </svg>
-                                                )}
-                                            </button>
-                                            <span
-                                                className={`task-text-btn ${
-                                                    task.status === "완료"
-                                                        ? "checked"
-                                                        : ""
-                                                }`}
-                                                style={{
-                                                    fontFamily: "Pretendard",
-                                                    fontSize: "14px",
-                                                    fontWeight: 600,
-                                                    fontStyle: "normal",
-                                                    lineHeight: "normal",
-                                                    color:
+                                                            viewBox="0 0 20 20"
+                                                        >
+                                                            <rect
+                                                                width="20"
+                                                                height="20"
+                                                                rx="10"
+                                                                fill="#36A862"
+                                                            />
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                clipRule="evenodd"
+                                                                d="M15.8 7.18c.13.12.2.28.2.44 0 .17-.07.33-.2.45l-6.15 5.76a.66.66 0 0 1-.47.17.66.66 0 0 1-.47-.17L5.2 10.52a.66.66 0 0 1-.14-.36c0-.13.03-.25.09-.36a.6.6 0 0 1 .26-.24.7.7 0 0 1 .46-.05.7.7 0 0 1 .39.2l3.05 2.86 5.7-5.39a.66.66 0 0 1 .94.04z"
+                                                                fill="#fff"
+                                                            />
+                                                        </svg>
+                                                    )}
+                                                </button>
+                                                <span
+                                                    className={`task-text-btn ${
                                                         task.status === "완료"
-                                                            ? "#888"
-                                                            : "#2A2A2A",
-                                                    textDecoration:
-                                                        task.status === "완료"
-                                                            ? "line-through"
-                                                            : "none",
-                                                }}
-                                            >
-                                                {task.task_name}
-                                            </span>
+                                                            ? "checked"
+                                                            : ""
+                                                    }`}
+                                                    style={{
+                                                        fontFamily:
+                                                            "Pretendard",
+                                                        fontSize: "14px",
+                                                        fontWeight: 600,
+                                                        color:
+                                                            task.status ===
+                                                            "완료"
+                                                                ? "#888"
+                                                                : "#2A2A2A",
+                                                        textDecoration:
+                                                            task.status ===
+                                                            "완료"
+                                                                ? "line-through"
+                                                                : "none",
+                                                    }}
+                                                >
+                                                    {task.task_name}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
-                        );
-                    })
+                        )
+                    )
                 )}
             </div>
         </div>
