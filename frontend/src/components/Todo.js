@@ -1,12 +1,13 @@
+// ✅ src/components/Todo.js
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
-
 import { addTask, deleteTask, updateTaskStatus } from "../api";
 
 function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categories = [] }) {
     const [tasksByCategory, setTasksByCategory] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [popupIndex, setPopupIndex] = useState({
         category: null,
         index: null,
@@ -27,6 +28,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
         return `${ampm} ${hour}:${minute}`;
     };
 
+    // ✅ 날짜별 할일 묶기
     useEffect(() => {
         const allCategoryNames = new Set([...categories.map((c) => c.category_name), ...tasksByDate.map((t) => t.category_name || "미분류")]);
 
@@ -41,40 +43,34 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                 category_id: task.category?.category_id || null,
                 notification_type: task.notification_type || "미알림",
                 notification_time: task.notification_time || null,
-                routine_type: task.routine_type || "",
-                routine_id: task.routine_id || null,
-                period_start: task.period_start || null,
-                period_end: task.period_end || null,
             });
             return acc;
         }, {});
 
-        const newTasksByCategory = Array.from(allCategoryNames).map((categoryName) => {
-            const existingTasks = grouped[categoryName] || [];
-            return { categoryName, tasks: existingTasks };
-        });
+        const newTasksByCategory = Array.from(allCategoryNames).map((categoryName) => ({
+            categoryName,
+            tasks: grouped[categoryName] || [],
+        }));
 
-        // ✅ state가 실제로 달라졌을 때만 setState
         setTasksByCategory((prev) => {
-            const prevString = JSON.stringify(prev);
-            const nextString = JSON.stringify(newTasksByCategory);
-            if (prevString !== nextString) return newTasksByCategory;
-            return prev;
+            const prevStr = JSON.stringify(prev);
+            const nextStr = JSON.stringify(newTasksByCategory);
+            return prevStr !== nextStr ? newTasksByCategory : prev;
         });
     }, [tasksByDate, categories]);
 
-    /** ✅ 포커스 유지 */
+    // ✅ 포커스 유지
     useLayoutEffect(() => {
         if (!focusedTaskId) return;
-        const inputEl = inputRefs.current[focusedTaskId];
-        if (inputEl)
+        const el = inputRefs.current[focusedTaskId];
+        if (el)
             setTimeout(() => {
-                inputEl.focus();
-                inputEl.select();
+                el.focus();
+                el.select();
             }, 120);
     }, [focusedTaskId, tasksByCategory]);
 
-    /** ✅ 체크 토글 */
+    // ✅ 체크 토글
     const toggleChecked = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
         if (!task.task_id) return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
@@ -83,42 +79,81 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
             await updateTaskStatus(task.task_id, {
                 status: newChecked ? "완료" : "미완료",
             });
-            if (onDataUpdated) onDataUpdated();
             setTasksByCategory((prev) => {
                 const updated = [...prev];
                 updated[catIdx].tasks[taskIdx].checked = newChecked;
                 return updated;
             });
+            onDataUpdated && onDataUpdated();
         } catch (err) {
             console.error("체크 상태 업데이트 실패:", err);
         }
     };
 
-    /** ✅ Task 삭제 */
+    // ✅ 새 할일 추가 (상단 +버튼)
+    const handleAddTask = async (catIdx, task_name) => {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) return alert("로그인이 필요합니다.");
+        if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
+
+        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+        const dateStr = localDate.toISOString().split("T")[0];
+
+        const tempId = Date.now() + Math.random();
+        const categoryName = catIdx != null ? tasksByCategory[catIdx].categoryName : "미분류";
+
+        const matchedCategory = categories.find((c) => c.category_name === categoryName);
+
+        // ✅ 팝업에서 선택된 카테고리 우선 적용
+        const category_id = selectedCategoryId ?? (matchedCategory ? matchedCategory.category_id : null);
+
+        const targetIdx = catIdx != null ? catIdx : tasksByCategory.findIndex((c) => c.categoryName === categoryName);
+
+        if (targetIdx === -1) return;
+
+        setTasksByCategory((prev) => {
+            const updated = [...prev];
+            if (updated[targetIdx].tasks.some((t) => t.isNew)) return updated;
+            updated[targetIdx].tasks.unshift({
+                task_name: "",
+                checked: false,
+                isNew: true,
+                category_id,
+                _tempId: tempId,
+            });
+            return updated;
+        });
+
+        setTimeout(() => {
+            const el = inputRefs.current[tempId];
+            if (el) el.focus();
+        }, 50);
+    };
+
+    // ✅ 삭제
     const handleDeleteTask = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
-                if (onDataUpdated) onDataUpdated();
+                onDataUpdated && onDataUpdated();
             } catch (err) {
-                console.error("Task 삭제 실패:", err);
+                console.error("삭제 실패:", err);
             }
         }
         setTasksByCategory((prev) =>
-            prev.map((cat, idx) =>
-                idx !== catIdx
+            prev.map((cat, i) =>
+                i !== catIdx
                     ? cat
                     : {
                           ...cat,
-                          tasks: cat.tasks.filter((_, i) => i !== taskIdx),
+                          tasks: cat.tasks.filter((_, j) => j !== taskIdx),
                       }
             )
         );
-        setPopupIndex((prev) => (prev.category === catIdx && prev.index === taskIdx ? { category: null, index: null } : prev));
     };
 
-    /** ✅ 팝업 토글 */
+    // ✅ 팝업 열기/닫기
     const togglePopup = (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
         if (!task.task_id) return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
@@ -152,10 +187,10 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                         disabled={!!task.task_id}
                                         onChange={(e) => {
                                             if (task.task_id) return;
-                                            const newText = e.target.value;
+                                            const val = e.target.value;
                                             setTasksByCategory((prev) => {
                                                 const updated = [...prev];
-                                                updated[catIdx].tasks[taskIdx].task_name = newText;
+                                                updated[catIdx].tasks[taskIdx].task_name = val;
                                                 return updated;
                                             });
                                         }}
@@ -173,38 +208,24 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                             const user_id = localStorage.getItem("user_id");
                                             if (!user_id) return alert("로그인이 필요합니다.");
 
-                                            const category_id = task.category_id || null; // ✅ null 허용
-
                                             const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
                                             const dateStr = localDate.toISOString().split("T")[0];
 
+                                            const category_id = selectedCategoryId ?? task.category_id ?? null;
+
                                             try {
-                                                const result = await addTask({
+                                                await addTask({
                                                     task_name: task.task_name,
                                                     memo: "",
                                                     task_date: dateStr,
-                                                    category_id, // ✅ null 그대로 전송
+                                                    category_id,
                                                     user_id: Number(user_id),
                                                     notification_type: "미알림",
                                                     notification_time: null,
                                                 });
-                                                if (onDataUpdated) onDataUpdated();
-                                                const savedTask = result.task;
-                                                setTasksByCategory((prev) => {
-                                                    const updated = [...prev];
-                                                    updated[catIdx].tasks[taskIdx] = {
-                                                        task_name: savedTask.task_name,
-                                                        checked: savedTask.status === "완료",
-                                                        task_id: savedTask.task_id,
-                                                        memo: savedTask.memo || "",
-                                                        category_id: savedTask.category_id ?? null,
-                                                        notification_type: savedTask.notification_type || "미알림",
-                                                        notification_time: savedTask.notification_time || null,
-                                                    };
-                                                    return updated;
-                                                });
+                                                onDataUpdated && onDataUpdated();
                                             } catch (err) {
-                                                console.error("Task 자동 저장 실패:", err);
+                                                console.error("추가 실패:", err);
                                             }
                                         }}
                                         onKeyDown={(e) => {
@@ -228,10 +249,9 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                         togglePopup(catIdx, taskIdx);
                                     }}
                                 >
-                                    <img src={ThreeIcon} alt="menu" style={{ width: "20px" }} />
+                                    <img src={ThreeIcon} alt="menu" width="20" />
                                 </button>
                             </div>
-
                             {task.memo && (
                                 <div className="task-memo-content">
                                     <svg className="task-time-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -257,45 +277,38 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                     <p className="task-time">{formatTime(task.notification_time)}</p>
                                 </div>
                             )}
+
+                            {popupIndex.category === catIdx && popupIndex.index === taskIdx && (
+                                <TaskOptionsPopup
+                                    taskId={task.task_id}
+                                    taskData={task}
+                                    userId={localStorage.getItem("user_id")}
+                                    selectedCategoryId={selectedCategoryId}
+                                    onCategorySelect={(id) => setSelectedCategoryId(id)}
+                                    onClose={() =>
+                                        setPopupIndex({
+                                            category: null,
+                                            index: null,
+                                        })
+                                    }
+                                    onDelete={() => handleDeleteTask(catIdx, taskIdx)}
+                                    onEditConfirm={(updatedTask) => {
+                                        setTasksByCategory((prev) => {
+                                            const updated = [...prev];
+                                            updated[catIdx].tasks[taskIdx] = {
+                                                ...updated[catIdx].tasks[taskIdx],
+                                                ...updatedTask,
+                                            };
+                                            return updated;
+                                        });
+                                        onDataUpdated && onDataUpdated();
+                                    }}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
             ))}
-
-            {popupIndex.category !== null &&
-                popupIndex.index !== null &&
-                (() => {
-                    const catIdx = popupIndex.category;
-                    const taskIdx = popupIndex.index;
-                    const task = tasksByCategory?.[catIdx]?.tasks?.[taskIdx];
-                    if (!task) return null;
-
-                    return (
-                        <TaskOptionsPopup
-                            taskId={task.task_id}
-                            taskData={task}
-                            userId={localStorage.getItem("user_id")}
-                            onClose={() =>
-                                setPopupIndex({
-                                    category: null,
-                                    index: null,
-                                })
-                            }
-                            onDelete={() => handleDeleteTask(catIdx, taskIdx)}
-                            onEditConfirm={async (updatedTask) => {
-                                setTasksByCategory((prev) => {
-                                    const updated = [...prev];
-                                    updated[catIdx].tasks[taskIdx] = {
-                                        ...updated[catIdx].tasks[taskIdx],
-                                        ...updatedTask,
-                                    };
-                                    return updated;
-                                });
-                                if (onDataUpdated) onDataUpdated();
-                            }}
-                        />
-                    );
-                })()}
         </div>
     );
 }

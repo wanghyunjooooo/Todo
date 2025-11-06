@@ -28,9 +28,9 @@
     position: fixed;
     width: 350px;
     padding: 20px;
-    margin-bottom: 20px;
     bottom: 0;
-    left: 20;
+    left: 0;
+    margin: 20px;
     background: #fff;
     border-radius: 16px;
     display: flex;
