@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // 한 줄로 합침
 import api, { addTask } from "../api";
 import "./CategoryTasks.css";
 import Header from "../components/Header";
@@ -21,6 +21,7 @@ function CategoryTasks() {
     const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false);
     const [isEditingCategoryName, setIsEditingCategoryName] = useState(false);
     const categoryInputRef = useRef(null);
+    const navigate = useNavigate(); // 이걸 추가해야 함
 
     /** 상단 카테고리 이름 편집 시 포커스 */
     useEffect(() => {
@@ -209,7 +210,7 @@ function CategoryTasks() {
                 <CategoryManagePopup
                     categories={categories}
                     onClose={() => setIsCategoryPopupOpen(false)}
-                    onEdit={() => setIsEditingCategoryName(true)} // 클릭 시 상단 인풋 편집 모드
+                    onEdit={() => setIsEditingCategoryName(true)}
                     onDelete={async () => {
                         if (
                             window.confirm(
@@ -221,7 +222,8 @@ function CategoryTasks() {
                                     `/categories/${userId}/${categoryId}`
                                 );
                                 setIsCategoryPopupOpen(false);
-                                // 삭제 후 'none' 페이지로 이동 가능
+                                // 삭제 후 홈 화면으로 이동
+                                navigate("/"); // <- 여기서 이동
                             } catch (err) {
                                 console.error("카테고리 삭제 실패", err);
                             }
