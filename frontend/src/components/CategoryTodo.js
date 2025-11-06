@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
 import { deleteTask, updateTaskStatus } from "../api";
 
-function CategoryTodo({ tasks, setTasks, categoryId, onDataUpdated }) {
+function CategoryTodo({ tasks, updateTaskInState, onDataUpdated }) {
     const [popupIndex, setPopupIndex] = React.useState({
         category: null,
         index: null,
@@ -25,7 +25,6 @@ function CategoryTodo({ tasks, setTasks, categoryId, onDataUpdated }) {
         return `${ampm} ${hour}:${minute}`;
     };
 
-    // ✅ 체크 토글
     const toggleChecked = async (taskIdx) => {
         const task = tasks[taskIdx];
         if (!task.task_id)
@@ -37,24 +36,21 @@ function CategoryTodo({ tasks, setTasks, categoryId, onDataUpdated }) {
                 status: newChecked ? "완료" : "미완료",
             });
 
-            const updated = tasks.map((t, i) =>
-                i === taskIdx ? { ...t, checked: newChecked } : t
-            );
-            setTasks(updated);
+            // 부모 함수로 상태 업데이트
+            updateTaskInState({ ...task, checked: newChecked });
             onDataUpdated && onDataUpdated();
         } catch (err) {
             console.error("체크 상태 업데이트 실패:", err);
         }
     };
 
-    // ✅ 삭제
     const handleDeleteTask = async (taskIdx) => {
         const task = tasks[taskIdx];
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
-                const updated = tasks.filter((_, i) => i !== taskIdx);
-                setTasks(updated);
+
+                // 삭제 후 부모에서 상태 갱신
                 onDataUpdated && onDataUpdated();
             } catch (err) {
                 console.error("삭제 실패:", err);
@@ -62,7 +58,6 @@ function CategoryTodo({ tasks, setTasks, categoryId, onDataUpdated }) {
         }
     };
 
-    // ✅ 팝업 열기/닫기
     const togglePopup = (taskIdx) => {
         const task = tasks[taskIdx];
         if (!task.task_id)
@@ -204,13 +199,8 @@ function CategoryTodo({ tasks, setTasks, categoryId, onDataUpdated }) {
                     }
                     onDelete={() => handleDeleteTask(popupIndex.index)}
                     onEditConfirm={(updatedTask) => {
-                        const updated = [...tasks];
-                        updated[popupIndex.index] = {
-                            ...updated[popupIndex.index],
-                            ...updatedTask,
-                        };
-                        setTasks(updated);
-                        if (onDataUpdated) onDataUpdated();
+                        updateTaskInState(updatedTask); // ✅ 부모 함수 사용
+                        onDataUpdated && onDataUpdated();
                     }}
                 />
             )}
