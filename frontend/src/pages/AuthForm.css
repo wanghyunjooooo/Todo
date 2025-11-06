@@ -34,9 +34,9 @@
 
 .auth-input,
 .password-input {
-    width: 310px;
-    height: 40px;
-    padding: 8px 20px;
+    width: 350px;
+    height: 56px;
+    padding: 21px 20px;
     font-size: 12px;
     font-weight: 400;
     border: none;
