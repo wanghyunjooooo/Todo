@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import api, { addTask } from "../api";
 import "./CategoryTasks.css";
@@ -6,16 +6,31 @@ import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
 import BottomTaskInput from "../components/BottomTaskInput";
 import CategoryTodo from "../components/CategoryTodo";
+import ThreeIcon from "../assets/three.svg";
+import CategoryManagePopup from "../components/CategoryManagePopup";
 
 function CategoryTasks() {
     const { categoryId } = useParams();
     const userId = localStorage.getItem("user_id");
+
     const [categoryName, setCategoryName] = useState("");
     const [tasks, setTasks] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false);
+    const [isEditingCategoryName, setIsEditingCategoryName] = useState(false);
+    const categoryInputRef = useRef(null);
 
-    /** 카테고리/할 일 불러오기 */
+    /** 상단 카테고리 이름 편집 시 포커스 */
+    useEffect(() => {
+        if (isEditingCategoryName) {
+            categoryInputRef.current?.focus();
+            categoryInputRef.current?.select();
+        }
+    }, [isEditingCategoryName]);
+
+    /** 특정 카테고리와 할 일 불러오기 */
     const fetchTasks = async () => {
         if (!userId || !categoryId) return;
         try {
@@ -38,19 +53,29 @@ function CategoryTasks() {
             setTasks(fetchedTasks);
         } catch (err) {
             console.error("카테고리/할 일 불러오기 실패:", err);
-            alert("카테고리 정보를 불러오지 못했습니다.");
         } finally {
             setLoading(false);
         }
     };
 
+    /** 모든 카테고리 불러오기 (팝업용) */
+    const fetchCategories = async () => {
+        if (!userId) return;
+        try {
+            const res = await api.get(`/categories/${userId}`);
+            setCategories(res.data || []);
+        } catch (err) {
+            console.error("카테고리 목록 불러오기 실패:", err);
+        }
+    };
+
     useEffect(() => {
         fetchTasks();
+        fetchCategories();
     }, [categoryId, userId]);
 
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-    /** 새로운 할 일 추가 */
     const handleAddTask = async (_, text) => {
         if (!userId) return alert("로그인이 필요합니다.");
 
@@ -70,15 +95,12 @@ function CategoryTasks() {
                 notification_type: "미알림",
                 notification_time: null,
             });
-
-            // 추가 후 tasks 새로 불러오기
             await fetchTasks();
         } catch (err) {
             console.error("할 일 추가 실패:", err);
         }
     };
 
-    /** task 상태 갱신 */
     const updateTaskInState = (updatedTask) => {
         setTasks((prev) =>
             prev.map((task) =>
@@ -89,9 +111,29 @@ function CategoryTasks() {
         );
     };
 
-    /** task 옵션에서 호출할 새로고침 */
     const handleDataUpdated = async () => {
         await fetchTasks();
+    };
+
+    /** 상단 카테고리 이름 수정 완료 */
+    const handleCategoryNameBlur = async () => {
+        setIsEditingCategoryName(false);
+
+        try {
+            const res = await api.put(`/categories/${userId}/${categoryId}`, {
+                category_name: categoryName,
+            });
+
+            // 서버에서 반환한 최종 카테고리 이름으로 상태 업데이트
+            if (res.data && res.data.category) {
+                setCategoryName(res.data.category.category_name);
+            }
+
+            // 카테고리 목록 갱신
+            await fetchCategories();
+        } catch (err) {
+            console.error("카테고리 이름 업데이트 실패:", err);
+        }
     };
 
     if (loading) return <div>로딩중...</div>;
@@ -103,9 +145,41 @@ function CategoryTasks() {
             <Header onSidebarToggle={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
-            <div className="title-header">
-                {categoryName}
-                {/* SVG 아이콘 생략 */}
+            {/* 카테고리 이름 + 점 세개 아이콘 */}
+            <div
+                className="title-header"
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "0 16px",
+                    marginTop: "8px",
+                }}
+            >
+                {isEditingCategoryName ? (
+                    <input
+                        ref={categoryInputRef}
+                        value={categoryName}
+                        onChange={(e) => setCategoryName(e.target.value)}
+                        onBlur={handleCategoryNameBlur}
+                        className="editing"
+                        style={{
+                            fontSize: "18px",
+                            fontWeight: "500",
+                            border: "1px solid #007bff",
+                            borderRadius: "4px",
+                            padding: "2px 4px",
+                        }}
+                    />
+                ) : (
+                    <span>{categoryName}</span>
+                )}
+                <img
+                    src={ThreeIcon}
+                    alt="더보기"
+                    style={{ width: "35px", height: "35px", cursor: "pointer" }}
+                    onClick={() => setIsCategoryPopupOpen(true)}
+                />
             </div>
 
             <div style={{ flex: 1, overflowY: "auto" }}>
@@ -113,16 +187,43 @@ function CategoryTasks() {
                     categoryId={categoryId}
                     tasks={tasks}
                     updateTaskInState={updateTaskInState}
-                    onDataUpdated={handleDataUpdated} // ✅ 여기서 실제 fetchTasks 호출
+                    onDataUpdated={handleDataUpdated}
                 />
             </div>
 
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
                 <BottomTaskInput
                     onAddTask={handleAddTask}
-                    hideCategorySelector={true} // 홈 화면 아니면 카테고리 선택 숨김
+                    hideCategorySelector={true}
                 />
             </div>
+
+            {/* 카테고리 관리 팝업 */}
+            {isCategoryPopupOpen && (
+                <CategoryManagePopup
+                    categories={categories}
+                    onClose={() => setIsCategoryPopupOpen(false)}
+                    onEdit={() => setIsEditingCategoryName(true)} // 클릭 시 상단 인풋 편집 모드
+                    onDelete={async () => {
+                        if (
+                            window.confirm(
+                                "정말 이 카테고리를 삭제하시겠습니까?"
+                            )
+                        ) {
+                            try {
+                                await api.delete(
+                                    `/categories/${userId}/${categoryId}`
+                                );
+                                setIsCategoryPopupOpen(false);
+                                // 삭제 후 'none' 페이지로 이동 가능
+                            } catch (err) {
+                                console.error("카테고리 삭제 실패", err);
+                            }
+                        }
+                    }}
+                    onUpdateCategories={setCategories}
+                />
+            )}
         </div>
     );
 }
