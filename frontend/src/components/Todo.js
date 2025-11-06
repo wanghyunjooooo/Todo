@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
-import TaskIcon from "../assets/task.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
 
-import { addTask, deleteTask, updateTaskStatus, updateTask } from "../api";
+import { addTask, deleteTask, updateTaskStatus } from "../api";
 
 function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categories = [] }) {
     const [tasksByCategory, setTasksByCategory] = useState([]);
@@ -13,8 +12,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
         index: null,
     });
     const inputRefs = useRef({});
-    const bottomInputRef = useRef(null);
-    const [bottomInput, setBottomInput] = useState("");
 
     const setInputRef = (id, el) => {
         if (el) inputRefs.current[id] = el;
@@ -97,60 +94,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
         }
     };
 
-    /** ✅ 상단 “+ 버튼”으로 새 Task 추가 */
-    const handleAddTask = async (catIdx, task_name) => {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return alert("로그인이 필요합니다.");
-        if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
-
-        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-        const dateStr = localDate.toISOString().split("T")[0];
-
-        // ✅ catIdx가 없는 경우 (하단 입력창 등)
-        if (catIdx === null || catIdx === undefined) {
-            try {
-                // ✅ 서버에 저장
-                await addTask({
-                    task_name: task_name,
-                    memo: "",
-                    task_date: dateStr,
-                    category_id: null,
-                    user_id: Number(user_id),
-                    notification_type: "미알림",
-                    notification_time: null,
-                });
-
-                if (onDataUpdated) onDataUpdated(); // 목록 새로고침
-            } catch (err) {
-                console.error("하단 입력창 추가 실패:", err);
-            }
-            return;
-        }
-
-        const tempId = Date.now() + Math.random();
-        const categoryName = tasksByCategory[catIdx].categoryName;
-        const matchedCategory = categories.find((c) => c.category_name === categoryName);
-        const category_id = matchedCategory ? matchedCategory.category_id : null;
-
-        setTasksByCategory((prev) => {
-            const updated = [...prev];
-            if (updated[catIdx].tasks.some((t) => t.isNew)) return updated;
-            updated[catIdx].tasks.unshift({
-                task_name: "",
-                checked: false,
-                isNew: true,
-                category_id,
-                _tempId: tempId,
-            });
-            return updated;
-        });
-
-        setTimeout(() => {
-            const el = inputRefs.current[tempId];
-            if (el) el.focus();
-        }, 50);
-    };
-
     /** ✅ Task 삭제 */
     const handleDeleteTask = async (catIdx, taskIdx) => {
         const task = tasksByCategory[catIdx].tasks[taskIdx];
@@ -187,7 +130,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
     return (
         <div className="todo-container">
             {tasksByCategory.map((group, catIdx) => (
-                <div key={group.categoryName} className="category-group">
+                <div key={group.categoryName} className="task-group">
                     {group.tasks.map((task, taskIdx) => (
                         <div key={task.task_id || task._tempId} className={`task-item ${task.checked ? "checked" : ""}`}>
                             <div className="task-content">

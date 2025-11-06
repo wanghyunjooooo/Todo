@@ -13,30 +13,12 @@
     font-family: "Pretendard", sans-serif;
 }
 
-.category-group {
+.task-group {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
     align-self: stretch;
-}
-
-.category-header {
-    display: flex;
-    padding: 8px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    border-radius: 16px;
-    border: 1px solid var(--green-light-active, #C1E4CE);
-    background: var(--Grey-White, #FFF);
-}
-
-.category-title {
-    font-size: 12px;
-    font-weight: 500;
-    color: #36a862;
-    margin: 0;
 }
 
 .task-add-btn {
