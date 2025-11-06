@@ -1,6 +1,6 @@
 // src/components/CategoryPopup.js
 import React, { useState, useEffect } from "react";
-import { getCategories } from "../api"; // ✅ api.js에서 불러옴
+import { getCategories } from "../api";
 import "./CategoryPopup.css";
 
 export default function CategoryPopup({ onSelect, onClose }) {
@@ -10,9 +10,16 @@ export default function CategoryPopup({ onSelect, onClose }) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const userId = 1; // ✅ 실제로는 로그인 시 저장된 user_id 사용
+                const userId = localStorage.getItem("user_id") || 1;
                 const data = await getCategories(userId);
-                setCategories(data);
+
+                // ✅ 항상 맨 앞에 “작업” 추가 (category_id: null)
+                const updated = [
+                    { category_id: null, category_name: "작업" },
+                    ...(Array.isArray(data) ? data : []),
+                ];
+
+                setCategories(updated);
             } catch (error) {
                 console.error("❌ 카테고리 불러오기 실패:", error);
             }
@@ -23,7 +30,13 @@ export default function CategoryPopup({ onSelect, onClose }) {
 
     const handleSelect = (cat) => {
         setSelectedId(cat.category_id);
-        if (onSelect) onSelect(cat); // ✅ 부모 컴포넌트로 전달
+        if (onSelect) {
+            // ✅ “작업”은 category_id: null로 넘김
+            const selected = cat.category_id
+                ? cat
+                : { ...cat, category_id: null };
+            onSelect(selected);
+        }
     };
 
     return (
@@ -35,7 +48,7 @@ export default function CategoryPopup({ onSelect, onClose }) {
                     const isSelected = cat.category_id === selectedId;
                     return (
                         <div
-                            key={cat.category_id}
+                            key={cat.category_id ?? "none"}
                             className="category-popup-item"
                             onClick={() => handleSelect(cat)}
                             style={{
