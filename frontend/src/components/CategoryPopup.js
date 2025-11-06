@@ -54,7 +54,7 @@ export default function CategoryPopup({
     return (
         <div className="category-popup" onMouseLeave={onClose}>
             {categories.length === 0 ? (
-                <div className="category-popup-empty">카테고리가 없습니다.</div>
+                <div className="category-popup-empty"></div>
             ) : (
                 categories.map((cat) => {
                     const id = cat.category_id ?? "none";

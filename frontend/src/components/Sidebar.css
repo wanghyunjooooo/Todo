@@ -62,7 +62,6 @@
 
 /* 카테고리 목록 */
 .category-list {
-    margin-top: 8px;
     display: flex;
     flex-direction: column;
     gap: 0;
