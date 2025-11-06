@@ -174,12 +174,18 @@ function CategoryTasks() {
                 ) : (
                     <span>{categoryName}</span>
                 )}
-                <img
-                    src={ThreeIcon}
-                    alt="더보기"
-                    style={{ width: "35px", height: "35px", cursor: "pointer" }}
-                    onClick={() => setIsCategoryPopupOpen(true)}
-                />
+                {categoryId !== "none" && (
+                    <img
+                        src={ThreeIcon}
+                        alt="더보기"
+                        style={{
+                            width: "35px",
+                            height: "35px",
+                            cursor: "pointer",
+                        }}
+                        onClick={() => setIsCategoryPopupOpen(true)}
+                    />
+                )}
             </div>
 
             <div style={{ flex: 1, overflowY: "auto" }}>
