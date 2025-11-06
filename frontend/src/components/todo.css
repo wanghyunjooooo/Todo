@@ -1,15 +1,14 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 .todo-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 390px;
     padding: 20px;
-    gap: 20px;
-    box-sizing: border-box;
     font-family: "Pretendard", sans-serif;
 }
 
@@ -71,7 +70,6 @@
     cursor: pointer;
     padding: 0;
     margin-right: 8px;
-    box-sizing: border-box;
     line-height: 1;
 }
 
@@ -79,7 +77,7 @@
     border: none;
 }
 
-.task-text-input {
+.task-text {
     width: 100%;
     border: none;
     background: transparent;

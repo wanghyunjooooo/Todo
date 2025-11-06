@@ -147,7 +147,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                     <input
                                         type="text"
                                         ref={(el) => setInputRef(task.task_id || task._tempId, el)}
-                                        className={`task-text-input ${task.checked ? "checked" : ""}`}
+                                        className={`task-text ${task.checked ? "checked" : ""}`}
                                         value={task.task_name}
                                         disabled={!!task.task_id}
                                         onChange={(e) => {
@@ -272,7 +272,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
 
                     return (
                         <TaskOptionsPopup
-                            style={{ top: "40px", right: "0" }}
                             taskId={task.task_id}
                             taskData={task}
                             userId={localStorage.getItem("user_id")}

@@ -82,18 +82,7 @@ function Home() {
             {/* Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
             {/* 오늘 날짜 표시 */}
-            <div
-                style={{
-                    color: "var(--Grey-Darker, #2A2A2A)",
-                    fontFamily: "Pretendard, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 600,
-                    lineHeight: "normal",
-                    width: "350px",
-                    margin: "12px 20px 0 20px",
-                }}
-            >
+            <div className="title-header" style={{ marginTop: "8px" }}>
                 {todayString}
             </div>
             {/* 오늘 할 일만 표시 */}
