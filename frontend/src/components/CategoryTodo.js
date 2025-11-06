@@ -66,12 +66,13 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
             await updateTaskStatus(task.task_id, {
                 status: newChecked ? "완료" : "미완료",
             });
+            // 상태 업데이트 후 반영
             setTasks((prev) => {
                 const updated = [...prev];
                 updated[taskIdx].checked = newChecked;
                 return updated;
             });
-            if (onDataUpdated) onDataUpdated();
+            onDataUpdated && onDataUpdated(); // onDataUpdated 호출로 상위 컴포넌트에서 상태 반영
         } catch (err) {
             console.error("체크 상태 업데이트 실패:", err);
         }
@@ -83,12 +84,12 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
-                if (onDataUpdated) onDataUpdated();
+                onDataUpdated && onDataUpdated(); // 삭제 후 상태 업데이트
             } catch (err) {
                 console.error("삭제 실패:", err);
             }
         }
-        setTasks((prev) => prev.filter((_, i) => i !== taskIdx));
+        setTasks((prev) => prev.filter((_, i) => i !== taskIdx)); // 삭제 후 상태 반영
     };
 
     // ✅ 팝업 열기/닫기
@@ -101,7 +102,7 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
     if (!tasks.length) return <div className="no-task-text">이 카테고리에 할 일이 없습니다.</div>;
 
     return (
-        <div className="todo-container">
+        <div className="todo-container" style={{ paddingTop: "12px" }}>
             {tasks.map((task, taskIdx) => (
                 <div key={task.task_id || taskIdx} className={`task-item ${task.checked ? "checked" : ""}`}>
                     <div className="task-content">
