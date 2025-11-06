@@ -3,49 +3,33 @@
 .search-page {
     width: 100%;
     padding: 0;
-    box-sizing: border-box;
 }
 
 .search-header {
     display: flex;
     align-items: center;
-    padding: 12px; /* 상단 여백 추가 */
-    padding-top: 35px;
+    padding: 26px 20px 20px 20px;
     border: none;
     position: sticky;
     top: 0;
-    background-color: #fff;
     z-index: 100;
-}
-
-.back-button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .back-icon {
     width: 40px;
     height: 40px;
+    transform: rotate(180deg);
     aspect-ratio: 1/1;
-    transform: rotate(180deg); /* 오른쪽 화살표를 왼쪽으로 회전 */
-    margin-left: 15px;
 }
 
 .search-input-wrapper {
-    flex: 1;
     display: flex;
+    padding: 4px 12px;
+    justify-content: space-between;
     align-items: center;
-    margin-left: 8px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 4px 8px;
+    flex: 1 0 0;
+    border-radius: 16px;
+    background: #FFF;
 }
 
 .search-input {
@@ -53,20 +37,28 @@
     border: none;
     background: none;
     outline: none;
-    padding: 4px 8px;
-    font-size: 16px;
+    color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
 }
 
 .search-icon {
-    width: 20px; /* 크기 줄임 */
-    height: 20px; /* 크기 줄임 */
-    aspect-ratio: 1/1;
-    margin-right: 15px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin: 10px;
 }
 
 .search-results {
     display: flex;
-    justify-content: center;
+    width: 390px;
+    padding: 0px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
 }
 
 .task-item.checked {
@@ -79,5 +71,29 @@
 
 .task-text-btn.checked {
     color: #888;
-    text-decoration: line-through; /* 원하면 취소선도 추가 */
+}
+
+.task-category-content {
+    display: flex;
+    position: fixed;
+    right: 32px;
+    align-items: center;
+    border: none;
+    background: transparent;
+}
+
+.task-category-icon {
+    width: 20px;
+    height: 20px;
+    aspect-ratio: 1/1;
+    padding: 3px 5px 4px 5px;
+}
+
+.task-category-span {
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
 }
