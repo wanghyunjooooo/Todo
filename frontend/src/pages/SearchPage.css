@@ -68,3 +68,16 @@
     display: flex;
     justify-content: center;
 }
+
+.task-item.checked {
+    background-color: #e0f7e9;
+}
+
+.task-check-btn.checked {
+    border: none;
+}
+
+.task-text-btn.checked {
+    color: #888;
+    text-decoration: line-through; /* 원하면 취소선도 추가 */
+}
