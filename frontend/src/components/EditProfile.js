@@ -167,69 +167,21 @@ function EditProfile() {
                     회원 정보 수정
                 </h2>
 
-                <input
-                    style={inputStyle}
-                    type="text"
-                    placeholder="이름"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                />
-                <input
-                    style={inputStyle}
-                    type="email"
-                    placeholder="이메일"
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                />
+                <input style={inputStyle} type="text" placeholder="이름" value={userName} onChange={(e) => setUserName(e.target.value)} />
+                <input style={inputStyle} type="email" placeholder="이메일" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} />
 
                 {/* 비밀번호 입력 */}
                 <div className="password-container">
-                    <input
-                        style={inputStyle}
-                        type={showPassword ? "text" : "password"}
-                        placeholder="비밀번호 (변경 시 입력)"
-                        value={userPassword}
-                        onChange={(e) => setUserPassword(e.target.value)}
-                        className="auth-input password-input"
-                        required
-                    />
-                    <button
-                        type="button"
-                        className="eye-btn"
-                        style={{ paddingTop: "21px" }}
-                        onClick={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ? (
-                            <EyeOff size={18} />
-                        ) : (
-                            <Eye size={18} />
-                        )}
+                    <input style={inputStyle} type={showPassword ? "text" : "password"} placeholder="비밀번호 (변경 시 입력)" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} className="auth-input password-input" required />
+                    <button type="button" className="eye-btn" style={{ paddingTop: "21px" }} onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
 
                 <div className="password-container">
-                    <input
-                        style={inputStyle}
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="비밀번호 확인"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="auth-input password-input"
-                        required
-                    />
-                    <button
-                        type="button"
-                        className="eye-btn"
-                        style={{ paddingTop: "21px" }}
-                        onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                        }
-                    >
-                        {showConfirmPassword ? (
-                            <EyeOff size={18} />
-                        ) : (
-                            <Eye size={18} />
-                        )}
+                    <input style={inputStyle} type={showConfirmPassword ? "text" : "password"} placeholder="비밀번호 확인" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="auth-input password-input" required />
+                    <button type="button" className="eye-btn" style={{ paddingTop: "21px" }} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
 
@@ -242,7 +194,7 @@ function EditProfile() {
                     display: "flex",
                     justifyContent: "center",
                     gap: "16px",
-                    paddingBottom: "120px",
+                    paddingBottom: "20px",
                 }}
             >
                 <button

@@ -168,9 +168,7 @@ function CategoryTasks() {
                 <CategoryTodo categoryId={categoryId} tasks={tasks} updateTaskInState={updateTaskInState} onDataUpdated={handleDataUpdated} />
             </div>
 
-            <div style={{ position: "fixed", bottom: 40, left: 20 }}>
-                <BottomTaskInput onAddTask={handleAddTask} hideCategorySelector={true} />
-            </div>
+            <BottomTaskInput onAddTask={handleAddTask} hideCategorySelector={true} />
 
             {/* 카테고리 관리 팝업 */}
             {isCategoryPopupOpen && (
