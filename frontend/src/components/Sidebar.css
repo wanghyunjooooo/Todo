@@ -60,11 +60,20 @@
     aspect-ratio: 1/1;
 }
 
+.category-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+}
+
 /* 카테고리 목록 */
 .category-list {
     display: flex;
     flex-direction: column;
     gap: 0;
+    max-height: 479px;
+    overflow: auto;
 }
 
 /* 일반 카테고리 */
@@ -73,7 +82,7 @@
     padding: 12px 0;
     align-items: center;
     gap: 8px;
-    flex: 1 0 0;
+    width: 172px;
     align-self: stretch;
     color: var(--Grey-Darker, #2A2A2A);
     font-family: Pretendard;
@@ -87,10 +96,13 @@
 /* 새 카테고리 추가하기 버튼 */
 .category-add {
     display: flex;
-    padding: 12px 0;
+    padding: 14px 0;
     align-items: center;
     gap: 8px;
     align-self: stretch;
+
+    width: 170px;
+
     border: none;
     background: transparent;
     border-bottom: 1px solid var(--grey-light-active, #D5D5D5);
@@ -103,25 +115,24 @@
     line-height: normal;
 }
 
-/* 로그아웃 버튼 */
 .sidebar-logout {
-    margin-top: auto;
-    /* 항상 맨 아래 */
-    width: 100%;
-    padding: 10px 0;
+    position: fixed;
+    bottom: 80px;
     display: flex;
+    padding: 12px 0;
     align-items: center;
-    justify-content: flex-start;
-    background: transparent;
-    color: var(--Grey-Darker, #fd5344);
+    gap: 8px;
+    width: 170px;
+    align-self: stretch;
+    border: none;
+    border-top: 1px solid var(--grey-light-active, #D5D5D5);
+    color: var(--Red, #FD5344);
     font-family: Pretendard;
     font-size: 14px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    border-top: 1px solid #d9d9d9;
-    box-sizing: border-box;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    background: transparent;
 }
 
 /* 오버레이 */

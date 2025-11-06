@@ -86,24 +86,25 @@ function Sidebar({ isOpen, onClose }) {
                         TODAY
                     </button>
 
-                    {/* 카테고리 제목 */}
-                    <button className="sidebar-menu-item" style={{ border: "0px" }}>
-                        카테고리
-                    </button>
+                    <div className="category-list-container">
+                        <button className="sidebar-menu-item" style={{ border: "0px" }}>
+                            카테고리
+                        </button>
 
-                    {/* 카테고리 리스트 */}
-                    <div className="category-list">
-                        {/* 항상 표시되는 작업 카테고리 */}
-                        <div className="category-item" onClick={() => handleCategoryClick("none")}>
-                            작업
-                        </div>
-
-                        {/* 서버에서 받아온 카테고리 */}
-                        {categories.map((cat) => (
-                            <div key={cat.id} className="category-item" onClick={() => handleCategoryClick(cat.id)} style={{ cursor: "pointer" }}>
-                                {cat.name}
+                        {/* 카테고리 리스트 */}
+                        <div className="category-list">
+                            {/* 항상 표시되는 작업 카테고리 */}
+                            <div className="category-item" onClick={() => handleCategoryClick("none")}>
+                                작업
                             </div>
-                        ))}
+
+                            {/* 서버에서 받아온 카테고리 */}
+                            {categories.map((cat) => (
+                                <div key={cat.id} className="category-item" onClick={() => handleCategoryClick(cat.id)} style={{ cursor: "pointer" }}>
+                                    {cat.name}
+                                </div>
+                            ))}
+                        </div>
 
                         {/* 새 카테고리 추가 input */}
                         {addingCategory && <input className="sidebar-input" type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} onKeyDown={handleKeyPress} placeholder="이름을 입력해주세요." autoFocus />}
@@ -119,7 +120,6 @@ function Sidebar({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                {/* 로그아웃 */}
                 <button className="sidebar-logout" onClick={() => setShowLogoutModal(true)}>
                     로그아웃
                 </button>
