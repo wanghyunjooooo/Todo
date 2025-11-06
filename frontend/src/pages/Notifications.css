@@ -20,11 +20,9 @@ li::marker {
 .notification-group-header {
     display: flex;
     justify-content: space-between;
-    /* 날짜와 버튼을 양쪽 정렬 */
     align-items: center;
     width: 350px;
     height: 22px;
-    margin-top: 20px;
 }
 
 /* 날짜 */
