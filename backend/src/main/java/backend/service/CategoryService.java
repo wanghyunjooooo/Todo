@@ -48,9 +48,15 @@ public class CategoryService {
     
     public List<CategoryDTO> getCategoryByUserId(Long userId) {
         List<Category> categories = categoryRepository.findByUser_UserId(userId);
-        
+
         return categories.stream().map(category -> {
             List<TaskDTO> taskDTOs = category.getTasks().stream()
+                .sorted((a, b) -> {
+                    int statusCompare = Boolean.compare("완료".equals(a.getStatus()), "완료".equals(b.getStatus()));
+                    if (statusCompare != 0) return statusCompare;
+
+                    return b.getCreatedAt().compareTo(a.getCreatedAt());
+                })
                 .map(task -> new TaskDTO(
                     task.getTaskId(),
                     task.getTaskName(),
@@ -78,7 +84,6 @@ public class CategoryService {
         }).toList();
     }
 
-
     public CategoryDTO getCategoryById(Long userId, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 카테고리를 찾을 수 없습니다."));
@@ -88,29 +93,35 @@ public class CategoryService {
         }
 
         List<TaskDTO> taskDTOs = category.getTasks().stream()
+                .sorted((a, b) -> {
+                    int statusCompare = Boolean.compare("완료".equals(a.getStatus()), "완료".equals(b.getStatus()));
+                    if (statusCompare != 0) return statusCompare;
+                    
+                    return b.getCreatedAt().compareTo(a.getCreatedAt());
+                })
                 .map(task -> new TaskDTO(
-                    task.getTaskId(),
-                    task.getTaskName(),
-                    task.getStatus(),
-                    task.getMemo(),
-                    task.getTaskDate(),
-                    task.getRoutineType(),
-                    task.getNotificationType(),
-                    task.getNotificationTime(),
-                    userId,
-                    category.getCategoryId(),
-                    category.getCategoryName(),
-                    task.getRoutine() != null ? task.getRoutine().getRoutineId() : null,
-                    task.getCreatedAt()
+                        task.getTaskId(),
+                        task.getTaskName(),
+                        task.getStatus(),
+                        task.getMemo(),
+                        task.getTaskDate(),
+                        task.getRoutineType(),
+                        task.getNotificationType(),
+                        task.getNotificationTime(),
+                        userId,
+                        category.getCategoryId(),
+                        category.getCategoryName(),
+                        task.getRoutine() != null ? task.getRoutine().getRoutineId() : null,
+                        task.getCreatedAt()
                 ))
                 .collect(Collectors.toList());
 
         return new CategoryDTO(
-            category.getCategoryId(),
-            category.getCategoryName(),
-            userId,
-            category.getCreatedAt(),
-            taskDTOs
+                category.getCategoryId(),
+                category.getCategoryName(),
+                userId,
+                category.getCreatedAt(),
+                taskDTOs
         );
     }
 
