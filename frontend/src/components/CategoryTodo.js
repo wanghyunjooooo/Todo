@@ -67,7 +67,7 @@ function CategoryTodo({ tasks, updateTaskInState, onDataUpdated }) {
     if (!tasks || tasks.length === 0) return <div className="no-task-text">이 카테고리에 할 일이 없습니다.</div>;
 
     return (
-        <div className="todo-container" style={{ paddingTop: "8px" }}>
+        <div className="todo-container">
             {tasks.map((task, taskIdx) => (
                 <div key={task.task_id || taskIdx} className={`task-item ${task.checked ? "checked" : ""}`}>
                     <div className="task-content">

@@ -75,8 +75,8 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
         setLoading(true);
         setError("");
         try {
-            setShowDeleteConfirm(false);
             if (onDelete) onDelete();
+            setShowDeleteConfirm(false);
         } catch (err) {
             console.error(err);
             setError("삭제 실패");
@@ -314,13 +314,13 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                             </div>
 
                             {/* 반복 주기 */}
-                            <div className={`category-item gray ${!repeatEnabled ? "disabled-item" : ""}`} onClick={() => repeatEnabled && setRepeatOptionsVisible(true)}>
+                            <div className={`category-item-gray ${!repeatEnabled ? "disabled-item" : ""}`} onClick={() => repeatEnabled && setRepeatOptionsVisible(true)}>
                                 반복 주기 {selectedRepeatOption && `: ${selectedRepeatOption}`}
                                 <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                             </div>
 
                             {/* 기간 설정 */}
-                            <div className={`category-item gray ${!repeatEnabled ? "disabled-item" : ""}`} onClick={() => repeatEnabled && setPeriodVisible(true)}>
+                            <div className={`category-item-gray ${!repeatEnabled ? "disabled-item" : ""}`} onClick={() => repeatEnabled && setPeriodVisible(true)}>
                                 기간 설정 {repeatEnabled && periodStart && periodEnd && (periodStart.getTime() === periodEnd.getTime() ? `` : ` : ${formatDate(periodStart)} - ${formatDate(periodEnd)}`)}
                                 <img src={ArrowIcon} alt="arrow" className="arrow-icon" />
                             </div>
@@ -335,7 +335,7 @@ function TaskOptionsPopup({ taskId, taskData, userId, onClose, onDelete, onEditC
                                     {repeatOptions.map((opt) => (
                                         <div
                                             key={opt}
-                                            className={`category-item gray ${selectedRepeatOption === opt ? "selected" : ""}`}
+                                            className={`category-item-gray ${selectedRepeatOption === opt ? "selected" : ""}`}
                                             onClick={() => {
                                                 setSelectedRepeatOption(opt);
                                                 setRepeatOptionsVisible(false);

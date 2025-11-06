@@ -244,11 +244,21 @@
     line-height: normal;
 }
 
-.category-item.gray {
+.category-item-gray {
+    display: flex;
     height: 56px;
     padding: 8px 20px;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: 16px;
     background: var(--Grey-Light, #F3F3F3);
     color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
 }
 
 .category-item.repeat-btn {
@@ -270,8 +280,8 @@
 
 .arrow-icon {
     margin-left: auto;
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
 }
 
 /* ===========================
