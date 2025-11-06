@@ -5,14 +5,14 @@ import "./CategoryManagePopup.css";
 export default function CategoryManagePopup({ onClose, onEdit, onDelete }) {
     const popupRef = useRef();
 
+    // 팝업 외부 클릭 시 닫기
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (popupRef.current && !popupRef.current.contains(event.target)) {
-                onClose(); // 팝업 외부 클릭 시 닫기
+                onClose();
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
@@ -20,7 +20,14 @@ export default function CategoryManagePopup({ onClose, onEdit, onDelete }) {
 
     return (
         <div className="category-options-popup" ref={popupRef}>
-            <button onClick={onEdit}>카테고리 수정</button>
+            <button
+                onClick={() => {
+                    onEdit(); // 페이지 상단 카테고리 이름 수정 시작
+                    onClose(); // 팝업 닫기
+                }}
+            >
+                카테고리 수정
+            </button>
             <div
                 style={{
                     width: "100%",

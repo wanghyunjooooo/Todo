@@ -1,3 +1,4 @@
+// src/components/Header.js
 import React from "react";
 import { useNavigate } from "react-router-dom"; // React Router v6 기준
 import LogoIcon from "../assets/logo.svg";
@@ -16,14 +17,18 @@ function Header({ onSidebarToggle }) {
         navigate("/search"); // 검색 페이지로 이동
     };
 
+    const handleLogoClick = () => {
+        navigate("/"); // 로고 클릭 시 홈으로 이동
+    };
+
     return (
         <header style={styles.header}>
             {/* 로고 */}
-            <div style={styles.logo}>
+            <div style={styles.logo} onClick={handleLogoClick}>
                 <img
                     src={LogoIcon}
                     alt="Logo"
-                    style={{ width: "40px", height: "40px" }}
+                    style={{ width: "40px", height: "40px", cursor: "pointer" }}
                 />
             </div>
 
@@ -34,14 +39,11 @@ function Header({ onSidebarToggle }) {
                     alt="검색"
                     onClick={handleSearchClick}
                 />
-                {/* 알람 아이콘 클릭 시 Notification 페이지 이동 */}
                 <IconButton
                     src={BellIcon}
                     alt="알림"
                     onClick={handleNotificationClick}
                 />
-
-                {/* 사이드바 버튼 클릭 시 onSidebarToggle 호출 */}
                 <IconButton
                     src={SidebarIcon}
                     alt="사이드바"
@@ -90,7 +92,7 @@ const styles = {
         background: "#FBFBFB",
         boxSizing: "border-box",
     },
-    logo: { display: "flex", alignItems: "center" },
+    logo: { display: "flex", alignItems: "center", cursor: "pointer" },
     iconGroup: {
         display: "flex",
         gap: "16px",
