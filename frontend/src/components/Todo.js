@@ -233,32 +233,32 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                     {task.notification_type === "알림" && task.notification_time && (
                         <div className="task-time-content">
                             <svg className="task-time-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M9.99999 15.5555C12.7614 15.5555 15 13.317 15 10.5555C15 7.79412 12.7614 5.55554 9.99999 5.55554C7.23857 5.55554 5 7.79412 5 10.5555C5 13.317 7.23857 15.5555 9.99999 15.5555Z" stroke="#595959" />
-                                <path d="M10 8.33334V10.5556L11.3889 11.9444M5.27783 5.83335L7.50005 4.44446M14.7223 5.83335L12.5 4.44446" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M10 15.5C12.76 15.5 15 13.26 15 10.5C15 7.74 12.76 5.5 10 5.5C7.24 5.5 5 7.74 5 10.5C5 13.26 7.24 15.5 10 15.5Z" stroke="#595959" />
+                                <path d="M10 8.333V10.555L11.389 11.944" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                             <p className="task-time">{formatTime(task.notification_time)}</p>
                         </div>
                     )}
-
-                    {popupIndex.index === taskIdx && (
-                        <TaskOptionsPopup
-                            taskId={task.task_id}
-                            taskData={task}
-                            userId={localStorage.getItem("user_id")}
-                            onClose={() => setPopupIndex({ category: null, index: null })}
-                            onDelete={() => handleDeleteTask(taskIdx)}
-                            onEditConfirm={(updatedTask) => {
-                                setTasks((prev) => {
-                                    const updated = [...prev];
-                                    updated[taskIdx] = { ...updated[taskIdx], ...updatedTask };
-                                    return updated;
-                                });
-                                if (onDataUpdated) onDataUpdated();
-                            }}
-                        />
-                    )}
                 </div>
             ))}
+
+            {popupIndex.index !== null && (
+                <TaskOptionsPopup
+                    taskId={tasks[popupIndex.index]?.task_id}
+                    taskData={tasks[popupIndex.index]}
+                    userId={localStorage.getItem("user_id")}
+                    onClose={() => setPopupIndex({ category: null, index: null })}
+                    onDelete={() => handleDeleteTask(popupIndex.index)}
+                    onEditConfirm={(updatedTask) => {
+                        setTasks((prev) => {
+                            const updated = [...prev];
+                            updated[popupIndex.index] = { ...updated[popupIndex.index], ...updatedTask };
+                            return updated;
+                        });
+                        if (onDataUpdated) onDataUpdated();
+                    }}
+                />
+            )}
         </div>
     );
 }

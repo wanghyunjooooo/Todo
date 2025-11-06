@@ -5,7 +5,7 @@ import "./CategoryTasks.css";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
 import BottomTaskInput from "../components/BottomTaskInput";
-import Todo from "../components/Todo";
+import CategoryTodo from "../components/CategoryTodo";
 
 function CategoryTasks() {
     const { categoryId } = useParams(); // 카테고리 ID
@@ -15,12 +15,13 @@ function CategoryTasks() {
     const [loading, setLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+    // 카테고리 할 일 불러오기
     useEffect(() => {
         const fetchCategoryTasks = async () => {
             try {
                 const res = await api.get(`/categories/${userId}/${categoryId}`);
                 setCategoryName(res.data.category_name);
-                setTasks(res.data.tasks || []); // 받아온 할 일을 상태에 설정
+                setTasks(res.data.tasks || []);
             } catch (err) {
                 console.error("카테고리 정보 불러오기 실패:", err);
                 alert("카테고리 정보를 불러오지 못했습니다.");
@@ -52,6 +53,7 @@ function CategoryTasks() {
                 notification_type: "미알림",
                 notification_time: null,
             });
+            // 새로고침
             const updatedTasks = await api.get(`/categories/${userId}/${categoryId}`);
             setTasks(updatedTasks.data.tasks || []);
             console.log("새 할 일 추가 완료");
@@ -60,13 +62,16 @@ function CategoryTasks() {
         }
     };
 
+    const updateTaskInState = (updatedTask) => {
+        setTasks((prev) => prev.map((task) => (task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task)));
+    };
+
     if (loading) return <div>로딩중...</div>;
 
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            {/* Header */}
             <Header onSidebarToggle={toggleSidebar} />
-            {/* Sidebar */}
+
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
             <div className="title-header">
@@ -87,8 +92,9 @@ function CategoryTasks() {
                     overflowY: "auto",
                 }}
             >
-                <Todo tasksByDate={tasks} selectedDate={new Date()} onDataUpdated={() => console.log("업데이트됨")} categories={[]} />
+                <CategoryTodo categoryId={categoryId} tasks={tasks} updateTaskInState={updateTaskInState} onDataUpdated={() => console.log("업데이트됨")} />
             </div>
+
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
                 <BottomTaskInput onAddTask={handleAddTask} categories={[]} />
             </div>

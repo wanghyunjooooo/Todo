@@ -24,28 +24,15 @@ function Home() {
     const day = selectedDate.getDate();
 
     /** 오늘 날짜 문자열 포맷 */
-    const weekDays = [
-        "일요일",
-        "월요일",
-        "화요일",
-        "수요일",
-        "목요일",
-        "금요일",
-        "토요일",
-    ];
-    const todayString = `${month + 1}월 ${day}일 ${
-        weekDays[selectedDate.getDay()]
-    }`;
+    const weekDays = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    const todayString = `${month + 1}월 ${day}일 ${weekDays[selectedDate.getDay()]}`;
 
     /** 오늘 할 일 로드 */
     useEffect(() => {
         if (!userId) return;
 
         const fetchTodayTasks = async () => {
-            const dateStr = `${year}-${String(month + 1).padStart(
-                2,
-                "0"
-            )}-${String(day).padStart(2, "0")}`;
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             try {
                 const tasks = await getTasksByDay(userId, dateStr);
                 setTasksByDate(tasks || []);
@@ -58,13 +45,7 @@ function Home() {
 
     /** Task 상태 갱신용 */
     const updateTaskInState = (updatedTask) => {
-        setTasksByDate((prev) =>
-            prev.map((task) =>
-                task.taskId === updatedTask.taskId
-                    ? { ...task, ...updatedTask }
-                    : task
-            )
-        );
+        setTasksByDate((prev) => prev.map((task) => (task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task)));
     };
 
     /** 사이드바 토글 */
@@ -76,9 +57,7 @@ function Home() {
         if (!user_id) return alert("로그인이 필요합니다.");
         if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
 
-        const localDate = new Date(
-            selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000
-        );
+        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -101,9 +80,7 @@ function Home() {
     };
 
     return (
-        <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-        >
+        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             {/* Header */}
             <Header onSidebarToggle={toggleSidebar} />
             {/* Sidebar */}
@@ -122,10 +99,7 @@ function Home() {
                     updateTaskInState={updateTaskInState}
                     onDataUpdated={async () => {
                         if (!userId) return;
-                        const dateStr = `${year}-${String(month + 1).padStart(
-                            2,
-                            "0"
-                        )}-${String(day).padStart(2, "0")}`;
+                        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                         try {
                             const tasks = await getTasksByDay(userId, dateStr);
                             setTasksByDate(tasks || []);
@@ -138,22 +112,11 @@ function Home() {
 
             {/* 하단 입력창 */}
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
-                <BottomTaskInput
-                    onAddTask={handleAddTask}
-                    categories={categories}
-                />
+                <BottomTaskInput onAddTask={handleAddTask} categories={categories} />
             </div>
 
             {/* 카테고리 관리 팝업 */}
-            {isCategoryPopupOpen && (
-                <CategoryManagePopup
-                    categories={categories}
-                    onClose={() => setIsCategoryPopupOpen(false)}
-                    onUpdateCategories={(newCategories) =>
-                        setCategories(newCategories)
-                    }
-                />
-            )}
+            {isCategoryPopupOpen && <CategoryManagePopup categories={categories} onClose={() => setIsCategoryPopupOpen(false)} onUpdateCategories={(newCategories) => setCategories(newCategories)} />}
         </div>
     );
 }
