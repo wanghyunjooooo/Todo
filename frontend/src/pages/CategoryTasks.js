@@ -138,7 +138,10 @@ function CategoryTasks() {
             </div>
 
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
-                <BottomTaskInput onAddTask={handleAddTask} categories={[]} />
+                <BottomTaskInput
+                    onAddTask={handleAddTask}
+                    hideCategorySelector={true}
+                />
             </div>
         </div>
     );

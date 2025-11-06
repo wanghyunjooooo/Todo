@@ -4,7 +4,11 @@ import TaskIcon from "../assets/task.svg";
 import "./bottomTaskInput.css";
 import CategoryPopup from "./CategoryPopup";
 
-export default function BottomTaskInput({ categories = [], onAddTask }) {
+export default function BottomTaskInput({
+    categories = [],
+    onAddTask,
+    hideCategorySelector = false, // 🔹 추가: 다른 페이지에서는 true
+}) {
     const [bottomInput, setBottomInput] = useState("");
     const [popupOpen, setPopupOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null); // ✅ 선택한 카테고리 저장
@@ -18,7 +22,7 @@ export default function BottomTaskInput({ categories = [], onAddTask }) {
             await onAddTask(
                 selectedCategory?.category_id ?? null,
                 bottomInput.trim()
-            ); // ✅ 선택한 카테고리 ID 전달
+            );
             setBottomInput("");
         }
     };
@@ -39,29 +43,33 @@ export default function BottomTaskInput({ categories = [], onAddTask }) {
                     />
                 </div>
 
-                <button
-                    className="bottom-menu-btn"
-                    onClick={() => setPopupOpen((prev) => !prev)}
-                >
-                    <img
-                        className="bottom-category-btn"
-                        src={TaskIcon}
-                        alt="task"
-                    />
-                    <span className="bottom-category-span">
-                        {selectedCategory
-                            ? selectedCategory.category_name // ✅ 선택된 카테고리 이름 표시
-                            : "작업"}
-                    </span>
-                </button>
+                {/* 🔹 Home 화면에서만 카테고리 선택 버튼 표시 */}
+                {!hideCategorySelector && (
+                    <button
+                        className="bottom-menu-btn"
+                        onClick={() => setPopupOpen((prev) => !prev)}
+                    >
+                        <img
+                            className="bottom-category-btn"
+                            src={TaskIcon}
+                            alt="task"
+                        />
+                        <span className="bottom-category-span">
+                            {selectedCategory
+                                ? selectedCategory.category_name
+                                : "작업"}
+                        </span>
+                    </button>
+                )}
             </div>
 
-            {popupOpen && (
+            {/* 🔹 Home 화면에서만 카테고리 팝업 표시 */}
+            {!hideCategorySelector && popupOpen && (
                 <CategoryPopup
                     categories={categories}
                     onSelect={(cat) => {
                         console.log("선택한 카테고리:", cat.category_name);
-                        setSelectedCategory(cat); // ✅ state에 저장
+                        setSelectedCategory(cat);
                         setPopupOpen(false);
                     }}
                     onClose={() => setPopupOpen(false)}
