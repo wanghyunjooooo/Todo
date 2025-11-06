@@ -59,36 +59,40 @@ export default function CategoryManagePopup({ onClose, onEdit, onDelete }) {
                 </div>
             )}
 
-            {/* 삭제 확인창 */}
+            {/* 삭제 확인창 + overlay */}
             {showDeleteConfirm && (
-                <div className="category-delete-popup">
-                    <div className="rename-title-with-icon">
-                        <img
-                            src={DeleteIcon}
-                            alt="삭제"
-                            className="memo-icon"
-                        />
-                        <span className="delete-title-text">카테고리 삭제</span>
-                    </div>
-                    <p className="delete-text">
-                        카테고리가 영구적으로 삭제됩니다.
-                    </p>
-                    {error && <p className="error-text">{error}</p>}
-                    <div className="button-group">
-                        <button
-                            className="cancel-button"
-                            onClick={() => setShowDeleteConfirm(false)}
-                            disabled={loading}
-                        >
-                            취소
-                        </button>
-                        <button
-                            className="confirm-button delete"
-                            onClick={handleDeleteCategory}
-                            disabled={loading}
-                        >
-                            {loading ? "처리 중..." : "삭제"}
-                        </button>
+                <div className="overlay">
+                    <div className="category-delete-popup">
+                        <div className="rename-title-with-icon">
+                            <img
+                                src={DeleteIcon}
+                                alt="삭제"
+                                className="memo-icon"
+                            />
+                            <span className="delete-title-text">
+                                카테고리 삭제
+                            </span>
+                        </div>
+                        <p className="delete-text">
+                            카테고리가 영구적으로 삭제됩니다.
+                        </p>
+                        {error && <p className="error-text">{error}</p>}
+                        <div className="button-group">
+                            <button
+                                className="cancel-button"
+                                onClick={() => setShowDeleteConfirm(false)}
+                                disabled={loading}
+                            >
+                                취소
+                            </button>
+                            <button
+                                className="confirm-button delete"
+                                onClick={handleDeleteCategory}
+                                disabled={loading}
+                            >
+                                {loading ? "처리 중..." : "삭제"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
