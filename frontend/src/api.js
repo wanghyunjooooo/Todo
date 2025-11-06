@@ -283,5 +283,17 @@ export const searchTasksByKeyword = (user_id, keyword) =>
     api
         .get("/search/word", { params: { userId: user_id, keyword } })
         .then((res) => res.data);
+// ✅ category_id가 null인 Task 조회 (작업 카테고리)
+export const getNullCategoryTasks = (user_id) =>
+    api
+        .get(`/tasks/${user_id}/none`) // 서버가 category_id null Task 반환
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error(
+                "작업 카테고리(Task category_id null) 조회 실패:",
+                err
+            );
+            throw err;
+        });
 
 export default api;

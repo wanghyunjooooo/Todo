@@ -15,32 +15,51 @@ function CategoryTasks() {
     const [loading, setLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // 카테고리 할 일 불러오기
+    // 카테고리/할 일 불러오기
     useEffect(() => {
         const fetchCategoryTasks = async () => {
+            if (!userId || !categoryId) return;
+
             try {
-                const res = await api.get(`/categories/${userId}/${categoryId}`);
-                setCategoryName(res.data.category_name);
-                setTasks(res.data.tasks || []);
+                let fetchedTasks = [];
+                let catName = "";
+
+                if (categoryId === "none") {
+                    // "none" 카테고리 → /tasks/:user_id/none 호출
+                    const res = await api.get(`/tasks/${userId}/none`);
+                    fetchedTasks = res.data;
+                    catName = "미분류";
+                } else {
+                    // 일반 카테고리 → /categories/:user_id/:categoryId 호출
+                    const res = await api.get(
+                        `/categories/${userId}/${categoryId}`
+                    );
+                    fetchedTasks = res.data.tasks || [];
+                    catName = res.data.category_name;
+                }
+
+                setCategoryName(catName);
+                setTasks(fetchedTasks);
             } catch (err) {
-                console.error("카테고리 정보 불러오기 실패:", err);
+                console.error("카테고리 정보/할 일 불러오기 실패:", err);
                 alert("카테고리 정보를 불러오지 못했습니다.");
             } finally {
                 setLoading(false);
             }
         };
 
-        if (categoryId && userId) fetchCategoryTasks();
+        fetchCategoryTasks();
     }, [categoryId, userId]);
 
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
     const handleAddTask = async (_, text) => {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return alert("로그인이 필요합니다.");
+        if (!userId) return alert("로그인이 필요합니다.");
 
         const today = new Date();
-        const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+        const localDate = new Date(
+            today.getTime() - today.getTimezoneOffset() * 60000
+        );
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -48,14 +67,24 @@ function CategoryTasks() {
                 task_name: text,
                 memo: "",
                 task_date: dateStr,
-                category_id: Number(categoryId),
-                user_id: Number(user_id),
+                category_id: categoryId === "none" ? null : Number(categoryId),
+                user_id: Number(userId),
                 notification_type: "미알림",
                 notification_time: null,
             });
-            // 새로고침
-            const updatedTasks = await api.get(`/categories/${userId}/${categoryId}`);
-            setTasks(updatedTasks.data.tasks || []);
+
+            // 추가 후 다시 불러오기
+            let updatedTasks;
+            if (categoryId === "none") {
+                const res = await api.get(`/tasks/${userId}/none`);
+                updatedTasks = res.data;
+            } else {
+                const res = await api.get(
+                    `/categories/${userId}/${categoryId}`
+                );
+                updatedTasks = res.data.tasks || [];
+            }
+            setTasks(updatedTasks);
             console.log("새 할 일 추가 완료");
         } catch (err) {
             console.error("할 일 추가 실패:", err);
@@ -63,20 +92,33 @@ function CategoryTasks() {
     };
 
     const updateTaskInState = (updatedTask) => {
-        setTasks((prev) => prev.map((task) => (task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task)));
+        setTasks((prev) =>
+            prev.map((task) =>
+                task.task_id === updatedTask.task_id
+                    ? { ...task, ...updatedTask }
+                    : task
+            )
+        );
     };
 
     if (loading) return <div>로딩중...</div>;
 
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
             <Header onSidebarToggle={toggleSidebar} />
-
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
             <div className="title-header">
                 {categoryName}
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40"
+                    height="40"
+                    viewBox="0 0 40 40"
+                    fill="none"
+                >
                     <path
                         fillRule="evenodd"
                         clipRule="evenodd"
@@ -86,13 +128,13 @@ function CategoryTasks() {
                 </svg>
             </div>
 
-            <div
-                style={{
-                    flex: 1,
-                    overflowY: "auto",
-                }}
-            >
-                <CategoryTodo categoryId={categoryId} tasks={tasks} updateTaskInState={updateTaskInState} onDataUpdated={() => console.log("업데이트됨")} />
+            <div style={{ flex: 1, overflowY: "auto" }}>
+                <CategoryTodo
+                    categoryId={categoryId}
+                    tasks={tasks}
+                    updateTaskInState={updateTaskInState}
+                    onDataUpdated={() => console.log("업데이트됨")}
+                />
             </div>
 
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
