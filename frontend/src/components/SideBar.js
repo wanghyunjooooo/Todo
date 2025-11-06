@@ -87,7 +87,9 @@ function Sidebar({ isOpen, onClose }) {
                     </button>
 
                     {/* 카테고리 제목 */}
-                    <button className="sidebar-menu-item">카테고리</button>
+                    <button className="sidebar-menu-item" style={{ border: "0px" }}>
+                        카테고리
+                    </button>
 
                     {/* 카테고리 리스트 */}
                     <div className="category-list">
