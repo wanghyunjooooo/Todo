@@ -76,34 +76,6 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
         }
     };
 
-    // ✅ 새 할일 추가 (상단 +버튼)
-    const handleAddTask = async (task_name) => {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return alert("로그인이 필요합니다.");
-        if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
-
-        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-        const dateStr = localDate.toISOString().split("T")[0];
-
-        const tempId = Date.now() + Math.random();
-
-        setTasks((prev) => {
-            const updated = [...prev];
-            updated.unshift({
-                task_name: "",
-                checked: false,
-                isNew: true,
-                _tempId: tempId,
-            });
-            return updated;
-        });
-
-        setTimeout(() => {
-            const el = inputRefs.current[tempId];
-            if (el) el.focus();
-        }, 50);
-    };
-
     // ✅ 삭제
     const handleDeleteTask = async (taskIdx) => {
         const task = tasks[taskIdx];

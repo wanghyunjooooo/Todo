@@ -25,17 +25,15 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
     private final NotificationSchedulerService notificationSchedulerService;
     private final NotificationRepository notificationRepository;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository, NotificationSchedulerService notificationSchedulerService, CategoryService categoryService, NotificationRepository notificationRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository, NotificationSchedulerService notificationSchedulerService, NotificationRepository notificationRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.notificationSchedulerService = notificationSchedulerService;
-        this.categoryService = categoryService;
         this.notificationRepository = notificationRepository;
     }
 
