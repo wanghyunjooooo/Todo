@@ -40,7 +40,6 @@
 }
 
 .bottom-text-input {
-    width: 249px;
     border: none;
     background: transparent;
     outline: none;
@@ -54,6 +53,8 @@
 
 .bottom-menu-btn {
     display: flex;
+    position: fixed;
+    right: 32px;
     align-items: center;
     border: none;
     background: transparent;

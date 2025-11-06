@@ -193,20 +193,25 @@
 
 .hour-btn,
 .minute-btn {
+    border: none;
+    cursor: pointer;
     display: flex;
-    justify-content: center;
-    align-items: center;
     width: 20px;
     height: 20px;
     padding: 10px;
-    border: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     border-radius: 14px;
-    background: var(--grey-white-hover, #fbfbfb);
-    cursor: pointer;
-    color: var(--Grey-Darker, #2a2a2a);
+    background: var(--grey-white-hover, #FBFBFB);
+    color: var(--Grey-Darker, #2A2A2A);
+    text-align: center;
     font-family: Pretendard;
     font-size: 10px;
+    font-style: normal;
     font-weight: 400;
+    line-height: normal;
 }
 
 /* ===========================
