@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import "./todo.css";
 import ThreeIcon from "../assets/three.svg";
 import TaskOptionsPopup from "./TaskOptionsPopup";
 import { deleteTask, updateTaskStatus } from "../api";
-import api from "../api";
 
-function CategoryTodo({ categoryId, onDataUpdated }) {
-    const [tasks, setTasks] = useState([]);
-    const [popupIndex, setPopupIndex] = useState({
+function CategoryTodo({ tasks, setTasks, categoryId, onDataUpdated }) {
+    const [popupIndex, setPopupIndex] = React.useState({
         category: null,
         index: null,
     });
@@ -27,66 +25,23 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
         return `${ampm} ${hour}:${minute}`;
     };
 
-    // ✅ 카테고리별 할 일 조회 (none 포함)
-    useEffect(() => {
-        const fetchCategoryTasks = async () => {
-            try {
-                const userId = localStorage.getItem("user_id");
-                let tasksData = [];
-
-                if (categoryId === "none") {
-                    // 미분류 작업 API
-                    const res = await api.get(`/tasks/${userId}/none`);
-                    tasksData = res.data || [];
-                } else {
-                    // 일반 카테고리
-                    const res = await api.get(
-                        `/categories/${userId}/${categoryId}`
-                    );
-                    tasksData = res.data.tasks || [];
-                }
-
-                console.log("카테고리별 할 일 응답:", tasksData);
-
-                const updatedTasks = tasksData.map((t) => ({
-                    task_name: t.task_name,
-                    checked: t.status === "완료",
-                    task_id: t.task_id,
-                    memo: t.memo || "",
-                    category_id: t.category_id || categoryId,
-                    notification_type: t.notification_type || "미알림",
-                    notification_time: t.notification_time || null,
-                    routine_type: t.routine_type || "",
-                    routine_id: t.routine_id || null,
-                }));
-
-                setTasks(updatedTasks);
-            } catch (err) {
-                console.error("카테고리별 할 일 조회 실패:", err);
-                setTasks([]);
-            }
-        };
-
-        if (categoryId) fetchCategoryTasks();
-    }, [categoryId]);
-
     // ✅ 체크 토글
     const toggleChecked = async (taskIdx) => {
         const task = tasks[taskIdx];
         if (!task.task_id)
             return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
+
         const newChecked = !task.checked;
         try {
             await updateTaskStatus(task.task_id, {
                 status: newChecked ? "완료" : "미완료",
             });
-            // 상태 업데이트 후 반영
-            setTasks((prev) => {
-                const updated = [...prev];
-                updated[taskIdx].checked = newChecked;
-                return updated;
-            });
-            onDataUpdated && onDataUpdated(); // onDataUpdated 호출로 상위 컴포넌트에서 상태 반영
+
+            const updated = tasks.map((t, i) =>
+                i === taskIdx ? { ...t, checked: newChecked } : t
+            );
+            setTasks(updated);
+            onDataUpdated && onDataUpdated();
         } catch (err) {
             console.error("체크 상태 업데이트 실패:", err);
         }
@@ -98,12 +53,13 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
         if (task.task_id) {
             try {
                 await deleteTask(task.task_id);
-                onDataUpdated && onDataUpdated(); // 삭제 후 상태 업데이트
+                const updated = tasks.filter((_, i) => i !== taskIdx);
+                setTasks(updated);
+                onDataUpdated && onDataUpdated();
             } catch (err) {
                 console.error("삭제 실패:", err);
             }
         }
-        setTasks((prev) => prev.filter((_, i) => i !== taskIdx)); // 삭제 후 상태 반영
     };
 
     // ✅ 팝업 열기/닫기
@@ -111,6 +67,7 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
         const task = tasks[taskIdx];
         if (!task.task_id)
             return alert("서버에 저장된 할 일을 먼저 선택해야 합니다.");
+
         setPopupIndex((prev) =>
             prev.index === taskIdx
                 ? { category: null, index: null }
@@ -118,7 +75,7 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
         );
     };
 
-    if (!tasks.length)
+    if (!tasks || tasks.length === 0)
         return (
             <div className="no-task-text">이 카테고리에 할 일이 없습니다.</div>
         );
@@ -247,14 +204,12 @@ function CategoryTodo({ categoryId, onDataUpdated }) {
                     }
                     onDelete={() => handleDeleteTask(popupIndex.index)}
                     onEditConfirm={(updatedTask) => {
-                        setTasks((prev) => {
-                            const updated = [...prev];
-                            updated[popupIndex.index] = {
-                                ...updated[popupIndex.index],
-                                ...updatedTask,
-                            };
-                            return updated;
-                        });
+                        const updated = [...tasks];
+                        updated[popupIndex.index] = {
+                            ...updated[popupIndex.index],
+                            ...updatedTask,
+                        };
+                        setTasks(updated);
                         if (onDataUpdated) onDataUpdated();
                     }}
                 />
