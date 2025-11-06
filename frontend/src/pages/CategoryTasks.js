@@ -43,9 +43,7 @@ function CategoryTasks() {
                 fetchedTasks = res.data;
                 catName = "작업";
             } else {
-                const res = await api.get(
-                    `/categories/${userId}/${categoryId}`
-                );
+                const res = await api.get(`/categories/${userId}/${categoryId}`);
                 fetchedTasks = res.data.tasks || [];
                 catName = res.data.category_name;
             }
@@ -81,9 +79,7 @@ function CategoryTasks() {
         if (!userId) return alert("로그인이 필요합니다.");
 
         const today = new Date();
-        const localDate = new Date(
-            today.getTime() - today.getTimezoneOffset() * 60000
-        );
+        const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -103,13 +99,7 @@ function CategoryTasks() {
     };
 
     const updateTaskInState = (updatedTask) => {
-        setTasks((prev) =>
-            prev.map((task) =>
-                task.task_id === updatedTask.task_id
-                    ? { ...task, ...updatedTask }
-                    : task
-            )
-        );
+        setTasks((prev) => prev.map((task) => (task.task_id === updatedTask.task_id ? { ...task, ...updatedTask } : task)));
     };
 
     const handleDataUpdated = async () => {
@@ -140,23 +130,12 @@ function CategoryTasks() {
     if (loading) return <div>로딩중...</div>;
 
     return (
-        <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-        >
+        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             <Header onSidebarToggle={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
             {/* 카테고리 이름 + 점 세개 아이콘 */}
-            <div
-                className="title-header"
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "0 16px",
-                    marginTop: "8px",
-                }}
-            >
+            <div className="title-header">
                 {isEditingCategoryName ? (
                     <input
                         ref={categoryInputRef}
@@ -190,19 +169,11 @@ function CategoryTasks() {
             </div>
 
             <div style={{ flex: 1, overflowY: "auto" }}>
-                <CategoryTodo
-                    categoryId={categoryId}
-                    tasks={tasks}
-                    updateTaskInState={updateTaskInState}
-                    onDataUpdated={handleDataUpdated}
-                />
+                <CategoryTodo categoryId={categoryId} tasks={tasks} updateTaskInState={updateTaskInState} onDataUpdated={handleDataUpdated} />
             </div>
 
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
-                <BottomTaskInput
-                    onAddTask={handleAddTask}
-                    hideCategorySelector={true}
-                />
+                <BottomTaskInput onAddTask={handleAddTask} hideCategorySelector={true} />
             </div>
 
             {/* 카테고리 관리 팝업 */}
@@ -212,15 +183,9 @@ function CategoryTasks() {
                     onClose={() => setIsCategoryPopupOpen(false)}
                     onEdit={() => setIsEditingCategoryName(true)}
                     onDelete={async () => {
-                        if (
-                            window.confirm(
-                                "정말 이 카테고리를 삭제하시겠습니까?"
-                            )
-                        ) {
+                        if (window.confirm("정말 이 카테고리를 삭제하시겠습니까?")) {
                             try {
-                                await api.delete(
-                                    `/categories/${userId}/${categoryId}`
-                                );
+                                await api.delete(`/categories/${userId}/${categoryId}`);
                                 setIsCategoryPopupOpen(false);
                                 // 삭제 후 홈 화면으로 이동
                                 navigate("/"); // <- 여기서 이동
