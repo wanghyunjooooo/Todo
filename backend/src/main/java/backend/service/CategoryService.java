@@ -1,6 +1,7 @@
 package backend.service;
 
 import backend.dto.CategoryDTO;
+import backend.dto.TaskDTO;
 import backend.entity.Category;
 import backend.entity.User;
 import backend.repository.CategoryRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -44,11 +46,40 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
     
-    public List<Category> getCategoryByUserId(Long userId) {
-        return categoryRepository.findByUser_UserId(userId);
+    public List<CategoryDTO> getCategoryByUserId(Long userId) {
+        List<Category> categories = categoryRepository.findByUser_UserId(userId);
+        
+        return categories.stream().map(category -> {
+            List<TaskDTO> taskDTOs = category.getTasks().stream()
+                .map(task -> new TaskDTO(
+                    task.getTaskId(),
+                    task.getTaskName(),
+                    task.getStatus(),
+                    task.getMemo(),
+                    task.getTaskDate(),
+                    task.getRoutineType(),
+                    task.getNotificationType(),
+                    task.getNotificationTime(),
+                    userId,
+                    category.getCategoryId(),
+                    category.getCategoryName(),
+                    task.getRoutine() != null ? task.getRoutine().getRoutineId() : null,
+                    task.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+            return new CategoryDTO(
+                    category.getCategoryId(),
+                    category.getCategoryName(),
+                    userId,
+                    category.getCreatedAt(),
+                    taskDTOs
+            );
+        }).toList();
     }
 
-    public Category getCategoryById(Long userId, Long categoryId) {
+
+    public CategoryDTO getCategoryById(Long userId, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 카테고리를 찾을 수 없습니다."));
 
@@ -56,7 +87,31 @@ public class CategoryService {
             throw new IllegalArgumentException("해당 사용자의 카테고리가 아닙니다.");
         }
 
-        return category;
+        List<TaskDTO> taskDTOs = category.getTasks().stream()
+                .map(task -> new TaskDTO(
+                    task.getTaskId(),
+                    task.getTaskName(),
+                    task.getStatus(),
+                    task.getMemo(),
+                    task.getTaskDate(),
+                    task.getRoutineType(),
+                    task.getNotificationType(),
+                    task.getNotificationTime(),
+                    userId,
+                    category.getCategoryId(),
+                    category.getCategoryName(),
+                    task.getRoutine() != null ? task.getRoutine().getRoutineId() : null,
+                    task.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        return new CategoryDTO(
+            category.getCategoryId(),
+            category.getCategoryName(),
+            userId,
+            category.getCreatedAt(),
+            taskDTOs
+        );
     }
 
     public Category updateCategory(Long userId, Long categoryId, CategoryDTO dto) {

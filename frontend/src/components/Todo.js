@@ -296,10 +296,10 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                             d="M5.13889 7.35294H14.8611M5 8.55529C5 7.31118 5 6.68882 5.24222 6.21353C5.46125 5.78959 5.80111 5.44971 6.21333 5.24235C6.68889 5 7.31111 5 8.55556 5H11.4444C12.6889 5 13.3111 5 13.7867 5.24235C14.205 5.45529 14.5444 5.79529 14.7578 6.21294C15 6.68941 15 7.31176 15 8.55588V11.4453C15 12.6894 15 13.3118 14.7578 13.7871C14.5388 14.211 14.1989 14.5509 13.7867 14.7582C13.3111 15 12.6889 15 11.4444 15H8.55556C7.31111 15 6.68889 15 6.21333 14.7576C5.80119 14.5504 5.46134 14.2108 5.24222 13.7871C5 13.3106 5 12.6882 5 11.4441V8.55529Z"
                                             stroke="#595959"
                                             strokeLinecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinejoin="round"
                                         />
-                                        <path d="M8 10H12" stroke="#595959" strokeLinecap="round" stroke-linejoin="round" />
-                                        <path d="M8 12H12" stroke="#595959" strokeLinecap="round" stroke-linejoin="round" />
+                                        <path d="M8 10H12" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M8 12H12" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                     <p className="task-memo">{task.memo}</p>
                                 </div>
@@ -309,7 +309,7 @@ function Todo({ tasksByDate, selectedDate, focusedTaskId, onDataUpdated, categor
                                 <div className="task-time-content">
                                     <svg className="task-time-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                                         <path d="M9.99999 15.5555C12.7614 15.5555 15 13.317 15 10.5555C15 7.79412 12.7614 5.55554 9.99999 5.55554C7.23857 5.55554 5 7.79412 5 10.5555C5 13.317 7.23857 15.5555 9.99999 15.5555Z" stroke="#595959" />
-                                        <path d="M10 8.33334V10.5556L11.3889 11.9444M5.27783 5.83335L7.50005 4.44446M14.7223 5.83335L12.5 4.44446" stroke="#595959" strokeLinecap="round" stroke-linejoin="round" />
+                                        <path d="M10 8.33334V10.5556L11.3889 11.9444M5.27783 5.83335L7.50005 4.44446M14.7223 5.83335L12.5 4.44446" stroke="#595959" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                     <p className="task-time">{formatTime(task.notification_time)}</p>
                                 </div>

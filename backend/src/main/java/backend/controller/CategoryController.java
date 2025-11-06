@@ -57,8 +57,8 @@ public class CategoryController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> getCategoryByUserId(@PathVariable Long userId) {
         try {
-            List<Category> categories = categoryService.getCategoryByUserId(userId);
-            return ResponseEntity.ok(categories);
+            List<CategoryDTO> categoryDTOs = categoryService.getCategoryByUserId(userId);
+            return ResponseEntity.ok(categoryDTOs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -67,10 +67,13 @@ public class CategoryController {
     @GetMapping("/{userId}/{categoryId}")
     public ResponseEntity<?> getCategoryByUserAndId(@PathVariable Long userId, @PathVariable Long categoryId) {
         try {
-            Category category = categoryService.getCategoryById(userId, categoryId);
-            return ResponseEntity.ok(category);
+            CategoryDTO categoryDTO = categoryService.getCategoryById(userId, categoryId);
+            return ResponseEntity.ok(categoryDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", "카테고리를 불러오는 중 오류가 발생했습니다."));
         }
     }
 
