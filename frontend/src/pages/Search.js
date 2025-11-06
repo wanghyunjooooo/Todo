@@ -119,7 +119,11 @@ function SearchPage() {
                                 </div>
 
                                 {/* 기존 Todo task 디자인 유지 */}
-                                <div className="task-item">
+                                <div
+                                    className={`task-item ${
+                                        task.status === "완료" ? "checked" : ""
+                                    }`}
+                                >
                                     <div className="task-content">
                                         <div className="task-left">
                                             <button
@@ -152,14 +156,25 @@ function SearchPage() {
                                                 )}
                                             </button>
                                             <span
-                                                className="task-text-input"
+                                                className={`task-text-btn ${
+                                                    task.status === "완료"
+                                                        ? "checked"
+                                                        : ""
+                                                }`}
                                                 style={{
                                                     fontFamily: "Pretendard",
                                                     fontSize: "14px",
                                                     fontWeight: 600,
                                                     fontStyle: "normal",
                                                     lineHeight: "normal",
-                                                    color: "#2A2A2A",
+                                                    color:
+                                                        task.status === "완료"
+                                                            ? "#888"
+                                                            : "#2A2A2A",
+                                                    textDecoration:
+                                                        task.status === "완료"
+                                                            ? "line-through"
+                                                            : "none",
                                                 }}
                                             >
                                                 {task.task_name}
