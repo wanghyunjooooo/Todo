@@ -46,7 +46,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t WHERE t.routine.routineId = :routineId AND t.taskDate = :taskDate")
     List<Task> findByRoutineIdAndExactDate(@Param("routineId") Long routineId, @Param("taskDate") LocalDate taskDate);
 
-    @Query("SELECT t FROM Task t WHERE t.user.userId = :userId AND t.category IS NULL ORDER BY t.createdAt DESC")
+    @Query("SELECT t FROM Task t WHERE t.user.userId = :userId AND t.category IS NULL ORDER BY " + "CASE WHEN t.status = '미완료' THEN 1 ELSE 2 END, " + "t.createdAt DESC")
     List<Task> findTasksWithoutCategory(@Param("userId") Long userId);
 }
 
