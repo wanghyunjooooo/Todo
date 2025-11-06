@@ -1,8 +1,16 @@
+* {
+  outline: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  overflow-wrap: anywhere;
+}
+
 body {
   margin: 0;
+  border: 0;
+  box-sizing: border-box;
+  background-color: #FBFBFB;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #FBFBFB;
 }
 
 code {
