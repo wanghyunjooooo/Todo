@@ -1,4 +1,3 @@
-// src/pages/CategoryTasks.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api, { addTask } from "../api";
@@ -6,21 +5,22 @@ import "./CategoryTasks.css";
 import Header from "../components/Header";
 import Sidebar from "../components/SideBar";
 import BottomTaskInput from "../components/BottomTaskInput";
-import CategoryTodo from "../components/CategoryTodo";
+import Todo from "../components/Todo";
 
 function CategoryTasks() {
-    const { categoryId } = useParams();
+    const { categoryId } = useParams(); // 카테고리 ID
     const userId = localStorage.getItem("user_id");
     const [categoryName, setCategoryName] = useState("");
+    const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [categories] = useState([]);
 
     useEffect(() => {
-        const fetchCategory = async () => {
+        const fetchCategoryTasks = async () => {
             try {
                 const res = await api.get(`/categories/${userId}/${categoryId}`);
                 setCategoryName(res.data.category_name);
+                setTasks(res.data.tasks || []); // 받아온 할 일을 상태에 설정
             } catch (err) {
                 console.error("카테고리 정보 불러오기 실패:", err);
                 alert("카테고리 정보를 불러오지 못했습니다.");
@@ -28,7 +28,8 @@ function CategoryTasks() {
                 setLoading(false);
             }
         };
-        fetchCategory();
+
+        if (categoryId && userId) fetchCategoryTasks();
     }, [categoryId, userId]);
 
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
@@ -51,6 +52,8 @@ function CategoryTasks() {
                 notification_type: "미알림",
                 notification_time: null,
             });
+            const updatedTasks = await api.get(`/categories/${userId}/${categoryId}`);
+            setTasks(updatedTasks.data.tasks || []);
             console.log("새 할 일 추가 완료");
         } catch (err) {
             console.error("할 일 추가 실패:", err);
@@ -84,10 +87,10 @@ function CategoryTasks() {
                     overflowY: "auto",
                 }}
             >
-                <CategoryTodo categoryId={categoryId} onDataUpdated={() => console.log("업데이트됨")} />
+                <Todo tasksByDate={tasks} selectedDate={new Date()} onDataUpdated={() => console.log("업데이트됨")} categories={[]} />
             </div>
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
-                <BottomTaskInput onAddTask={handleAddTask} categories={categories} />
+                <BottomTaskInput onAddTask={handleAddTask} categories={[]} />
             </div>
         </div>
     );

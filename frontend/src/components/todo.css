@@ -7,17 +7,12 @@
 .todo-container {
     display: flex;
     flex-direction: column;
-    width: 390px;
-    padding: 20px;
-    font-family: "Pretendard", sans-serif;
-}
-
-.task-group {
-    display: flex;
-    flex-direction: column;
     align-items: flex-start;
     gap: 8px;
     align-self: stretch;
+    width: 390px;
+    padding: 20px;
+    font-family: "Pretendard", sans-serif;
 }
 
 .task-add-btn {
