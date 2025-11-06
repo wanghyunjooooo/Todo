@@ -28,7 +28,7 @@ function CategoryTasks() {
                     // "none" 카테고리 → /tasks/:user_id/none 호출
                     const res = await api.get(`/tasks/${userId}/none`);
                     fetchedTasks = res.data;
-                    catName = "미분류";
+                    catName = "작업";
                 } else {
                     // 일반 카테고리 → /categories/:user_id/:categoryId 호출
                     const res = await api.get(
