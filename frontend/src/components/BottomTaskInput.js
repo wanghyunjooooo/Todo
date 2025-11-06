@@ -67,9 +67,9 @@ export default function BottomTaskInput({
             {!hideCategorySelector && popupOpen && (
                 <CategoryPopup
                     categories={categories}
+                    selectedCategory={selectedCategory} // ✅ 현재 선택된 카테고리 전달
                     onSelect={(cat) => {
-                        console.log("선택한 카테고리:", cat.category_name);
-                        setSelectedCategory(cat);
+                        setSelectedCategory(cat); // 선택된 카테고리 상태 갱신
                         setPopupOpen(false);
                     }}
                     onClose={() => setPopupOpen(false)}
