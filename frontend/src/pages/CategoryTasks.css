@@ -12,3 +12,19 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.editing {
+    display: flex;
+    width: 350px;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    background: transparent;
+
+    color: var(--Grey-Darker, #2A2A2A);
+    font-family: Pretendard;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}

@@ -142,14 +142,10 @@ function CategoryTasks() {
                         value={categoryName}
                         onChange={(e) => setCategoryName(e.target.value)}
                         onBlur={handleCategoryNameBlur}
-                        className="editing"
-                        style={{
-                            fontSize: "18px",
-                            fontWeight: "500",
-                            border: "1px solid #007bff",
-                            borderRadius: "4px",
-                            padding: "2px 4px",
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") e.target.blur();
                         }}
+                        className="editing"
                     />
                 ) : (
                     <span>{categoryName}</span>
