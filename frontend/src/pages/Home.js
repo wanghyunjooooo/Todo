@@ -4,6 +4,8 @@ import Todo from "../components/Todo";
 import { addTask, getTasksByDay } from "../api";
 import Sidebar from "../components/SideBar";
 import BottomTaskInput from "../components/BottomTaskInput";
+import ThreeIcon from "../assets/three.svg";
+import CategoryManagePopup from "../components/CategoryManagePopup"; // 카테고리 관리용 팝업
 
 function Home() {
     const [tasksByDate, setTasksByDate] = useState([]);
@@ -14,13 +16,14 @@ function Home() {
     const [focusedTaskId, setFocusedTaskId] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false); // 팝업 상태
     const userId = localStorage.getItem("user_id");
 
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
     const day = selectedDate.getDate();
 
-    /** 오늘 날짜 문자열 포맷: "11월 4일 화요일" */
+    /** 오늘 날짜 문자열 포맷 */
     const weekDays = [
         "일요일",
         "월요일",
@@ -50,7 +53,6 @@ function Home() {
                 console.error("오늘 할 일 로드 실패:", err);
             }
         };
-
         fetchTodayTasks();
     }, [userId, year, month, day]);
 
@@ -106,9 +108,13 @@ function Home() {
             <Header onSidebarToggle={toggleSidebar} />
             {/* Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
-            {/* 오늘 날짜 표시 */}
+
+            {/* 오늘 날짜 + 점 세 개 */}
             <div
                 style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     color: "var(--Grey-Darker, #2A2A2A)",
                     fontFamily: "Pretendard, sans-serif",
                     fontSize: "20px",
@@ -119,15 +125,17 @@ function Home() {
                     margin: "12px 20px 0 20px",
                 }}
             >
-                {todayString}
+                <span>{todayString}</span>
+                <img
+                    src={ThreeIcon}
+                    alt="menu"
+                    style={{ cursor: "pointer", width: 35, height: 35 }}
+                    onClick={() => setIsCategoryPopupOpen(true)}
+                />
             </div>
+
             {/* 오늘 할 일만 표시 */}
-            <div
-                style={{
-                    flex: 1,
-                    overflowY: "auto",
-                }}
-            >
+            <div style={{ flex: 1, overflowY: "auto" }}>
                 <Todo
                     tasksByDate={tasksByDate}
                     selectedDate={selectedDate}
@@ -148,6 +156,7 @@ function Home() {
                     }}
                 />
             </div>
+
             {/* 하단 입력창 */}
             <div style={{ position: "fixed", bottom: 40, left: 20 }}>
                 <BottomTaskInput
@@ -155,6 +164,17 @@ function Home() {
                     categories={categories}
                 />
             </div>
+
+            {/* 카테고리 관리 팝업 */}
+            {isCategoryPopupOpen && (
+                <CategoryManagePopup
+                    categories={categories}
+                    onClose={() => setIsCategoryPopupOpen(false)}
+                    onUpdateCategories={(newCategories) =>
+                        setCategories(newCategories)
+                    }
+                />
+            )}
         </div>
     );
 }

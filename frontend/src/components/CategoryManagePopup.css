@@ -1,0 +1,43 @@
+.category-options-popup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 144px;
+    padding: 8px 12px;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    position: absolute; /* 점 세 개 바로 밑에 위치 */
+    top: 120px; /* 조절 가능 */
+    right: 10px; /* 클릭한 위치 기준 오른쪽 맞춤 */
+    z-index: 1000;
+}
+
+.category-options-popup button {
+    background: none;
+    border: none;
+    padding: 6px 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px; /* 116.667% */
+}
+
+.category-options-popup button:hover {
+    background-color: #f0f0f0;
+}
+
+.category-options-popup button:last-child {
+    color: var(--Red, #fd5344);
+    font-family: Pretendard, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px; /* 116.667% */
+}
