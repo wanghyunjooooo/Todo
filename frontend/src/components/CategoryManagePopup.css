@@ -1,45 +1,75 @@
+/* 1. 작은 옵션 메뉴 */
 .category-options-popup {
     position: absolute;
-    display: flex;
     width: 144px;
     padding: 4px 12px;
+    display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
     border-radius: 8px;
-    background: var(--Grey-White, #FFF);
+    background: #fff;
     top: 144px;
     right: 20px;
     z-index: 1000;
 }
 
 .category-options-popup button {
-    display: flex;
     padding: 8px 0;
-    align-items: center;
-    gap: 10px;
-    align-self: stretch;
-    border-bottom: 1px solid var(--grey-light-hover, #EBEBEB);
     border: none;
     background: transparent;
-    color: var(--Grey-Dark, #595959);
-    font-family: Pretendard;
+    text-align: left;
     font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 14px;
-}
-
-.category-options-popup button:hover {
-    background-color: #f0f0f0;
+    color: #595959;
+    cursor: pointer;
 }
 
 .category-options-popup button:last-child {
-    border-top: 1px solid var(--grey-light-hover, #EBEBEB);
-    color: var(--Red, #FD5344);
-    font-family: Pretendard;
+    color: #fd5344;
+}
+
+/* 2. 삭제 확인 하단 팝업 */
+.category-delete-popup {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 350px;
+    background: #fbfbfb;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2000;
+}
+
+.category-delete-popup .rename-title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.category-delete-popup .delete-title-text {
+    font-weight: 500;
+    color: #fd5344;
+}
+
+.category-delete-popup .delete-text {
     font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 14px;
+    color: #2a2a2a;
+}
+
+.category-delete-popup .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.category-delete-popup .cancel-button {
+    flex: 1;
+    height: 40px;
+    border-radius: 16px;
+    border: none;
+    background: #fff;
+    color: #2a2a2a;
+    cursor: pointer;
 }
