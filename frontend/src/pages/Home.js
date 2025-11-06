@@ -108,30 +108,9 @@ function Home() {
             <Header onSidebarToggle={toggleSidebar} />
             {/* Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
-
-            {/* 오늘 날짜 + 점 세 개 */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    color: "var(--Grey-Darker, #2A2A2A)",
-                    fontFamily: "Pretendard, sans-serif",
-                    fontSize: "20px",
-                    fontStyle: "normal",
-                    fontWeight: 600,
-                    lineHeight: "normal",
-                    width: "350px",
-                    margin: "12px 20px 0 20px",
-                }}
-            >
-                <span>{todayString}</span>
-                <img
-                    src={ThreeIcon}
-                    alt="menu"
-                    style={{ cursor: "pointer", width: 35, height: 35 }}
-                    onClick={() => setIsCategoryPopupOpen(true)}
-                />
+            {/* 오늘 날짜 표시 */}
+            <div className="title-header" style={{ marginTop: "8px" }}>
+                {todayString}
             </div>
 
             {/* 오늘 할 일만 표시 */}
