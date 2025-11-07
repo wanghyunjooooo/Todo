@@ -83,7 +83,7 @@
     display: flex;
     width: 165px;
     height: 56px;
-    padding: 19.5px 20px;
+    padding: 20px 54px;
     justify-content: center;
     align-items: center;
     gap: 8px;
@@ -112,13 +112,14 @@
 /* 상단 헤더 */
 .edit-profile-header {
     display: flex;
+    width: 350px;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 22px;
 }
 
-.edit-profile-header h2 {
-    color: var(--Grey-Darker, #2a2a2a);
+/* 상단 헤더 */
+.edit-profile-header-text {
+    color: var(--Grey-Darker, #2A2A2A);
     font-family: Pretendard;
     font-size: 20px;
     font-style: normal;
@@ -132,6 +133,4 @@
     transform: rotate(-90deg);
     aspect-ratio: 1/1;
     transform: rotate(180deg);
-    /* 왼쪽 -> 오른쪽 */
-    margin-bottom: 10px;
 }

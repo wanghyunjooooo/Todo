@@ -68,7 +68,7 @@ function EditProfile() {
                 {/* 상단: 화살표 + 회원정보 수정 같은 줄 */}
                 <div className="edit-profile-header">
                     <img src={ArrowLeftIcon} alt="back" className="back-arrow" onClick={() => window.history.back()} />
-                    <h2>회원 정보 수정</h2>
+                    <span className="edit-profile-header-text">회원 정보 수정</span>
                 </div>
 
                 <input className="edit-profile-input" type="text" placeholder="이름" value={userName} onChange={(e) => setUserName(e.target.value)} />
