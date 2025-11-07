@@ -136,11 +136,11 @@ li::marker {
 
 /* Notifications.css */
 .notifications-actions-row {
-    margin-top: 50px;
+    margin-top: 30px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 20px;
 }
 
 .notification-title {
