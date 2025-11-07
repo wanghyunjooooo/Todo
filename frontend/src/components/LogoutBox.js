@@ -32,18 +32,18 @@ function LogoutBox({ onClose }) {
             {/* 팝업 본체 */}
             <div
                 style={{
-                    position: "fixed",
-                    bottom: "20px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
                     display: "flex",
-                    width: "330px",
+                    width: "350px",
                     padding: "20px",
                     flexDirection: "column",
                     alignItems: "flex-start",
                     gap: "8px",
                     borderRadius: "16px",
-                    background: "#FFF",
+                    background: "var(--grey-white-hover, #FBFBFB)",
+
+                    position: "fixed",
+                    bottom: "41px",
+                    left: "20px",
                     zIndex: 10000,
                 }}
             >
@@ -55,16 +55,17 @@ function LogoutBox({ onClose }) {
                         padding: "13px 8px",
                         alignItems: "center",
                         gap: "8px",
-                        borderRadius: "12px",
-                        background: "#fff",
                     }}
                 >
                     <span
                         style={{
+                            flex: "1 0 0",
+                            color: "var(--Red, #FD5344)",
                             fontFamily: "Pretendard",
                             fontSize: "12px",
-                            fontWeight: 400,
-                            color: "#FD5344",
+                            fontStyle: "normal",
+                            fontWeight: "500",
+                            lineHeight: "normal",
                         }}
                     >
                         로그아웃
@@ -77,17 +78,20 @@ function LogoutBox({ onClose }) {
                         display: "flex",
                         width: "310px",
                         padding: "13px 0",
-                        gap: "8px",
-                        justifyContent: "center",
                         alignItems: "center",
+                        gap: "8px",
                     }}
                 >
                     <span
                         style={{
+                            flex: "1 0 0",
+                            color: "var(--Grey-Darker, #2A2A2A)",
+                            textAlign: "center",
                             fontFamily: "Pretendard",
                             fontSize: "12px",
-                            fontWeight: 400,
-                            color: "#2A2A2A",
+                            fontStyle: "normal",
+                            fontWeight: "400",
+                            lineHeight: "normal",
                         }}
                     >
                         정말로 로그아웃 하시겠습니까?
@@ -98,44 +102,68 @@ function LogoutBox({ onClose }) {
                 <div
                     style={{
                         display: "flex",
-                        justifyContent: "flex-end",
-                        width: "100%",
-                        gap: "10px",
-                        marginTop: "8px",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        alignSelf: "stretch",
                     }}
                 >
-                    <button
-                        onClick={onClose} // 취소 → 팝업 닫기
+                    <div
                         style={{
-                            flex: "1",
-                            padding: "13px 20px",
-                            borderRadius: "16px",
-                            border: "none",
-                            background: "#fff",
-                            fontFamily: "Pretendard",
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            color: "#595959",
+                            display: "flex",
+                            width: "151px",
+                            height: "40px",
+                            padding: "20px",
+                            alignItems: "center",
+                            gap: "8px",
+                            background: "transparent",
                         }}
                     >
-                        취소
-                    </button>
-                    <button
-                        onClick={handleConfirmLogout} // 확인 → 로그아웃
+                        <button
+                            onClick={onClose} // 취소 → 팝업 닫기
+                            style={{
+                                flex: "1 0 0",
+                                color: "var(--Grey-Dark, #595959)",
+                                textAlign: "center",
+                                fontFamily: "Pretendard",
+                                fontSize: "12px",
+                                fontStyle: "normal",
+                                fontWeight: "500",
+                                lineHeight: "normal",
+                                border: "none",
+                                background: "transparent",
+                            }}
+                        >
+                            취소
+                        </button>
+                    </div>
+                    <div
                         style={{
-                            flex: "1",
-                            padding: "13px 20px",
-                            borderRadius: "16px",
-                            border: "none",
-                            background: "#fff",
-                            color: "#595959",
-                            fontFamily: "Pretendard",
-                            fontWeight: 500,
-                            cursor: "pointer",
+                            display: "flex",
+                            width: "151px",
+                            height: "40px",
+                            padding: "20px",
+                            alignItems: "center",
+                            gap: "8px",
                         }}
                     >
-                        확인
-                    </button>
+                        <button
+                            onClick={handleConfirmLogout} // 확인 → 로그아웃
+                            style={{
+                                flex: "1 0 0",
+                                color: "var(--Grey-Dark, #595959)",
+                                textAlign: "center",
+                                fontFamily: "Pretendard",
+                                fontSize: "12px",
+                                fontStyle: "normal",
+                                fontWeight: "500",
+                                lineHeight: "normal",
+                                border: "none",
+                                background: "transparent",
+                            }}
+                        >
+                            확인
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

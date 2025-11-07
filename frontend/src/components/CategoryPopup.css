@@ -1,14 +1,18 @@
 /* src/components/CategoryPopup.css */
 
 .category-popup {
-    background: var(--Green-Light, #ebf6ef);
-    border: none;
     border-radius: 8px;
-    padding: 8px 0;
-    width: 150px;
+    background: var(--Green-Light, #EBF6EF);
+    border: none;
+    display: flex;
+    width: 120px;
+    padding: 4px 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    left: 55%;
-    bottom: 90px;
+    right: 20px;
+    bottom: 91px;
     z-index: 9999;
 }
 
@@ -21,37 +25,50 @@
 
 .category-popup-item {
     display: flex;
+    padding: 4px 0;
     align-items: center;
-    gap: 4px;
-    padding: 8px 10px;
+    gap: 10px;
+    align-self: stretch;
+    width: 90px;
     font-family: "Pretendard", sans-serif;
     font-size: 12px;
     line-height: 14px;
     color: #2a2a2a;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    border-bottom: 1px solid var(--grey-light-hover, #EBEBEB);
 }
 
-.category-popup-item:hover {
-    background-color: #f0f0f0;
+.category-popup-item:last-child {
+    border: none;
 }
 
 .category-popup-item.selected {
-    font-weight: 700;
+    font-weight: 600;
     color: var(--Grey-Dark, #595959);
 }
 
 .category-popup-icon {
+    width: 20px;
+    height: 20px;
+    aspect-ratio: 1/1;
     flex-shrink: 0;
 }
 
 .category-popup-text {
-    flex-grow: 1;
+    color: var(--Grey-Dark, #595959);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 14px;
 }
 
 .category-popup-item.selected .category-popup-icon path {
-    fill: #777777; /* 선택 시 SVG 채움 */
-    stroke: #777777; /* 테두리 색상 */
+    fill: #777777;
+    /* 선택 시 SVG 채움 */
+    stroke: #777777;
+    /* 테두리 색상 */
 }
 
 .category-popup-icon path {
