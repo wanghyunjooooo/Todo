@@ -127,7 +127,7 @@ function CategoryTasks() {
         }
     };
 
-    if (loading) return <div>로딩중...</div>;
+    if (loading) return <div></div>;
 
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>

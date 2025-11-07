@@ -66,7 +66,7 @@ function ProgressBar({ userId }) {
         fetchData();
     }, [userId, period]);
 
-    if (!stats) return <div>로딩중...</div>;
+    if (!stats) return <div></div>;
 
     const completed = stats?.summary?.completed ?? 0;
     const total = stats?.summary?.total_tasks ?? 0;
