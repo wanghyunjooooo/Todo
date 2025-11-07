@@ -14,7 +14,7 @@
 
 /* 팝업 박스 */
 .editor-box {
-    background: #fff;
+    background: #fbfbfb;
     border-radius: 16px;
     padding: 20px;
     width: 100%;
@@ -41,7 +41,7 @@
 
 /* 흰색 배경 아이템 */
 .category-item.white-bg {
-    background: #ffffff;
+    background: #fbfbfb;
 }
 
 /* 클릭 가능한 아이템 */

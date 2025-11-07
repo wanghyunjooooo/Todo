@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: column;
     border-radius: 8px;
-    background: #fff;
+    background: #fbfbfb;
     top: 144px;
     right: 20px;
     z-index: 1000;
@@ -71,7 +71,7 @@
     height: 40px;
     border-radius: 16px;
     border: none;
-    background: #fff;
+    background: #fbfbfb;
     color: #2a2a2a;
     cursor: pointer;
 }
