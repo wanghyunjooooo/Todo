@@ -8,8 +8,8 @@
     width: 150px;
     position: absolute;
     left: 55%;
-    bottom: 120%;
-    z-index: 1000;
+    bottom: 90px;
+    z-index: 9999;
 }
 
 .category-popup-empty {
