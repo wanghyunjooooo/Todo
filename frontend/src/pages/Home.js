@@ -161,7 +161,7 @@ function Home() {
                                         style={{
                                             display: "flex",
                                             alignItems: "center",
-                                            justifyContent: "space-between", // 왼쪽/오른쪽 분리
+                                            justifyContent: "space-between",
                                             width: "100%",
                                             padding: "0 8px",
                                         }}
@@ -209,11 +209,11 @@ function Home() {
                                             />
 
                                             <button
-                                                onClick={() =>
-                                                    setTempSelectedDate(
-                                                        new Date()
-                                                    )
-                                                }
+                                                onClick={() => {
+                                                    const today = new Date();
+                                                    setTempSelectedDate(today);
+                                                    setSelectedDate(today);
+                                                }}
                                                 style={{
                                                     padding: "4px 8px",
                                                     color: "#2a2a2a",
