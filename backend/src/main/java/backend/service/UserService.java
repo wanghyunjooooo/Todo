@@ -28,9 +28,9 @@ public class UserService {
         }
 
         User user = new User();
-        user.setUserEmail(dto.getUserEmail());
-        user.setUserName(dto.getUserName());
-        user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+        user.setEmail(dto.getUserEmail());
+        user.setName(dto.getUserName());
+        user.setPassword(passwordEncoder.encode(dto.getUserPassword()));
 
         User savedUser = userRepository.save(user);
 
@@ -44,18 +44,18 @@ public class UserService {
 
         User user = optionalUser.get();
 
-        if (!passwordEncoder.matches(dto.getUserPassword(), user.getUserPassword())) {
+        if (!passwordEncoder.matches(dto.getUserPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
 
-        String token = jwtoken.createToken(user.getUserId(), user.getUserName());
+        String token = jwtoken.createToken(user.getUserId(), user.getName());
 
         return Map.of(
                 "message", "로그인 성공",
                 "token", token,
                 "user_id", user.getUserId(),
-                "user_name", user.getUserName(),
-                "user_email", user.getUserEmail()
+                "user_name", user.getName(),
+                "user_email", user.getEmail()
         );
     }
 
@@ -67,10 +67,10 @@ public class UserService {
 
     public User updateProfile(Long userId, UserDTO dto) {
         User user = getProfile(userId);
-        if (dto.getUserName() != null) user.setUserName(dto.getUserName());
-        if (dto.getUserEmail() != null) user.setUserEmail(dto.getUserEmail());
+        if (dto.getUserName() != null) user.setName(dto.getUserName());
+        if (dto.getUserEmail() != null) user.setEmail(dto.getUserEmail());
         if (dto.getUserPassword() != null)
-            user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+            user.setPassword(passwordEncoder.encode(dto.getUserPassword()));
         return userRepository.save(user);
     }
 }
