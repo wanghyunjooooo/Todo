@@ -68,25 +68,10 @@ function Sidebar({ isOpen, onClose }) {
             <div className={`sidebar ${isOpen ? "open" : ""}`}>
                 <div className="sidebar-content">
                     {/* 회원 정보 */}
-                    <button
-                        className="sidebar-menu-item"
-                        onClick={() => navigate("/edit-profile")}
-                    >
+                    <button className="sidebar-menu-item" onClick={() => navigate("/edit-profile")}>
                         <span>회원 정보</span>
-                        <svg
-                            className="sidebar-menu-arrow"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                        >
-                            <path
-                                d="M8 14L12 10L8 6"
-                                stroke="#2A2A2A"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
+                        <svg className="sidebar-menu-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M8 14L12 10L8 6" stroke="#2A2A2A" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
 
@@ -102,98 +87,49 @@ function Sidebar({ isOpen, onClose }) {
                     </button>
 
                     <div className="category-list-container">
-                        <button
-                            className="sidebar-menu-item"
-                            style={{ border: "0px" }}
-                        >
+                        <button className="sidebar-menu-item" style={{ border: "0px" }}>
                             카테고리
                         </button>
 
                         {/* 카테고리 리스트 */}
-                        <div className="category-list">
+                        <div className="sidebar-category-list">
                             {/* 항상 표시되는 작업 카테고리 */}
-                            <div
-                                className="sidebar-category-item"
-                                onClick={() => handleCategoryClick("none")}
-                            >
+                            <div className="sidebar-item" onClick={() => handleCategoryClick("none")}>
                                 작업
                             </div>
 
                             {/* 서버에서 받아온 카테고리 */}
                             {categories.map((cat) => (
-                                <div
-                                    key={cat.id}
-                                    className="sidebar-category-item"
-                                    onClick={() => handleCategoryClick(cat.id)}
-                                    style={{ cursor: "pointer" }}
-                                >
+                                <div key={cat.id} className="sidebar-item" onClick={() => handleCategoryClick(cat.id)} style={{ cursor: "pointer" }}>
                                     {cat.name}
                                 </div>
                             ))}
+
+                            {/* 새 카테고리 추가 input */}
+                            {addingCategory && <input className="sidebar-input" type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} onKeyDown={handleKeyPress} placeholder="이름을 입력해주세요." autoFocus />}
                         </div>
 
-                        {/* 새 카테고리 추가 input */}
-                        {addingCategory && (
-                            <input
-                                className="sidebar-input"
-                                type="text"
-                                value={newCategoryName}
-                                onChange={(e) =>
-                                    setNewCategoryName(e.target.value)
-                                }
-                                onKeyDown={handleKeyPress}
-                                placeholder="이름을 입력해주세요."
-                                autoFocus
-                            />
-                        )}
-
                         {/* 새 카테고리 추가 버튼 */}
-                        <button
-                            className="category-add"
-                            onClick={() => setAddingCategory(true)}
-                        >
+                        <button className="category-add" onClick={() => setAddingCategory(true)}>
                             <span>새 카테고리 추가하기</span>
-                            <svg
-                                className="category-plus-icon"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                            >
-                                <path
-                                    d="M5 10H15"
-                                    stroke="#297E4A"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                                <path
-                                    d="M10 5V15"
-                                    stroke="#297E4A"
-                                    strokeLinecap="round"
-                                />
+                            <svg className="category-plus-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10H15" stroke="#297E4A" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M10 5V15" stroke="#297E4A" strokeLinecap="round" />
                             </svg>
                         </button>
                     </div>
                 </div>
 
-                <button
-                    className="sidebar-logout"
-                    onClick={() => setShowLogoutModal(true)}
-                >
+                <button className="sidebar-logout" onClick={() => setShowLogoutModal(true)}>
                     로그아웃
                 </button>
             </div>
 
             {/* overlay */}
-            {isOpen && (
-                <div className="sidebar-overlay" onClick={onClose}></div>
-            )}
+            {isOpen && <div className="sidebar-overlay" onClick={onClose}></div>}
 
             {/* 로그아웃 모달 */}
-            {showLogoutModal && (
-                <LogoutBox onClose={() => setShowLogoutModal(false)} />
-            )}
+            {showLogoutModal && <LogoutBox onClose={() => setShowLogoutModal(false)} />}
         </>
     );
 }

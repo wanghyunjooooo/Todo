@@ -68,18 +68,13 @@
 }
 
 /* 카테고리 목록 */
-.category-list {
+.sidebar-category-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0;
+    width: 172px;
     max-height: 479px;
     overflow: auto;
-    color: var(--Grey-Darker, #2a2a2a);
-    font-family: Pretendard;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
 }
 
 /* 일반 카테고리 */
@@ -88,9 +83,8 @@
     padding: 12px 0;
     align-items: center;
     gap: 8px;
-    width: 172px;
     align-self: stretch;
-    color: var(--Grey-Darker, #2a2a2a);
+    color: var(--Grey-Normal, #2a2a2a);
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
