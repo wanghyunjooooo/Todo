@@ -77,8 +77,10 @@ function SearchPage() {
             let response;
             if (query.trim() === "") {
                 response = await searchTasksByDate(userId, date);
-            } else if (/^\d{4}-\d{2}-\d{2}$/.test(query.trim())) {
-                response = await searchTasksByDate(userId, query.trim());
+            } else if (/^\d{4}[-.]\d{2}[-.]\d{2}$/.test(query.trim())) {
+                // YYYY-MM-DD 또는 YYYY.MM.DD 형식
+                const formattedDate = query.trim().replace(/\./g, "-"); // YYYY.MM.DD → YYYY-MM-DD
+                response = await searchTasksByDate(userId, formattedDate);
             } else {
                 response = await searchTasksByKeyword(userId, query.trim());
             }
