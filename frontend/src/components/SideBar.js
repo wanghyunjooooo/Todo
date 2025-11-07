@@ -51,6 +51,7 @@ function Sidebar({ isOpen, onClose }) {
 
     const handleKeyPress = (e) => {
         if (e.key === "Enter") handleAddCategory();
+        else if (e.key === "Escape") setAddingCategory(false);
     };
 
     // 카테고리 클릭 시 이동
@@ -106,7 +107,21 @@ function Sidebar({ isOpen, onClose }) {
                             ))}
 
                             {/* 새 카테고리 추가 input */}
-                            {addingCategory && <input className="sidebar-input" type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} onKeyDown={handleKeyPress} placeholder="이름을 입력해주세요." autoFocus />}
+                            {addingCategory && (
+                                <input
+                                    className="sidebar-input"
+                                    type="text"
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    onKeyDown={handleKeyPress}
+                                    onBlur={(e) => {
+                                        if (e.target.value !== "") handleAddCategory();
+                                        else setAddingCategory(false);
+                                    }}
+                                    placeholder="이름을 입력해주세요."
+                                    autoFocus
+                                />
+                            )}
                         </div>
 
                         {/* 새 카테고리 추가 버튼 */}
