@@ -51,7 +51,6 @@
     position: relative;
     width: 100%;
     max-width: 350px;
-    margin-top: 12px;
 }
 
 .password-container .eye-btn {
@@ -109,6 +108,7 @@
     background-color: #36a862;
     color: #fff;
 }
+
 /* 상단 헤더 */
 .edit-profile-header {
     display: flex;
@@ -131,6 +131,7 @@
     height: 40px;
     transform: rotate(-90deg);
     aspect-ratio: 1/1;
-    transform: rotate(180deg); /* 왼쪽 -> 오른쪽 */
+    transform: rotate(180deg);
+    /* 왼쪽 -> 오른쪽 */
     margin-bottom: 10px;
 }

@@ -67,72 +67,24 @@ function EditProfile() {
             <div className="edit-profile-form">
                 {/* 상단: 화살표 + 회원정보 수정 같은 줄 */}
                 <div className="edit-profile-header">
-                    <img
-                        src={ArrowLeftIcon}
-                        alt="back"
-                        className="back-arrow"
-                        onClick={() => window.history.back()}
-                    />
+                    <img src={ArrowLeftIcon} alt="back" className="back-arrow" onClick={() => window.history.back()} />
                     <h2>회원 정보 수정</h2>
                 </div>
 
-                <input
-                    className="edit-profile-input"
-                    type="text"
-                    placeholder="이름"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                />
-                <input
-                    className="edit-profile-input"
-                    type="email"
-                    placeholder="이메일"
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                />
+                <input className="edit-profile-input" type="text" placeholder="이름" value={userName} onChange={(e) => setUserName(e.target.value)} />
+                <input className="edit-profile-input" type="email" placeholder="이메일" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} />
 
-                {/* 비밀번호 입력 */}
                 <div className="password-container">
-                    <input
-                        className="edit-profile-input"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="비밀번호 (변경 시 입력)"
-                        value={userPassword}
-                        onChange={(e) => setUserPassword(e.target.value)}
-                    />
-                    <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ? (
-                            <EyeOff size={18} />
-                        ) : (
-                            <Eye size={18} />
-                        )}
+                    <input className="edit-profile-input" type={showPassword ? "text" : "password"} placeholder="비밀번호 (변경 시 입력)" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} />
+                    <button type="button" className="eye-btn" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
 
                 <div className="password-container">
-                    <input
-                        className="edit-profile-input"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="비밀번호 확인"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                        }
-                    >
-                        {showConfirmPassword ? (
-                            <EyeOff size={18} />
-                        ) : (
-                            <Eye size={18} />
-                        )}
+                    <input className="edit-profile-input" type={showConfirmPassword ? "text" : "password"} placeholder="비밀번호 확인" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                    <button type="button" className="eye-btn" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
 
@@ -141,10 +93,7 @@ function EditProfile() {
 
             {/* 버튼 */}
             <div className="edit-profile-btns">
-                <button
-                    className="edit-profile-btn cancel"
-                    onClick={handleCancel}
-                >
+                <button className="edit-profile-btn cancel" onClick={handleCancel}>
                     취소
                 </button>
                 <button className="edit-profile-btn save" onClick={handleSave}>
