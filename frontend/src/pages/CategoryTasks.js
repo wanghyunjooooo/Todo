@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // 한 줄로 합침
+import { useParams, useNavigate } from "react-router-dom";
 import api, { addTask } from "../api";
 import "./CategoryTasks.css";
 import Header from "../components/Header";
@@ -21,7 +21,7 @@ function CategoryTasks() {
     const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false);
     const [isEditingCategoryName, setIsEditingCategoryName] = useState(false);
     const categoryInputRef = useRef(null);
-    const navigate = useNavigate(); // 이걸 추가해야 함
+    const navigate = useNavigate();
 
     /** 상단 카테고리 이름 편집 시 포커스 */
     useEffect(() => {
@@ -40,11 +40,19 @@ function CategoryTasks() {
 
             if (categoryId === "none") {
                 const res = await api.get(`/tasks/${userId}/none`);
-                fetchedTasks = res.data;
+                fetchedTasks = res.data.map((task) => ({
+                    ...task,
+                    checked: task.status === "완료", // DB 상태를 checked로 변환
+                }));
                 catName = "작업";
             } else {
-                const res = await api.get(`/categories/${userId}/${categoryId}`);
-                fetchedTasks = res.data.tasks || [];
+                const res = await api.get(
+                    `/categories/${userId}/${categoryId}`
+                );
+                fetchedTasks = (res.data.tasks || []).map((task) => ({
+                    ...task,
+                    checked: task.status === "완료",
+                }));
                 catName = res.data.category_name;
             }
 
@@ -79,7 +87,9 @@ function CategoryTasks() {
         if (!userId) return alert("로그인이 필요합니다.");
 
         const today = new Date();
-        const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+        const localDate = new Date(
+            today.getTime() - today.getTimezoneOffset() * 60000
+        );
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -99,7 +109,19 @@ function CategoryTasks() {
     };
 
     const updateTaskInState = (updatedTask) => {
-        setTasks((prev) => prev.map((task) => (task.task_id === updatedTask.task_id ? { ...task, ...updatedTask } : task)));
+        setTasks((prev) =>
+            prev.map((task) =>
+                task.task_id === updatedTask.task_id
+                    ? {
+                          ...task,
+                          ...updatedTask,
+                          checked:
+                              updatedTask.status === "완료" ||
+                              updatedTask.checked,
+                      }
+                    : task
+            )
+        );
     };
 
     const handleDataUpdated = async () => {
@@ -115,12 +137,10 @@ function CategoryTasks() {
                 category_name: categoryName,
             });
 
-            // 서버에서 반환한 최종 카테고리 이름으로 상태 업데이트
             if (res.data && res.data.category) {
                 setCategoryName(res.data.category.category_name);
             }
 
-            // 카테고리 목록 갱신
             await fetchCategories();
         } catch (err) {
             console.error("카테고리 이름 업데이트 실패:", err);
@@ -130,11 +150,12 @@ function CategoryTasks() {
     if (loading) return <div></div>;
 
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
             <Header onSidebarToggle={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
-            {/* 카테고리 이름 + 점 세개 아이콘 */}
             <div className="title-header">
                 {isEditingCategoryName ? (
                     <input
@@ -165,24 +186,36 @@ function CategoryTasks() {
             </div>
 
             <div style={{ flex: 1, overflowY: "auto" }}>
-                <CategoryTodo categoryId={categoryId} tasks={tasks} updateTaskInState={updateTaskInState} onDataUpdated={handleDataUpdated} />
+                <CategoryTodo
+                    categoryId={categoryId}
+                    tasks={tasks}
+                    updateTaskInState={updateTaskInState}
+                    onDataUpdated={handleDataUpdated}
+                />
             </div>
 
-            <BottomTaskInput onAddTask={handleAddTask} hideCategorySelector={true} />
+            <BottomTaskInput
+                onAddTask={handleAddTask}
+                hideCategorySelector={true}
+            />
 
-            {/* 카테고리 관리 팝업 */}
             {isCategoryPopupOpen && (
                 <CategoryManagePopup
                     categories={categories}
                     onClose={() => setIsCategoryPopupOpen(false)}
                     onEdit={() => setIsEditingCategoryName(true)}
                     onDelete={async () => {
-                        if (window.confirm("정말 이 카테고리를 삭제하시겠습니까?")) {
+                        if (
+                            window.confirm(
+                                "정말 이 카테고리를 삭제하시겠습니까?"
+                            )
+                        ) {
                             try {
-                                await api.delete(`/categories/${userId}/${categoryId}`);
+                                await api.delete(
+                                    `/categories/${userId}/${categoryId}`
+                                );
                                 setIsCategoryPopupOpen(false);
-                                // 삭제 후 홈 화면으로 이동
-                                navigate("/"); // <- 여기서 이동
+                                navigate("/");
                             } catch (err) {
                                 console.error("카테고리 삭제 실패", err);
                             }
