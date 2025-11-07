@@ -71,9 +71,15 @@
 .category-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
     max-height: 479px;
     overflow: auto;
+    color: var(--Grey-Darker, #2a2a2a);
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 /* 일반 카테고리 */
