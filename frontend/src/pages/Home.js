@@ -4,35 +4,49 @@ import Todo from "../components/Todo";
 import { addTask, getTasksByDay } from "../api";
 import Sidebar from "../components/SideBar";
 import BottomTaskInput from "../components/BottomTaskInput";
-import ThreeIcon from "../assets/three.svg";
-import CategoryManagePopup from "../components/CategoryManagePopup"; // 카테고리 관리용 팝업
+import CategoryManagePopup from "../components/CategoryManagePopup";
+import DatePicker from "react-datepicker";
+import { ko } from "date-fns/locale";
+import ArrowIcon from "../assets/icon-arrow-right.svg";
+import RepeatIcon from "../assets/calendar.svg";
+import "react-datepicker/dist/react-datepicker.css";
+import "./Home.css";
 
 function Home() {
     const [tasksByDate, setTasksByDate] = useState([]);
-    const [selectedDate] = useState(() => {
+    const [selectedDate, setSelectedDate] = useState(() => {
         const saved = localStorage.getItem("selectedDate");
         return saved ? new Date(saved) : new Date();
     });
     const [focusedTaskId, setFocusedTaskId] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [categories, setCategories] = useState([]);
-    const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false); // 팝업 상태
+    const [isCategoryPopupOpen, setIsCategoryPopupOpen] = useState(false);
+
+    // 단일 날짜 선택용 팝업 상태
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
+
     const userId = localStorage.getItem("user_id");
 
-    const year = selectedDate.getFullYear();
-    const month = selectedDate.getMonth();
-    const day = selectedDate.getDate();
-
-    /** 오늘 날짜 문자열 포맷 */
-    const weekDays = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
-    const todayString = `${month + 1}월 ${day}일 ${weekDays[selectedDate.getDay()]}`;
+    const weekDays = [
+        "일요일",
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일",
+    ];
+    const todayString = `${
+        selectedDate.getMonth() + 1
+    }월 ${selectedDate.getDate()}일 ${weekDays[selectedDate.getDay()]}`;
 
     /** 오늘 할 일 로드 */
     useEffect(() => {
         if (!userId) return;
-
         const fetchTodayTasks = async () => {
-            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            const dateStr = selectedDate.toISOString().split("T")[0];
             try {
                 const tasks = await getTasksByDay(userId, dateStr);
                 setTasksByDate(tasks || []);
@@ -41,23 +55,27 @@ function Home() {
             }
         };
         fetchTodayTasks();
-    }, [userId, year, month, day]);
+    }, [userId, selectedDate]);
 
-    /** Task 상태 갱신용 */
     const updateTaskInState = (updatedTask) => {
-        setTasksByDate((prev) => prev.map((task) => (task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task)));
+        setTasksByDate((prev) =>
+            prev.map((task) =>
+                task.taskId === updatedTask.taskId
+                    ? { ...task, ...updatedTask }
+                    : task
+            )
+        );
     };
 
-    /** 사이드바 토글 */
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-    /** 할 일 추가 */
     const handleAddTask = async (category_id, text) => {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return alert("로그인이 필요합니다.");
+        if (!userId) return alert("로그인이 필요합니다.");
         if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
 
-        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+        const localDate = new Date(
+            selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000
+        );
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -65,32 +83,150 @@ function Home() {
                 task_name: text,
                 memo: "",
                 task_date: dateStr,
-                category_id: category_id ?? null, // 선택된 카테고리 id 전달
-                user_id: Number(user_id),
+                category_id: category_id ?? null,
+                user_id: Number(userId),
                 notification_type: "미알림",
                 notification_time: null,
             });
 
-            // 새로고침
-            const tasks = await getTasksByDay(user_id, dateStr);
+            const tasks = await getTasksByDay(userId, dateStr);
             setTasksByDate(tasks || []);
         } catch (err) {
             console.error("하단 입력창 추가 실패:", err);
         }
     };
 
+    /** 단일 날짜 선택 후 확인 */
+    const handleDateConfirm = () => {
+        setSelectedDate(tempSelectedDate);
+        setIsDatePickerOpen(false);
+        localStorage.setItem("selectedDate", tempSelectedDate.toISOString());
+    };
+
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            {/* Header */}
+        <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
             <Header onSidebarToggle={toggleSidebar} />
-            {/* Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
-            {/* 오늘 날짜 표시 */}
-            <div className="title-header" style={{ marginTop: "8px" }}>
+
+            {/* 오늘 날짜 표시 + 클릭 시 달력 팝업 */}
+            <div
+                className="title-header"
+                style={{ marginTop: "8px", cursor: "pointer" }}
+                onClick={() => {
+                    setTempSelectedDate(selectedDate);
+                    setIsDatePickerOpen(true);
+                }}
+            >
                 {todayString}
             </div>
 
-            {/* 오늘 할 일만 표시 */}
+            {/* 단일 날짜 선택 팝업 */}
+            {isDatePickerOpen && (
+                <div
+                    className="calendar-overlay"
+                    onClick={() => setIsDatePickerOpen(false)}
+                >
+                    <div
+                        className="editor-box"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="title-box">
+                            <img
+                                src={RepeatIcon}
+                                alt="달력"
+                                className="memo-icon"
+                            />
+                            <span className="option-title">날짜</span>
+                        </div>
+
+                        <div className="calendar-box">
+                            <DatePicker
+                                inline
+                                locale={ko}
+                                selected={tempSelectedDate}
+                                onChange={(date) =>
+                                    date && setTempSelectedDate(date)
+                                }
+                                renderCustomHeader={({
+                                    date,
+                                    decreaseMonth,
+                                    increaseMonth,
+                                    prevMonthButtonDisabled,
+                                    nextMonthButtonDisabled,
+                                }) => (
+                                    <div className="datepicker-header">
+                                        <span className="header-month-year">
+                                            {date.getFullYear()}년{" "}
+                                            {date.getMonth() + 1}월
+                                        </span>
+                                        <div className="arrow-btn">
+                                            <img
+                                                src={ArrowIcon}
+                                                alt="prev"
+                                                style={{
+                                                    width: "20px",
+                                                    height: "20px",
+                                                    transform: "rotate(180deg)",
+                                                    cursor: prevMonthButtonDisabled
+                                                        ? "default"
+                                                        : "pointer",
+                                                    opacity:
+                                                        prevMonthButtonDisabled
+                                                            ? 0.3
+                                                            : 1,
+                                                }}
+                                                onClick={
+                                                    !prevMonthButtonDisabled
+                                                        ? decreaseMonth
+                                                        : undefined
+                                                }
+                                            />
+                                            <img
+                                                src={ArrowIcon}
+                                                alt="next"
+                                                style={{
+                                                    width: "20px",
+                                                    height: "20px",
+                                                    cursor: nextMonthButtonDisabled
+                                                        ? "default"
+                                                        : "pointer",
+                                                    opacity:
+                                                        nextMonthButtonDisabled
+                                                            ? 0.3
+                                                            : 1,
+                                                }}
+                                                onClick={
+                                                    !nextMonthButtonDisabled
+                                                        ? increaseMonth
+                                                        : undefined
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            />
+                        </div>
+
+                        <div className="button-group">
+                            <button
+                                className="cancel-button"
+                                onClick={() => setIsDatePickerOpen(false)}
+                            >
+                                취소
+                            </button>
+                            <button
+                                className="confirm-button"
+                                onClick={handleDateConfirm}
+                            >
+                                확인
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div style={{ flex: 1, overflowY: "auto" }}>
                 <Todo
                     tasksByDate={tasksByDate}
@@ -98,8 +234,9 @@ function Home() {
                     focusedTaskId={focusedTaskId}
                     updateTaskInState={updateTaskInState}
                     onDataUpdated={async () => {
-                        if (!userId) return;
-                        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                        const dateStr = selectedDate
+                            .toISOString()
+                            .split("T")[0];
                         try {
                             const tasks = await getTasksByDay(userId, dateStr);
                             setTasksByDate(tasks || []);
@@ -110,10 +247,20 @@ function Home() {
                 />
             </div>
 
-            <BottomTaskInput onAddTask={handleAddTask} categories={categories} />
+            <BottomTaskInput
+                onAddTask={handleAddTask}
+                categories={categories}
+            />
 
-            {/* 카테고리 관리 팝업 */}
-            {isCategoryPopupOpen && <CategoryManagePopup categories={categories} onClose={() => setIsCategoryPopupOpen(false)} onUpdateCategories={(newCategories) => setCategories(newCategories)} />}
+            {isCategoryPopupOpen && (
+                <CategoryManagePopup
+                    categories={categories}
+                    onClose={() => setIsCategoryPopupOpen(false)}
+                    onUpdateCategories={(newCategories) =>
+                        setCategories(newCategories)
+                    }
+                />
+            )}
         </div>
     );
 }
