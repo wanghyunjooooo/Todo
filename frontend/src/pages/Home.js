@@ -29,8 +29,18 @@ function Home() {
 
     const userId = localStorage.getItem("user_id");
 
-    const weekDays = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
-    const todayString = `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 ${weekDays[selectedDate.getDay()]}`;
+    const weekDays = [
+        "일요일",
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일",
+    ];
+    const todayString = `${
+        selectedDate.getMonth() + 1
+    }월 ${selectedDate.getDate()}일 ${weekDays[selectedDate.getDay()]}`;
 
     /** 오늘 할 일 로드 */
     useEffect(() => {
@@ -48,7 +58,13 @@ function Home() {
     }, [userId, selectedDate]);
 
     const updateTaskInState = (updatedTask) => {
-        setTasksByDate((prev) => prev.map((task) => (task.taskId === updatedTask.taskId ? { ...task, ...updatedTask } : task)));
+        setTasksByDate((prev) =>
+            prev.map((task) =>
+                task.taskId === updatedTask.taskId
+                    ? { ...task, ...updatedTask }
+                    : task
+            )
+        );
     };
 
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
@@ -57,7 +73,9 @@ function Home() {
         if (!userId) return alert("로그인이 필요합니다.");
         if (!selectedDate) return alert("날짜가 유효하지 않습니다.");
 
-        const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+        const localDate = new Date(
+            selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000
+        );
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -86,7 +104,9 @@ function Home() {
     };
 
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
             <Header onSidebarToggle={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
@@ -104,10 +124,20 @@ function Home() {
 
             {/* 단일 날짜 선택 팝업 */}
             {isDatePickerOpen && (
-                <div className="overlay" onClick={() => setIsDatePickerOpen(false)}>
-                    <div className="editor-box" onClick={(e) => e.stopPropagation()}>
+                <div
+                    className="overlay"
+                    onClick={() => setIsDatePickerOpen(false)}
+                >
+                    <div
+                        className="editor-box"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="title-box">
-                            <img src={RepeatIcon} alt="달력" className="memo-icon" />
+                            <img
+                                src={RepeatIcon}
+                                alt="달력"
+                                className="memo-icon"
+                            />
                             <span className="option-title">날짜</span>
                         </div>
 
@@ -116,13 +146,45 @@ function Home() {
                                 inline
                                 locale={ko}
                                 selected={tempSelectedDate}
-                                onChange={(date) => date && setTempSelectedDate(date)}
-                                renderCustomHeader={({ date, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
-                                    <div className="datepicker-header">
-                                        <span className="header-month-year">
-                                            {date.getFullYear()}년 {date.getMonth() + 1}월
+                                onChange={(date) =>
+                                    date && setTempSelectedDate(date)
+                                }
+                                renderCustomHeader={({
+                                    date,
+                                    decreaseMonth,
+                                    increaseMonth,
+                                    prevMonthButtonDisabled,
+                                    nextMonthButtonDisabled,
+                                }) => (
+                                    <div
+                                        className="datepicker-header"
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between", // 왼쪽/오른쪽 분리
+                                            width: "100%",
+                                            padding: "0 8px",
+                                        }}
+                                    >
+                                        {/* 왼쪽: 연월 표시 */}
+                                        <span
+                                            style={{
+                                                fontWeight: "550",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            {date.getFullYear()}년{" "}
+                                            {date.getMonth() + 1}월
                                         </span>
-                                        <div className="arrow-btn">
+
+                                        {/* 오른쪽: 이전 화살표 + 오늘 버튼 + 다음 화살표 */}
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "0px",
+                                            }}
+                                        >
                                             <img
                                                 src={ArrowIcon}
                                                 alt="prev"
@@ -130,21 +192,61 @@ function Home() {
                                                     width: "20px",
                                                     height: "20px",
                                                     transform: "rotate(180deg)",
-                                                    cursor: prevMonthButtonDisabled ? "default" : "pointer",
-                                                    opacity: prevMonthButtonDisabled ? 0.3 : 1,
+                                                    cursor: prevMonthButtonDisabled
+                                                        ? "default"
+                                                        : "pointer",
+                                                    opacity:
+                                                        prevMonthButtonDisabled
+                                                            ? 0.3
+                                                            : 1,
+                                                    margin: 0,
                                                 }}
-                                                onClick={!prevMonthButtonDisabled ? decreaseMonth : undefined}
+                                                onClick={
+                                                    !prevMonthButtonDisabled
+                                                        ? decreaseMonth
+                                                        : undefined
+                                                }
                                             />
+
+                                            <button
+                                                onClick={() =>
+                                                    setTempSelectedDate(
+                                                        new Date()
+                                                    )
+                                                }
+                                                style={{
+                                                    padding: "4px 8px",
+                                                    color: "#2a2a2a",
+                                                    border: "none",
+                                                    borderRadius: "0px",
+                                                    cursor: "pointer",
+                                                    fontWeight: "400",
+                                                    margin: 0,
+                                                }}
+                                            >
+                                                오늘
+                                            </button>
+
                                             <img
                                                 src={ArrowIcon}
                                                 alt="next"
                                                 style={{
                                                     width: "20px",
                                                     height: "20px",
-                                                    cursor: nextMonthButtonDisabled ? "default" : "pointer",
-                                                    opacity: nextMonthButtonDisabled ? 0.3 : 1,
+                                                    cursor: nextMonthButtonDisabled
+                                                        ? "default"
+                                                        : "pointer",
+                                                    opacity:
+                                                        nextMonthButtonDisabled
+                                                            ? 0.3
+                                                            : 1,
+                                                    margin: 0,
                                                 }}
-                                                onClick={!nextMonthButtonDisabled ? increaseMonth : undefined}
+                                                onClick={
+                                                    !nextMonthButtonDisabled
+                                                        ? increaseMonth
+                                                        : undefined
+                                                }
                                             />
                                         </div>
                                     </div>
@@ -153,10 +255,16 @@ function Home() {
                         </div>
 
                         <div className="button-group">
-                            <button className="cancel-button" onClick={() => setIsDatePickerOpen(false)}>
+                            <button
+                                className="cancel-button"
+                                onClick={() => setIsDatePickerOpen(false)}
+                            >
                                 취소
                             </button>
-                            <button className="confirm-button" onClick={handleDateConfirm}>
+                            <button
+                                className="confirm-button"
+                                onClick={handleDateConfirm}
+                            >
                                 확인
                             </button>
                         </div>
@@ -171,7 +279,9 @@ function Home() {
                     focusedTaskId={focusedTaskId}
                     updateTaskInState={updateTaskInState}
                     onDataUpdated={async () => {
-                        const dateStr = selectedDate.toISOString().split("T")[0];
+                        const dateStr = selectedDate
+                            .toISOString()
+                            .split("T")[0];
                         try {
                             const tasks = await getTasksByDay(userId, dateStr);
                             setTasksByDate(tasks || []);
@@ -182,11 +292,21 @@ function Home() {
                 />
             </div>
 
-            <BottomTaskInput onAddTask={handleAddTask} categories={categories} />
+            <BottomTaskInput
+                onAddTask={handleAddTask}
+                categories={categories}
+            />
 
-            {isCategoryPopupOpen && <CategoryManagePopup categories={categories} onClose={() => setIsCategoryPopupOpen(false)} onUpdateCategories={(newCategories) => setCategories(newCategories)} />}
+            {isCategoryPopupOpen && (
+                <CategoryManagePopup
+                    categories={categories}
+                    onClose={() => setIsCategoryPopupOpen(false)}
+                    onUpdateCategories={(newCategories) =>
+                        setCategories(newCategories)
+                    }
+                />
+            )}
         </div>
     );
 }
-
 export default Home;
