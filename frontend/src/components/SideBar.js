@@ -135,7 +135,7 @@ function Sidebar({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                <button className="sidebar-logout" onClick={() => setShowLogoutModal(true)}>
+                <button className="sidebar-logout" onClick={() => onClose() & setShowLogoutModal(true)}>
                     로그아웃
                 </button>
             </div>
