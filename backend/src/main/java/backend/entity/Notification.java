@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Notification {
 
     @Id
@@ -22,6 +23,7 @@ public class Notification {
     private Long notificationId;
 
     @Column(nullable = false, length = 10)
+    @Builder.Default
     private String status = "안읽음";
 
     @ManyToOne(fetch = FetchType.LAZY)

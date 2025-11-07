@@ -16,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Routine {
 
     @Id
@@ -44,7 +45,7 @@ public class Routine {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "routine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
+    @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Task> tasks;
 }

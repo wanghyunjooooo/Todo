@@ -17,6 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Task {
 
     @Id
@@ -29,6 +30,7 @@ public class Task {
     private String taskName;
 
     @Column(nullable = false, length = 10)
+    @Builder.Default
     private String status = "미완료";
 
     @Column(columnDefinition = "TEXT")
@@ -37,13 +39,15 @@ public class Task {
     @Column(nullable = false)
     @JsonProperty("task_date")
     private LocalDate taskDate;
-    
+
     @Column(length = 20)
     @JsonProperty("routine_type")
+    @Builder.Default
     private String routineType = "반복없음";
 
     @Column(nullable = false, length = 10)
     @JsonProperty("notification_type")
+    @Builder.Default
     private String notificationType = "미알림";
 
     @JsonProperty("notification_time")
