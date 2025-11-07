@@ -31,7 +31,7 @@
     bottom: 0;
     margin-bottom: 41px;
     left: 20px;
-    background: #fff;
+    background: #fbfbfb;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -52,7 +52,7 @@
     gap: 8px;
     border: none;
     border-radius: 8px;
-    background: #fff;
+    background: #fbfbfb;
     font-family: Pretendard, sans-serif;
     font-size: 12px;
     font-weight: 400;
@@ -92,7 +92,7 @@
     font-family: Pretendard, sans-serif;
     font-size: 12px;
     font-weight: 400;
-    background: #fff;
+    background: #fbfbfb;
     color: var(--Grey-Darker, #595959);
 }
 
@@ -485,7 +485,7 @@
 .minute-btn.selected {
     background-color: #36a862;
     color: white;
-    font-weight: bold;
+    font-weight: 400;
 }
 
 .header-buttons {
@@ -518,7 +518,7 @@
 /* 선택 가능한 날짜 */
 .selectable-day {
     color: #000;
-    background: #fff;
+    background: #fbfbfb;
     border-radius: 50%;
 }
 
@@ -527,13 +527,13 @@
 .react-datepicker__day--in-selecting-range,
 .react-datepicker__day--in-range {
     background: #4caf50;
-    color: white;
+    color: #fbfbfb;
     border-radius: 50%;
 }
 
 .selected-range-day {
     background-color: #4caf50 !important;
-    color: #fff !important;
+    color: #fbfbfb !important;
     border-radius: 50%;
 }
 
