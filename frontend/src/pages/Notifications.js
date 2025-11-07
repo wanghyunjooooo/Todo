@@ -1,15 +1,15 @@
-// src/pages/Notifications.js
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ 이거 빠져있었음!
 import Header from "../components/Header";
 import CheckIcon from "../assets/Vector.svg";
 import api from "../api";
 import "./Notifications.css";
 import DOMPurify from "dompurify"; // 🔹 보안용 (XSS 방지)
-
+import ArrowIcon from "../assets/icon-arrow-right.svg"; // 🔹 화살표 아이콘
 function Notifications() {
     const [notifications, setNotifications] = useState([]);
     const userId = localStorage.getItem("user_id");
-
+    const navigate = useNavigate();
     // 🔹 알림 전체 조회
     useEffect(() => {
         if (!userId) return;
@@ -126,10 +126,10 @@ function Notifications() {
         (a, b) => new Date(b) - new Date(a)
     );
 
+    // ...생략 (import 등 동일)
+
     return (
         <div className="notifications-page">
-            <Header showMenu={false} />
-
             <div className="notifications-list">
                 {sortedDates.map((date) => {
                     const isToday =
@@ -138,19 +138,27 @@ function Notifications() {
 
                     return (
                         <div key={date} className="notification-group">
-                            <div className="notification-group-header">
-                                <div className="notification-date">
-                                    {new Date(date).toLocaleDateString(
-                                        "ko-KR",
-                                        {
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                        }
-                                    )}
-                                </div>
+                            {/* ✅ 첫 줄: 화살표 + 알람 + 전체선택/읽음/삭제 */}
+                            {isToday && (
+                                <div className="notifications-actions-row">
+                                    <div className="notification-title-group">
+                                        {/* 🔹 화살표 아이콘 (이전 페이지 이동) */}
+                                        <img
+                                            src={ArrowIcon}
+                                            alt="arrow"
+                                            className="arrow-icon"
+                                            onClick={() => navigate(-1)}
+                                            style={{
+                                                cursor: "pointer",
+                                                transform: "rotate(180deg)", // 🔹 오른쪽 방향이 아니라 왼쪽이면 회전 조절
+                                                marginRight: "8px",
+                                            }}
+                                        />
+                                        <span className="notification-title">
+                                            알람
+                                        </span>
+                                    </div>
 
-                                {isToday && (
                                     <div className="notifications-actions">
                                         <div
                                             className="action-button"
@@ -188,9 +196,24 @@ function Notifications() {
                                             삭제
                                         </div>
                                     </div>
-                                )}
+                                </div>
+                            )}
+
+                            {/* ✅ 두 번째 줄: 날짜 */}
+                            <div className="notification-group-header">
+                                <div className="notification-date">
+                                    {new Date(date).toLocaleDateString(
+                                        "ko-KR",
+                                        {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        }
+                                    )}
+                                </div>
                             </div>
 
+                            {/* ✅ 알림 리스트 */}
                             {grouped[date].length === 0 ? (
                                 <div className="no-notifications">
                                     현재 알림이 없습니다.

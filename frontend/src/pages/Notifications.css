@@ -112,7 +112,7 @@ li::marker {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    background: #F3F3F3;
+    background: #f3f3f3;
     flex-shrink: 0;
 }
 
@@ -132,4 +132,40 @@ li::marker {
     color: #999999;
     font-size: 14px;
     padding: 20px 0;
+}
+
+/* Notifications.css */
+.notifications-actions-row {
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.notification-title {
+    color: var(--Grey-Darker, #2a2a2a);
+    font-family: Pretendard;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.notifications-actions {
+    display: flex;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.notification-title-group {
+    display: flex;
+    align-items: center;
+}
+
+.arrow-icon {
+    width: 35px;
+    height: 35px;
+    transform: rotate(-90deg);
+    aspect-ratio: 1/1;
 }
