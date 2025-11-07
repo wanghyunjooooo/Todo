@@ -168,4 +168,5 @@ li::marker {
     height: 35px;
     transform: rotate(-90deg);
     aspect-ratio: 1/1;
+    margin-top: 3px;
 }
