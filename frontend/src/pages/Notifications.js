@@ -33,9 +33,7 @@ function Notifications() {
                     return {
                         id: n.notification_id,
                         date: dateStr,
-                        text: `오늘의 To Do ${
-                            mark ? "<b>*</b>" : ""
-                        }<br><li>${safeTask}</li>`,
+                        text: `오늘의 To Do ${mark ? "<b>*</b>" : ""}<br><li>${safeTask}</li>`,
                         read: n.status === "읽음",
                         selected: false,
                     };
@@ -53,11 +51,7 @@ function Notifications() {
     const handleNotificationClick = async (notificationId) => {
         try {
             await api.patch(`/notifications/${notificationId}/read`);
-            setNotifications((prev) =>
-                prev.map((n) =>
-                    n.id === notificationId ? { ...n, read: true } : n
-                )
-            );
+            setNotifications((prev) => prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)));
         } catch (err) {
             console.error("알림 읽음 처리 실패:", err);
         }
@@ -65,25 +59,17 @@ function Notifications() {
 
     // 🔹 선택 토글
     const toggleSelect = (id) => {
-        setNotifications((prev) =>
-            prev.map((n) => (n.id === id ? { ...n, selected: !n.selected } : n))
-        );
+        setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, selected: !n.selected } : n)));
     };
 
     // 🔹 선택 삭제 (서버 반영)
     const deleteSelected = async (date) => {
-        const selectedIds = notifications
-            .filter((n) => n.date === date && n.selected)
-            .map((n) => n.id);
+        const selectedIds = notifications.filter((n) => n.date === date && n.selected).map((n) => n.id);
         if (selectedIds.length === 0) return;
 
         try {
-            await Promise.all(
-                selectedIds.map((id) => api.delete(`/notifications/${id}`))
-            );
-            setNotifications((prev) =>
-                prev.filter((n) => !selectedIds.includes(n.id))
-            );
+            await Promise.all(selectedIds.map((id) => api.delete(`/notifications/${id}`)));
+            setNotifications((prev) => prev.filter((n) => !selectedIds.includes(n.id)));
         } catch (err) {
             console.error("선택 알림 삭제 실패:", err);
         }
@@ -91,15 +77,11 @@ function Notifications() {
 
     // 🔹 선택 읽음 처리 (서버 반영) + 체크 해제
     const markSelectedAsRead = async (date) => {
-        const selectedIds = notifications
-            .filter((n) => n.date === date && n.selected && !n.read)
-            .map((n) => n.id);
+        const selectedIds = notifications.filter((n) => n.date === date && n.selected && !n.read).map((n) => n.id);
         if (selectedIds.length === 0) return;
 
         try {
-            await Promise.all(
-                selectedIds.map((id) => api.patch(`/notifications/${id}/read`))
-            );
+            await Promise.all(selectedIds.map((id) => api.patch(`/notifications/${id}/read`)));
             setNotifications((prev) =>
                 prev.map((n) =>
                     selectedIds.includes(n.id)
@@ -122,9 +104,7 @@ function Notifications() {
     const today = new Date().toISOString().split("T")[0];
     if (!grouped[today]) grouped[today] = [];
 
-    const sortedDates = Object.keys(grouped).sort(
-        (a, b) => new Date(b) - new Date(a)
-    );
+    const sortedDates = Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
 
     // ...생략 (import 등 동일)
 
@@ -132,9 +112,7 @@ function Notifications() {
         <div className="notifications-page">
             <div className="notifications-list">
                 {sortedDates.map((date) => {
-                    const isToday =
-                        new Date(date).toDateString() ===
-                        new Date().toDateString();
+                    const isToday = new Date(date).toDateString() === new Date().toDateString();
 
                     return (
                         <div key={date} className="notification-group">
@@ -150,29 +128,24 @@ function Notifications() {
                                             onClick={() => navigate(-1)}
                                             style={{
                                                 cursor: "pointer",
-                                                transform: "rotate(180deg)", // 🔹 오른쪽 방향이 아니라 왼쪽이면 회전 조절
+                                                transform: "rotate(180deg)",
                                                 marginRight: "8px",
                                             }}
                                         />
-                                        <span className="notification-title">
-                                            알람
-                                        </span>
+                                        <span className="notification-title">알람</span>
                                     </div>
 
                                     <div className="notifications-actions">
                                         <div
                                             className="action-button"
                                             onClick={() => {
-                                                const allSelected = grouped[
-                                                    date
-                                                ].every((n) => n.selected);
+                                                const allSelected = grouped[date].every((n) => n.selected);
                                                 setNotifications((prev) =>
                                                     prev.map((n) =>
                                                         n.date === date
                                                             ? {
                                                                   ...n,
-                                                                  selected:
-                                                                      !allSelected,
+                                                                  selected: !allSelected,
                                                               }
                                                             : n
                                                     )
@@ -181,18 +154,10 @@ function Notifications() {
                                         >
                                             전체선택
                                         </div>
-                                        <div
-                                            className="action-button"
-                                            onClick={() =>
-                                                markSelectedAsRead(date)
-                                            }
-                                        >
+                                        <div className="action-button" onClick={() => markSelectedAsRead(date)}>
                                             읽음
                                         </div>
-                                        <div
-                                            className="action-button"
-                                            onClick={() => deleteSelected(date)}
-                                        >
+                                        <div className="action-button" onClick={() => deleteSelected(date)}>
                                             삭제
                                         </div>
                                     </div>
@@ -202,49 +167,28 @@ function Notifications() {
                             {/* ✅ 두 번째 줄: 날짜 */}
                             <div className="notification-group-header">
                                 <div className="notification-date">
-                                    {new Date(date).toLocaleDateString(
-                                        "ko-KR",
-                                        {
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                        }
-                                    )}
+                                    {new Date(date).toLocaleDateString("ko-KR", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    })}
                                 </div>
                             </div>
 
                             {/* ✅ 알림 리스트 */}
                             {grouped[date].length === 0 ? (
-                                <div className="no-notifications">
-                                    현재 알림이 없습니다.
-                                </div>
+                                <div className="no-notifications">현재 알림이 없습니다.</div>
                             ) : (
                                 grouped[date].map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className={`notification-item ${
-                                            n.read ? "read" : ""
-                                        }`}
-                                        onClick={() =>
-                                            handleNotificationClick(n.id)
-                                        }
-                                    >
+                                    <div key={n.id} className={`notification-item ${n.read ? "read" : ""}`} onClick={() => handleNotificationClick(n.id)}>
                                         <div
-                                            className={`notification-select ${
-                                                n.selected ? "selected" : ""
-                                            }`}
+                                            className={`notification-select ${n.selected ? "selected" : ""}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 toggleSelect(n.id);
                                             }}
                                         >
-                                            {n.selected && (
-                                                <img
-                                                    src={CheckIcon}
-                                                    alt="check"
-                                                    className="checkmark"
-                                                />
-                                            )}
+                                            {n.selected && <img src={CheckIcon} alt="check" className="checkmark" />}
                                         </div>
                                         <span
                                             className="notification-text"
