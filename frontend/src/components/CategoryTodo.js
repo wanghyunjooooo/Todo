@@ -64,11 +64,21 @@ function CategoryTodo({ tasks, updateTaskInState, onDataUpdated }) {
         setPopupIndex((prev) => (prev.index === taskIdx ? { category: null, index: null } : { category: null, index: taskIdx }));
     };
 
-    if (!tasks || tasks.length === 0) return <div className="no-task-text">이 카테고리에 할 일이 없습니다.</div>;
+    // ✅ 오늘 날짜 구하기
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    // ✅ 오늘 날짜만 필터링
+    const todayTasks = (tasks || []).filter((task) => {
+        if (!task.task_date) return false;
+        const dateStr = new Date(task.task_date).toISOString().split("T")[0];
+        return dateStr === todayStr;
+    });
+
+    if (!todayTasks || todayTasks.length === 0) return <div className="no-task-text">오늘의 할 일이 없습니다.</div>;
 
     return (
         <div className="todo-container">
-            {tasks.map((task, taskIdx) => (
+            {todayTasks.map((task, taskIdx) => (
                 <div key={task.task_id || taskIdx} className={`task-item ${task.checked ? "checked" : ""}`}>
                     <div className="task-content">
                         <div className="task-left">
@@ -124,13 +134,13 @@ function CategoryTodo({ tasks, updateTaskInState, onDataUpdated }) {
 
             {popupIndex.index !== null && (
                 <TaskOptionsPopup
-                    taskId={tasks[popupIndex.index]?.task_id}
-                    taskData={tasks[popupIndex.index]}
+                    taskId={todayTasks[popupIndex.index]?.task_id}
+                    taskData={todayTasks[popupIndex.index]}
                     userId={localStorage.getItem("user_id")}
                     onClose={() => setPopupIndex({ category: null, index: null })}
                     onDelete={() => handleDeleteTask(popupIndex.index)}
                     onEditConfirm={(updatedTask) => {
-                        updateTaskInState(updatedTask); // ✅ 부모 함수 사용
+                        updateTaskInState(updatedTask);
                         onDataUpdated && onDataUpdated();
                     }}
                 />
