@@ -450,7 +450,7 @@ function TaskOptionsPopup({
                                 <img
                                     src={ArrowIcon}
                                     alt="arrow"
-                                    className="arrow-icon"
+                                    className="la-arrow-icon"
                                 />
                             </div>
 
@@ -476,7 +476,7 @@ function TaskOptionsPopup({
                                 <img
                                     src={ArrowIcon}
                                     alt="arrow"
-                                    className="arrow-icon"
+                                    className="la-arrow-icon"
                                 />
                             </div>
 

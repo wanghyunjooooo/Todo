@@ -204,8 +204,8 @@
     align-items: center;
     gap: 10px;
     border-radius: 14px;
-    background: var(--grey-white-hover, #FBFBFB);
-    color: var(--Grey-Darker, #2A2A2A);
+    background: var(--grey-white-hover, #fbfbfb);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 10px;
@@ -236,7 +236,7 @@
     border-radius: 16px;
     background: transparent;
     cursor: pointer;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
@@ -252,7 +252,7 @@
     gap: 8px;
     align-self: stretch;
     border-radius: 16px;
-    background: var(--Grey-Light, #F3F3F3);
+    background: var(--Grey-Light, #f3f3f3);
     color: var(--Grey-Dark, #595959);
     font-family: Pretendard;
     font-size: 12px;
@@ -278,7 +278,7 @@
     line-height: normal;
 }
 
-.arrow-icon {
+.la-arrow-icon {
     margin-left: auto;
     width: 40px;
     height: 40px;
@@ -383,7 +383,7 @@
     justify-content: center;
     align-items: center;
     gap: 6px;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 12px;
@@ -393,7 +393,7 @@
 }
 
 .react-datepicker__day-name:nth-child(1) {
-    color: var(--Red, #FD5344);
+    color: var(--Red, #fd5344);
 }
 
 .react-datepicker__month {
@@ -549,17 +549,13 @@
     /* 회색 처리 */
 }
 
-
-
-
-
 /* ===========================
    🔹 삭제
 =========================== */
 
 .delete-title-text {
     flex: 1 0 0;
-    color: var(--Red, #FD5344);
+    color: var(--Red, #fd5344);
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
@@ -573,7 +569,7 @@
     padding: 13px 0;
     align-items: center;
     justify-content: center;
-    color: var(--Grey-Darker, #2A2A2A);
+    color: var(--Grey-Darker, #2a2a2a);
     text-align: center;
     font-family: Pretendard;
     font-size: 12px;
@@ -583,5 +579,5 @@
 }
 
 .confirm-button.delete {
-    color: var(--Red, #FD5344);
+    color: var(--Red, #fd5344);
 }
