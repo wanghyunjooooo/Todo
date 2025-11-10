@@ -5,8 +5,8 @@ function LogoutBox({ onClose }) {
     const handleConfirmLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
-        localStorage.removeItem("user_name");
-        localStorage.removeItem("user_email");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
         sessionStorage.clear();
 
         alert("로그아웃 되었습니다.");

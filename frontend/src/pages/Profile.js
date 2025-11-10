@@ -2,27 +2,19 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import ProfileInfoBox from "../components/ProfileInfoBox";
 import ProgressBar from "../components/ProgressBar";
-import LogoutBox from "../components/LogoutBox";
 
 function MyProfile() {
-    const [username, setUsername] = useState("홍길동");
+    const [name, setName] = useState("홍길동");
     const [email, setEmail] = useState("hong@example.com");
-    const [userId, setUserId] = useState(null);
+    const [userId, setId] = useState(null);
 
     useEffect(() => {
         const id = localStorage.getItem("user_id"); // 로그인 시 저장한 user_id
-        setUserId(id);
+        setId(id);
     }, []);
 
     const handleSaveProfile = () => {
-        alert(
-            `회원정보가 저장되었습니다.\n이름: ${username}\n이메일: ${email}`
-        );
-    };
-
-    const handleLogout = () => {
-        localStorage.clear();
-        window.location.href = "/auth";
+        alert(`회원정보가 저장되었습니다.\n이름: ${name}\n이메일: ${email}`);
     };
 
     return (
@@ -54,19 +46,9 @@ function MyProfile() {
                     height: "100%",
                 }}
             >
-                <ProfileInfoBox
-                    username={username}
-                    setUsername={setUsername}
-                    email={email}
-                    setEmail={setEmail}
-                    onSave={handleSaveProfile}
-                />
+                <ProfileInfoBox name={name} setName={setName} email={email} setEmail={setEmail} onSave={handleSaveProfile} />
 
-                {userId ? (
-                    <ProgressBar userId={userId} />
-                ) : (
-                    <div>주간 통계 로딩중...</div>
-                )}
+                {userId ? <ProgressBar userId={userId} /> : <div>주간 통계 로딩중...</div>}
             </div>
 
             <div

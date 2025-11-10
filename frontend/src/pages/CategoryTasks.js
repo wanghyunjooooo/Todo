@@ -46,9 +46,7 @@ function CategoryTasks() {
                 }));
                 catName = "작업";
             } else {
-                const res = await api.get(
-                    `/categories/${userId}/${categoryId}`
-                );
+                const res = await api.get(`/categories/${userId}/${categoryId}`);
                 fetchedTasks = (res.data.tasks || []).map((task) => ({
                     ...task,
                     checked: task.status === "완료",
@@ -87,9 +85,7 @@ function CategoryTasks() {
         if (!userId) return alert("로그인이 필요합니다.");
 
         const today = new Date();
-        const localDate = new Date(
-            today.getTime() - today.getTimezoneOffset() * 60000
-        );
+        const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
         const dateStr = localDate.toISOString().split("T")[0];
 
         try {
@@ -115,9 +111,7 @@ function CategoryTasks() {
                     ? {
                           ...task,
                           ...updatedTask,
-                          checked:
-                              updatedTask.status === "완료" ||
-                              updatedTask.checked,
+                          checked: updatedTask.status === "완료" || updatedTask.checked,
                       }
                     : task
             )
@@ -150,9 +144,7 @@ function CategoryTasks() {
     if (loading) return <div></div>;
 
     return (
-        <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-        >
+        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             <Header onSidebarToggle={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
@@ -186,18 +178,10 @@ function CategoryTasks() {
             </div>
 
             <div style={{ flex: 1, overflowY: "auto" }}>
-                <CategoryTodo
-                    categoryId={categoryId}
-                    tasks={tasks}
-                    updateTaskInState={updateTaskInState}
-                    onDataUpdated={handleDataUpdated}
-                />
+                <CategoryTodo categoryId={categoryId} tasks={tasks} updateTaskInState={updateTaskInState} onDataUpdated={handleDataUpdated} />
             </div>
 
-            <BottomTaskInput
-                onAddTask={handleAddTask}
-                hideCategorySelector={true}
-            />
+            <BottomTaskInput onAddTask={handleAddTask} hideCategorySelector={true} />
 
             {isCategoryPopupOpen && (
                 <CategoryManagePopup
@@ -205,15 +189,9 @@ function CategoryTasks() {
                     onClose={() => setIsCategoryPopupOpen(false)}
                     onEdit={() => setIsEditingCategoryName(true)}
                     onDelete={async () => {
-                        if (
-                            window.confirm(
-                                "정말 이 카테고리를 삭제하시겠습니까?"
-                            )
-                        ) {
+                        if (window.confirm("정말 이 카테고리를 삭제하시겠습니까?")) {
                             try {
-                                await api.delete(
-                                    `/categories/${userId}/${categoryId}`
-                                );
+                                await api.delete(`/categories/${userId}/${categoryId}`);
                                 setIsCategoryPopupOpen(false);
                                 navigate("/");
                             } catch (err) {
