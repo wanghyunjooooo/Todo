@@ -53,8 +53,8 @@ public class UserService {
                 "message", "로그인 성공",
                 "token", token,
                 "user_id", user.getUserId(),
-                "user_name", user.getName(),
-                "user_email", user.getEmail()
+                "name", user.getName(),
+                "email", user.getEmail()
         );
     }
 

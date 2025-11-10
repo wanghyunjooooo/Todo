@@ -18,9 +18,9 @@ public class JWToken {
 
     private final long validityInMs = 7 * 24 * 60 * 60 * 1000;
 
-    public String createToken(Long userId, String userName) {
+    public String createToken(Long userId, String Name) {
         Claims claims = Jwts.claims().setSubject(userId.toString());
-        claims.put("user_name", userName);
+        claims.put("name", Name);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMs);
