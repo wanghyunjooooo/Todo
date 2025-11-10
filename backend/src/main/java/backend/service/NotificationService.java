@@ -43,19 +43,18 @@ public class NotificationService {
     }
 
     private NotificationDTO convertToDTO(Notification n) {
-    return NotificationDTO.builder()
-            .notificationId(n.getNotificationId())
-            .status(n.getStatus())
-            .createdAt(n.getCreatedAt())
-            .taskId(n.getTask().getTaskId())
-            .taskName(n.getTask().getTaskName())
-            .taskDate(n.getTask().getTaskDate())
-            .categoryName(
-                n.getTask().getCategory() != null
-                    ? n.getTask().getCategory().getCategoryName()
-                    : null
-            )
-            .build();
-}
-
+        return NotificationDTO.builder()
+                .notificationId(n.getNotificationId())
+                .status(n.getStatus())
+                .createdAt(n.getCreatedAt())
+                .taskId(n.getTask().getTaskId())
+                .taskName(n.getTask().getTaskName())
+                .taskDate(n.getTask().getTaskDate())
+                .categoryName(
+                    n.getTask().getCategory() != null
+                        ? n.getTask().getCategory().getCategoryName()
+                        : null
+                )
+                .build();
+    }
 }

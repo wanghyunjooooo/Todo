@@ -20,13 +20,11 @@ public class RoutineService {
     private final RoutineRepository routineRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final TaskService taskService;
 
-    public RoutineService(RoutineRepository routineRepository, TaskRepository taskRepository, UserRepository userRepository, TaskService taskService) {
+    public RoutineService(RoutineRepository routineRepository, TaskRepository taskRepository, UserRepository userRepository) {
         this.routineRepository = routineRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
-        this.taskService = taskService;
     }
 
     @Transactional
@@ -34,11 +32,12 @@ public class RoutineService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        Routine routine = new Routine();
-        routine.setRoutineType(dto.getRoutineType());
-        routine.setStartDate(dto.getStartDate());
-        routine.setEndDate(dto.getEndDate());
-        routine.setUser(user);
+        Routine routine = Routine.builder()
+            .routineType(dto.getRoutineType())
+            .startDate(dto.getStartDate())
+            .endDate(dto.getEndDate())
+            .user(user)
+            .build();
 
         Routine savedRoutine = routineRepository.saveAndFlush(routine);
 
@@ -109,18 +108,20 @@ public class RoutineService {
         LocalDate next = stepNext(baseTaskDateInclusive, routine.getRoutineType());
 
         while (next != null && !next.isAfter(end)) {
-            Task t = new Task();
-            t.setTaskName(baseTask.getTaskName());
-            t.setStatus("미완료");
-            t.setMemo(null);
-            t.setTaskDate(next);
-            t.setNotificationType(baseTask.getNotificationType());
-            t.setNotificationTime(baseTask.getNotificationTime());
-            t.setUser(baseTask.getUser());
-            t.setCategory(baseTask.getCategory());
-            t.setRoutine(routine);
-            t.setRoutineType(routine.getRoutineType());
+            Task t = Task.builder()
+                    .taskName(baseTask.getTaskName())
+                    .status("미완료")
+                    .memo(null)
+                    .taskDate(next)
+                    .notificationType(baseTask.getNotificationType())
+                    .notificationTime(baseTask.getNotificationTime())
+                    .user(baseTask.getUser())
+                    .category(baseTask.getCategory())
+                    .routine(routine)
+                    .routineType(routine.getRoutineType())
+                    .build();
             list.add(t);
+
 
             next = stepNext(next, routine.getRoutineType());
         }

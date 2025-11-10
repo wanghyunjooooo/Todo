@@ -35,9 +35,10 @@ public class CategoryService {
             }
         }
 
-        Category category = new Category();
-        category.setCategoryName(dto.getCategoryName().trim());
-        category.setUser(user);
+        Category category = Category.builder()
+                .categoryName(dto.getCategoryName().trim())
+                .user(user)
+                .build();
 
         return categoryRepository.save(category);
     }
@@ -99,30 +100,30 @@ public class CategoryService {
                     
                     return b.getCreatedAt().compareTo(a.getCreatedAt());
                 })
-                .map(task -> new TaskDTO(
-                        task.getTaskId(),
-                        task.getTaskName(),
-                        task.getStatus(),
-                        task.getMemo(),
-                        task.getTaskDate(),
-                        task.getRoutineType(),
-                        task.getNotificationType(),
-                        task.getNotificationTime(),
-                        userId,
-                        category.getCategoryId(),
-                        category.getCategoryName(),
-                        task.getRoutine() != null ? task.getRoutine().getRoutineId() : null,
-                        task.getCreatedAt()
-                ))
-                .collect(Collectors.toList());
+                .map(task -> TaskDTO.builder()
+                    .taskId(task.getTaskId())
+                    .taskName(task.getTaskName())
+                    .status(task.getStatus())
+                    .memo(task.getMemo())
+                    .taskDate(task.getTaskDate())
+                    .routineType(task.getRoutineType())
+                    .notificationType(task.getNotificationType())
+                    .notificationTime(task.getNotificationTime())
+                    .userId(userId)
+                    .categoryId(category.getCategoryId())
+                    .categoryName(category.getCategoryName())
+                    .routineId(task.getRoutine() != null ? task.getRoutine().getRoutineId() : null)
+                    .createdAt(task.getCreatedAt())
+                    .build())
+                    .collect(Collectors.toList());
 
-        return new CategoryDTO(
-                category.getCategoryId(),
-                category.getCategoryName(),
-                userId,
-                category.getCreatedAt(),
-                taskDTOs
-        );
+        return CategoryDTO.builder()
+                .categoryId(category.getCategoryId())
+                .categoryName(category.getCategoryName())
+                .userId(userId)
+                .createdAt(category.getCreatedAt())
+                .tasks(taskDTOs)
+                .build();
     }
 
     public Category updateCategory(Long userId, Long categoryId, CategoryDTO dto) {

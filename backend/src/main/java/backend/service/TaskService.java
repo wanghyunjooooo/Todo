@@ -42,21 +42,21 @@ public class TaskService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         Category category = null;
-
         if (dto.getCategoryId() != null) {
             category = categoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
         }
 
-        Task task = new Task();
-        task.setTaskName(dto.getTaskName());
-        task.setStatus(dto.getStatus() != null ? dto.getStatus() : "미완료");
-        task.setMemo(dto.getMemo());
-        task.setTaskDate(dto.getTaskDate());
-        task.setNotificationType(dto.getNotificationType() != null ? dto.getNotificationType() : "미알림");
-        task.setNotificationTime(dto.getNotificationTime());
-        task.setUser(user);
-        task.setCategory(category);
+        Task task = Task.builder()
+                .taskName(dto.getTaskName())
+                .status(dto.getStatus() != null ? dto.getStatus() : "미완료")
+                .memo(dto.getMemo())
+                .taskDate(dto.getTaskDate())
+                .notificationType(dto.getNotificationType() != null ? dto.getNotificationType() : "미알림")
+                .notificationTime(dto.getNotificationTime())
+                .user(user)
+                .category(category)
+                .build();
 
         return taskRepository.save(task);
     }
@@ -250,22 +250,20 @@ public class TaskService {
     }
 
     public TaskDTO convertToDTO(Task task) {
-        TaskDTO dto = new TaskDTO();
-        dto.setTaskId(task.getTaskId());
-        dto.setTaskName(task.getTaskName());
-        dto.setStatus(task.getStatus());
-        dto.setMemo(task.getMemo());
-        dto.setTaskDate(task.getTaskDate());
-        dto.setNotificationType(task.getNotificationType());
-        dto.setNotificationTime(task.getNotificationTime());
-        dto.setUserId(task.getUser() != null ? task.getUser().getUserId() : null);
-        dto.setCategoryId(task.getCategory() != null ? task.getCategory().getCategoryId() : null);
-        dto.setCategoryName(task.getCategory() != null ? task.getCategory().getCategoryName() : null);
-        dto.setCreatedAt(task.getCreatedAt());
-
-        dto.setRoutineId(task.getRoutine() != null ? task.getRoutine().getRoutineId() : null);
-        dto.setRoutineType(task.getRoutineType());
-
-        return dto;
+        return TaskDTO.builder()
+                .taskId(task.getTaskId())
+                .taskName(task.getTaskName())
+                .status(task.getStatus())
+                .memo(task.getMemo())
+                .taskDate(task.getTaskDate())
+                .notificationType(task.getNotificationType())
+                .notificationTime(task.getNotificationTime())
+                .userId(task.getUser() != null ? task.getUser().getUserId() : null)
+                .categoryId(task.getCategory() != null ? task.getCategory().getCategoryId() : null)
+                .categoryName(task.getCategory() != null ? task.getCategory().getCategoryName() : null)
+                .routineId(task.getRoutine() != null ? task.getRoutine().getRoutineId() : null)
+                .routineType(task.getRoutineType())
+                .createdAt(task.getCreatedAt())
+                .build();
     }
 }
