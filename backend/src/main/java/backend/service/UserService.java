@@ -23,7 +23,7 @@ public class UserService {
     }
 
     public User signup(UserDTO dto) {
-        if (userRepository.findByUserEmail(dto.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
@@ -37,7 +37,7 @@ public class UserService {
     }
 
     public Map<String, Object> login(UserDTO dto) {
-        Optional<User> optionalUser = userRepository.findByUserEmail(dto.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(dto.getEmail());
         if (optionalUser.isEmpty())
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
 
