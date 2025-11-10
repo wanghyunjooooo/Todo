@@ -15,13 +15,13 @@ public class UserDTO {
     private Long userId;
 
     @JsonProperty("name")
-    private String Name;
+    private String name;
 
     @JsonProperty("email")
-    private String Email;
+    private String email;
 
     @JsonProperty("password")
-    private String Password;
+    private String password;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
