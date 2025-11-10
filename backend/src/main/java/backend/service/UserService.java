@@ -23,28 +23,27 @@ public class UserService {
     }
 
     public User signup(UserDTO dto) {
-        if (userRepository.findByUserEmail(dto.getUserEmail()).isPresent()) {
+        if (userRepository.findByUserEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        User user = new User();
-        user.setEmail(dto.getUserEmail());
-        user.setName(dto.getUserName());
-        user.setPassword(passwordEncoder.encode(dto.getUserPassword()));
+        User user = User.builder()
+                .email(dto.getEmail())
+                .name(dto.getName())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .build();
 
-        User savedUser = userRepository.save(user);
-
-        return savedUser;
+        return userRepository.save(user);
     }
 
     public Map<String, Object> login(UserDTO dto) {
-        Optional<User> optionalUser = userRepository.findByUserEmail(dto.getUserEmail());
+        Optional<User> optionalUser = userRepository.findByUserEmail(dto.getEmail());
         if (optionalUser.isEmpty())
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
 
         User user = optionalUser.get();
 
-        if (!passwordEncoder.matches(dto.getUserPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
 
@@ -67,10 +66,10 @@ public class UserService {
 
     public User updateProfile(Long userId, UserDTO dto) {
         User user = getProfile(userId);
-        if (dto.getUserName() != null) user.setName(dto.getUserName());
-        if (dto.getUserEmail() != null) user.setEmail(dto.getUserEmail());
-        if (dto.getUserPassword() != null)
-            user.setPassword(passwordEncoder.encode(dto.getUserPassword()));
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getPassword() != null)
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
         return userRepository.save(user);
     }
 }

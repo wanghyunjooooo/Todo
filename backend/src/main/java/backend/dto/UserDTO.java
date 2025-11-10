@@ -8,19 +8,20 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserDTO {
 
     @JsonProperty("user_id")
     private Long userId;
 
-    @JsonProperty("user_name")
-    private String userName;
+    @JsonProperty("name")
+    private String Name;
 
-    @JsonProperty("user_email")
-    private String userEmail;
+    @JsonProperty("email")
+    private String Email;
 
-    @JsonProperty("user_password")
-    private String userPassword;
+    @JsonProperty("password")
+    private String Password;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;

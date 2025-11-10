@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TaskDTO {
 
     @JsonProperty("task_id")
